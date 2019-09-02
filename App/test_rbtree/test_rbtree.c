@@ -30,6 +30,36 @@ struct rb_root mytree = RB_ROOT;
         const typeof( ((type *)0)->member ) *__mptr = (ptr);\
         (type *)( (char *)__mptr - offsetof(type,member) );})
 
+/* rb_tree basic function */
+void dummy_rotate(struct rb_node *old, struct rb_node *new)
+{
+ 	return;
+}
+
+void rb_link_node(struct rb_node *node, struct rb_node *parent,
+				struct rb_node **rb_link)
+{
+	node->__rb_parent_color = (unsigned long)parent;
+	node->rb_left = node->rb_right = NULL;
+
+	*rb_link = node;
+
+	return;
+}
+
+void __rb_insert(struct rb_node *node, struct rb_root *root, void (*augment_rotate)(struct rb_node *old, struct rb_node *new))
+{
+    return;
+}
+
+void rb_insert_color(struct rb_node *node, struct rb_root *root)
+{	
+	__rb_insert(node, root, dummy_rotate);
+
+	return;
+}
+
+
 int my_insert(struct rb_root *root, struct mytype *data)
 {
     struct rb_node **new = &(root->rb_node);
@@ -40,21 +70,21 @@ int my_insert(struct rb_root *root, struct mytype *data)
     while(*new)
     {
         this = container_of(*new, struct mytype, node);
-	result = data->num - this->num;
+		result = data->num - this->num;
     }    
 
     parent = *new;
     if(result < 0)
     {
-	new = &((*new)->rb_left);
+		new = &((*new)->rb_left);
     }
     else if(result > 0)
     {
-	new = &((*new)->rb_right);
+		new = &((*new)->rb_right);
     }
     else
     {
-	return FALSES;
+		return FALSE;
     }
 
     rb_link_node(&data->node, parent, new);

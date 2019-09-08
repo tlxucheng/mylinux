@@ -1,0 +1,6 @@
+MY_APP_PAHT=./model_one ./model_two
+
+all:
+	set -e; for i in $(MY_APP_PAHT); do  $(MAKE) -C $$i; done
+clean:
+	set -e; for i in $(MY_APP_PAHT); do  $(MAKE) -C $$i clean; done

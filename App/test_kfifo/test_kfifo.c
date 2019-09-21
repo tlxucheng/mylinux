@@ -19,5 +19,6 @@ struct kfifo
 void kfifo_init(struct kfifo *fifo, void *buffer, unsigned int size)
 {
 
+
     return;
 }

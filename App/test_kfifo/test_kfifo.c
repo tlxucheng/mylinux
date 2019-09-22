@@ -18,7 +18,10 @@ struct kfifo
 
 void kfifo_init(struct kfifo *fifo, void *buffer, unsigned int size)
 {
-
+    if(!is_power_of_2(size))
+    {
+        return;
+    }
 
     return;
 }

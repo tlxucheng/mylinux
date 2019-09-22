@@ -16,12 +16,20 @@ struct kfifo
     unsigned int out;
 };
 
+void _kfifo_init(struct kfifo *fifo, void *buffer, unsigned int size)
+{
+    return;
+}
+
 void kfifo_init(struct kfifo *fifo, void *buffer, unsigned int size)
 {
     if(!is_power_of_2(size))
     {
         return;
     }
+
+
+
 
     return;
 }

@@ -27,9 +27,14 @@ typedef struct client
 
 struct redisServer
 {
-    pid_t pid;              /* Main process pid. */
-    client *current_client; /* Current client, only used on crash report */
-    list *clients;          /* List of active clients */
+    pid_t pid;                  /* Main process pid. */
+    client *current_client;     /* Current client, only used on crash report */
+    list *clients;              /* List of active clients */
+    list *clients_to_close;     /* Clients to close asynchronously */
+    list *unblocked_clients;    /* list of clients to unblock before next loop */
+    list *clients_waiting_acks; /* Clients waiting in WAIT command. */
+    size_t system_memory_size;  /* Total memory in system as reported by OS */
+
 };
 
 #endif

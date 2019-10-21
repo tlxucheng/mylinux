@@ -36,6 +36,7 @@
 #endif
 #endif
 
+size_t zmalloc_get_memory_size(void);
 
 #endif /* __ZMALLOC_H */
 

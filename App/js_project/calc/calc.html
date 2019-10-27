@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>calculator</title>
+    <script>
+    function calc(){
+        num1=Number(document.getElementById("num1").value);
+        num2=Number(document.getElementById("num2").value);
+        //comp=document.getElementById("select").value;
+        method=String(document.getElementById("method").value);    
+        var result;
+        switch(method) {
+            case "+":
+                result = num1+num2;
+                break;
+            case "-":
+                result = num1-num2
+                break;
+            case "*":
+                result = num1*num2;
+                break;
+            case "/":
+                result = num1/num2;
+                break;
+        }
+    document.getElementById("result").value = result;
+    }
+    </script>
+</head>
+<body>
+    <input type="text" id="num1"/>
+    <input type="text" id="method"/>
+    <!--
+        <!select name="method" id="select">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        <!/select>
+    -->
+    <input type="text" id="num2"/>
+    <input type="button" id="calc_action" value="等于" onclick="calc()" />
+    <input type="text" id="result"/>
+</body>
+</html>

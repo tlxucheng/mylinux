@@ -41,9 +41,14 @@ class ExcelHandle {
 		String m_file_name = cell.getContents();
 		System.out.println(m_file_name);
 		
-		FileHandle  filehandle = new FileHandle();
-		filehandle.WirteFile(m_file_name, "hello world!");
+		FileHandle filehandle = new FileHandle();
 		
+		String c_file = m_file_name+".c";;
+		String h_file = m_file_name+".h";;
+		
+		filehandle.WirteFile(c_file, "hello world!");
+		filehandle.WirteFile(h_file, "hello world!");
+
 		workbook.close();
 	}
 	

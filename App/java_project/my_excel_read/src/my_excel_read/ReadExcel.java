@@ -23,5 +23,7 @@ public class ReadExcel {
 			}
 			System.out.println();
 		}
+		
+		workbook.close();
 	}
 }

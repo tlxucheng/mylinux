@@ -43,12 +43,22 @@ class CFileHandle extends FileHandle {
 		return m_table_name + ".c";
 	}
 	
+	public String GenHeadIfnDef() {
+		String headnametran = m_table_name.toUpperCase() + "_" + "H_";
+		
+		return "#ifndef _" + headnametran + "\r" + "#define _" + headnametran;
+	}
+	
+	public String GenEndline() {
+		return "\r\n#endif";
+	}
+	
 	public void WriteHeadFile() throws Exception {
 		FileHandle filehandle = new FileHandle();
 		String     head_file_name  = GenHeadFileName();
-		String     content = "#include <stdio.h>";
 		
-		filehandle.WriteFile(head_file_name, content);
+		filehandle.WriteFile(head_file_name, GenHeadIfnDef());
+		filehandle.WriteFile(head_file_name, GenEndline());
 	}	
 	
 	public void WriteSourceFile() throws Exception {

@@ -8,6 +8,9 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class FileHandle {
 	void WriteFile(String m_file_name, String m_content) throws Exception {
 		File file = new File(m_file_name);
@@ -20,7 +23,6 @@ class FileHandle {
         BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
         bufferWritter.write(m_content);
         bufferWritter.close();
-        System.out.println("finish");
 	}
 	
 	void ReadFile() {
@@ -69,6 +71,21 @@ class CFileHandle extends FileHandle {
 		
 		filehandle.WriteFile(source_file_name, content);
 	}
+	
+	public void WriteFieldsEnum (List<String> fields_str, int fields_num) throws Exception {
+		String 		start_str = "\r\n\r\nenum\r\n{\r\n";
+		String 		end_str = "}";
+		String     	source_file_name  = GenSourceFileName();
+		FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, start_str);
+			
+		for(int i = 0; i < fields_num; i++) {
+			filehandle.WriteFile(source_file_name, "    "+m_table_name.toUpperCase()+"_"+fields_str.get(i).toUpperCase()+"\r\n");
+		}
+		
+		filehandle.WriteFile(source_file_name, end_str);
+	}
 }
 
 class CppFileHandle extends FileHandle {
@@ -91,24 +108,55 @@ class ExcelHandle {
 	void ReadExcel() throws Exception {
 		Workbook workbook = Workbook.getWorkbook(new File("create_table_sql.xls"));
 		Sheet sheet = workbook.getSheet(0);	
-		int row_num = sheet.getRows();
-		int col_num = sheet.getColumns();
 	
 		Cell cell = sheet.getCell(0, 0);		
-		System.out.print(cell.getContents()+" ");
-		cell = sheet.getCell(1, 0);
-		String m_file_name = cell.getContents();
-		System.out.println(m_file_name);
-		
+		String m_file_name = cell.getContents();		
 		
 		CFileHandle cfilehandle = new CFileHandle();
 		
 		cfilehandle.SetTableName(m_file_name);
 		cfilehandle.WriteHeadFile();
 		cfilehandle.WriteSourceFile();
-		
+
+		List<String> Fields = ReadExcelFields();
+			
+		/* 表名+表字段 */
+		cfilehandle.WriteFieldsEnum(Fields,GetExcelNum()-1);
+
 		workbook.close();
 	}
+	
+	String ReadExcelByIndex(int row, int col) throws Exception {
+		Workbook workbook = Workbook.getWorkbook(new File("create_table_sql.xls"));
+		Sheet sheet = workbook.getSheet(0);
+		/* getCell(x,y)   第y行的第x列 */
+		Cell cell = sheet.getCell(row, col);
+		
+		return cell.getContents();
+	}
+	
+	String ReadExcelTableName() throws Exception {
+		return ReadExcelByIndex(0, 0);
+	}
+	
+	int GetExcelNum() throws Exception {
+		Workbook workbook = Workbook.getWorkbook(new File("create_table_sql.xls"));
+		Sheet sheet = workbook.getSheet(0);
+		int row_num = sheet.getRows();
+		workbook.close();
+		
+		return row_num;
+	}
+	
+	List<String> ReadExcelFields() throws Exception {
+		List<String> Fields = new ArrayList<>();	
+		
+		for(int i = 1 ; i < GetExcelNum() ; i++) {
+			Fields.add(ReadExcelByIndex(0, i));
+		}
+			
+		return Fields;
+	}	
 	
 	void WriteExcel() {
 		
@@ -119,6 +167,9 @@ public class GenMysqlCApiCode {
 	public static void main(String[] args) throws Exception {
 		ExcelHandle excelhandle = new ExcelHandle();		
 	
-		excelhandle.ReadExcel();		
+		excelhandle.ReadExcel();
+		//excelhandle.ReadExcelTableName();
+		
+		System.out.println("finish");
 	}
 }

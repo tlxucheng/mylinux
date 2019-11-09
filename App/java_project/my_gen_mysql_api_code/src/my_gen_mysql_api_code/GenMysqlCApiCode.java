@@ -74,17 +74,79 @@ class CFileHandle extends FileHandle {
 	
 	public void WriteFieldsEnum (List<String> fields_str, int fields_num) throws Exception {
 		String 		start_str = "\r\n\r\nenum\r\n{\r\n";
-		String 		end_str = "}";
+		String 		end_str = "};";
 		String     	source_file_name  = GenSourceFileName();
 		FileHandle 	filehandle = new FileHandle();
 
 		filehandle.WriteFile(source_file_name, start_str);
 			
 		for(int i = 0; i < fields_num; i++) {
-			filehandle.WriteFile(source_file_name, "    "+m_table_name.toUpperCase()+"_"+fields_str.get(i).toUpperCase()+"\r\n");
+			filehandle.WriteFile(source_file_name, "    "+m_table_name.toUpperCase()+"_"+fields_str.get(i).toUpperCase()+",\r\n");
 		}
 		
 		filehandle.WriteFile(source_file_name, end_str);
+	}
+	
+	public void GenFieldsEnum(List<String> fields_str, List<String> out_fields_str) {
+		for(int i = 0; i < fields_str.size(); i++) {
+			out_fields_str.add(m_table_name.toUpperCase()+"_"+fields_str.get(i).toUpperCase());
+		}
+	}
+	
+	/* 未测试if分支 */
+    public String GenColNamesStaticVar() {
+    	String str_table_type;
+    	
+    	/* CM的表 */
+    	if(0 == m_table_name.compareTo("cc_talk"))
+    	{
+    		str_table_type = "CcTalk";
+    	}
+    	/* CR的表 */
+    	else
+    	{
+    		str_table_type = "Cm";
+    	}
+    	
+    	return str_table_type;
+    }
+    
+    /* 增加一个处理字符串的类，方便进行需要生成代码字符串的特殊处理 */
+    public String TranStringFirstCharToUpper(String inputStr) {
+    	return inputStr.substring(0,1).toUpperCase() + inputStr.substring(1);
+    }
+    
+    /* student_info ---> StudentInfo */
+    public String GenTableNameCamelCase() {
+    	String[] table_name_split = m_table_name.split("_");
+    	String table_name_camel_case = TranStringFirstCharToUpper(table_name_split[0])
+    			                         + TranStringFirstCharToUpper(table_name_split[1]);
+
+    	return table_name_camel_case;
+    }
+	
+    /* static DATABASE_CLOUMN_NAMES CmStudentInfoColumns[] = */
+	public void WriteFielsColNames (List<String> fields_str) throws Exception {
+		String 		start_str = "\r\n\r\nstatic DATABASE_CLOUMN_NAMES " + GenColNamesStaticVar()
+		                        + GenTableNameCamelCase() + "[] =\r\n";
+		String      left_parenthesis = "{\r\n";
+		String      end_str = "};\r\n";
+		
+		FileHandle 	filehandle = new FileHandle();
+		String     	source_file_name  = GenSourceFileName();
+		filehandle.WriteFile(source_file_name, start_str);  
+		filehandle.WriteFile(source_file_name, left_parenthesis);  
+		
+		/* 产生{STUDENT_INFO_ID, "id", 0}, 暂时不考虑第三列的属性生成 */
+		List<String> out_fields_str = new ArrayList<>();
+		GenFieldsEnum(fields_str, out_fields_str);
+		
+		for(int i = 0; i < out_fields_str.size(); i++) {
+			String colunm_name_fields_str = "    {"+ out_fields_str.get(i) + ", " + "\""+fields_str.get(i) + "\"" +", " + "0},\r\n";
+			filehandle.WriteFile(source_file_name, colunm_name_fields_str);  
+		}
+		
+		filehandle.WriteFile(source_file_name, end_str);  
 	}
 }
 
@@ -122,7 +184,8 @@ class ExcelHandle {
 			
 		/* 表名+表字段 */
 		cfilehandle.WriteFieldsEnum(Fields,GetExcelNum()-1);
-
+		cfilehandle.WriteFielsColNames(Fields);
+	
 		workbook.close();
 	}
 	

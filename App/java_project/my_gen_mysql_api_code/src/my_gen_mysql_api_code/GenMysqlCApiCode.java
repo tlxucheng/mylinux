@@ -72,7 +72,7 @@ class CFileHandle extends FileHandle {
 		filehandle.WriteFile(source_file_name, content);
 	}
 	
-	public void WriteFieldsEnum (List<String> fields_str, int fields_num) throws Exception {
+	public void WriteFieldsEnum (List<String> fields_str) throws Exception {
 		String 		start_str = "\r\n\r\nenum\r\n{\r\n";
 		String 		end_str = "};";
 		String     	source_file_name  = GenSourceFileName();
@@ -80,7 +80,7 @@ class CFileHandle extends FileHandle {
 
 		filehandle.WriteFile(source_file_name, start_str);
 			
-		for(int i = 0; i < fields_num; i++) {
+		for(int i = 0; i < fields_str.size(); i++) {
 			filehandle.WriteFile(source_file_name, "    "+m_table_name.toUpperCase()+"_"+fields_str.get(i).toUpperCase()+",\r\n");
 		}
 		
@@ -208,7 +208,7 @@ class ExcelHandle {
 		List<String> Fields = ReadExcelFields();
 			
 		/* 表名+表字段 */
-		cfilehandle.WriteFieldsEnum(Fields,GetExcelNum()-1);
+		cfilehandle.WriteFieldsEnum(Fields);
 		cfilehandle.WriteFielsColNames(Fields);
 		cfilehandle.GenColNameFunction();
 		
@@ -236,16 +236,45 @@ class ExcelHandle {
 		
 		return row_num;
 	}
+
+	int GetExcelFieldNum() throws Exception {
+		Workbook workbook = Workbook.getWorkbook(new File("create_table_sql.xls"));
+		Sheet sheet = workbook.getSheet(0);
+		int row_num = sheet.getRows();
+		int filed_num = 0;
+		
+		/* 第一行为表名 */
+		for(int i = 1; i < row_num; i++) {
+			/* getCell(x,y)   第y行的第x列 */
+			Cell cell = sheet.getCell(0, i);
+			if("" == cell.getContents()) {
+				break;
+			}
+			filed_num++;
+		}
+		
+		workbook.close();
+		
+		return filed_num;
+	}
 	
 	List<String> ReadExcelFields() throws Exception {
 		List<String> Fields = new ArrayList<>();	
 		
-		for(int i = 1 ; i < GetExcelNum() ; i++) {
+		for(int i = 1 ; i <= GetExcelFieldNum() ; i++) {
 			Fields.add(ReadExcelByIndex(0, i));
 		}
 			
 		return Fields;
 	}	
+	
+	/* 第11行开始读取4行方法 */
+	List<String> ReadExcelMethods() throws Exception {
+		List<String> Methods = new ArrayList<>();	
+
+		
+		return Methods;
+	}
 	
 	void WriteExcel() {
 		

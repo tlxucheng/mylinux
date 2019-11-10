@@ -128,9 +128,9 @@ class CFileHandle extends FileHandle {
     /* static DATABASE_CLOUMN_NAMES CmStudentInfoColumns[] = */
 	public void WriteFielsColNames (List<String> fields_str) throws Exception {
 		String 		start_str = "\r\n\r\nstatic DATABASE_CLOUMN_NAMES " + GenColNamesStaticVar()
-		                        + GenTableNameCamelCase() + "[] =\r\n";
+		                        + GenTableNameCamelCase() + "Columns[] =\r\n";
 		String      left_parenthesis = "{\r\n";
-		String      end_str = "};\r\n";
+		String      end_str = "};\r\n\r\n";
 		
 		FileHandle 	filehandle = new FileHandle();
 		String     	source_file_name  = GenSourceFileName();
@@ -147,6 +147,31 @@ class CFileHandle extends FileHandle {
 		}
 		
 		filehandle.WriteFile(source_file_name, end_str);  
+	}
+	
+	public String GenColNameFunctionName() {
+		return "Static char *" + GenColNamesStaticVar() + GenTableNameCamelCase() + "ColumnName" + "(int *seq)\r\n";
+	}
+	
+	public String GenColNameFunctionBody() {
+		return "    if(seq >= 0 || seq < sizeof(" + GenColNamesStaticVar() + GenTableNameCamelCase() + "Columns)"
+			  + "/sizeof(DATABASE_CLOUMN_NAMES))\r\n" 
+			  + "        return"+ GenColNamesStaticVar() + GenTableNameCamelCase() + "Columns[seq].name;\r\n"
+			  + "    retur NULL;\r\n";
+	}
+	
+	public void GenColNameFunction() throws Exception {
+		String     	source_file_name  = GenSourceFileName();
+		String      function_name = GenColNameFunctionName();
+		String      left_parenthesis = "{\r\n";
+		String      function_body = GenColNameFunctionBody();
+		String      right_parenthesis = "}\r\n";
+	    FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, function_name);  
+		filehandle.WriteFile(source_file_name, left_parenthesis);  
+		filehandle.WriteFile(source_file_name, function_body);  
+		filehandle.WriteFile(source_file_name, right_parenthesis);  
 	}
 }
 
@@ -185,7 +210,8 @@ class ExcelHandle {
 		/* ±íÃû+±í×Ö¶Î */
 		cfilehandle.WriteFieldsEnum(Fields,GetExcelNum()-1);
 		cfilehandle.WriteFielsColNames(Fields);
-	
+		cfilehandle.GenColNameFunction();
+		
 		workbook.close();
 	}
 	

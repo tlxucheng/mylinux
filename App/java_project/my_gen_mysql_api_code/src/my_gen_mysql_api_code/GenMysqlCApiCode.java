@@ -165,13 +165,83 @@ class CFileHandle extends FileHandle {
 		String      function_name = GenColNameFunctionName();
 		String      left_parenthesis = "{\r\n";
 		String      function_body = GenColNameFunctionBody();
-		String      right_parenthesis = "}\r\n";
+		String      right_parenthesis = "}\r\n\r\n";
 	    FileHandle 	filehandle = new FileHandle();
 
 		filehandle.WriteFile(source_file_name, function_name);  
 		filehandle.WriteFile(source_file_name, left_parenthesis);  
 		filehandle.WriteFile(source_file_name, function_body);  
 		filehandle.WriteFile(source_file_name, right_parenthesis);  
+	}
+	
+	public void GenInsertmMethodFunction(String method_str) throws Exception {
+		String     	source_file_name  = GenSourceFileName();
+		String      left_parenthesis = "{\r\n";
+		String      right_parenthesis = "}\r\n\r\n";
+	    FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, left_parenthesis);
+		filehandle.WriteFile(source_file_name, right_parenthesis);
+	}
+
+	public void GenDeleteMethodFunction(String method_str) throws Exception {
+		String     	source_file_name  = GenSourceFileName();
+		String      left_parenthesis = "{\r\n";
+		String      right_parenthesis = "}\r\n\r\n";
+	    FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, left_parenthesis);
+		filehandle.WriteFile(source_file_name, right_parenthesis);
+	}
+	
+	public void GenUpdateMethodFunction(String method_str) throws Exception {
+		String     	source_file_name  = GenSourceFileName();
+		String      left_parenthesis = "{\r\n";
+		String      right_parenthesis = "}\r\n\r\n";
+	    FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, left_parenthesis);
+		filehandle.WriteFile(source_file_name, right_parenthesis);
+	}
+	
+	public void GenGetMethodFunction(String method_str) throws Exception {
+		String     	source_file_name  = GenSourceFileName();
+		String      left_parenthesis = "{\r\n";
+		String      right_parenthesis = "}\r\n\r\n";
+	    FileHandle 	filehandle = new FileHandle();
+
+		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, left_parenthesis);
+		filehandle.WriteFile(source_file_name, right_parenthesis);
+	}
+	
+	/* java定义枚举类型 0: insert, 1: delete, 2: update, 3: get */
+	/* 是否可以用多态实现数据库操作函数 */
+	public void GenMethodFunction(List<String> fields_str) throws Exception {
+		
+		for (int i = 0; i < fields_str.size(); i++) {
+			String method_str = fields_str.get(i);
+			switch(method_str)
+			{
+				case "insert":
+					GenInsertmMethodFunction(method_str);
+					break;
+				case "delete":
+					GenDeleteMethodFunction(method_str);
+					break;
+				case "update":
+					GenUpdateMethodFunction(method_str);
+					break;
+				case "get":
+					GenGetMethodFunction(method_str);
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
 
@@ -206,11 +276,13 @@ class ExcelHandle {
 		cfilehandle.WriteSourceFile();
 
 		List<String> Fields = ReadExcelFields();
+		List<String> Methods = ReadExcelMethods();
 			
 		/* 表名+表字段 */
 		cfilehandle.WriteFieldsEnum(Fields);
 		cfilehandle.WriteFielsColNames(Fields);
 		cfilehandle.GenColNameFunction();
+		cfilehandle.GenMethodFunction(Methods);
 		
 		workbook.close();
 	}
@@ -272,7 +344,10 @@ class ExcelHandle {
 	List<String> ReadExcelMethods() throws Exception {
 		List<String> Methods = new ArrayList<>();	
 
-		
+		/* 先固定在11~14行 */
+		for(int i = 10 ; i < 14 ; i++) {
+			Methods.add(ReadExcelByIndex(0, i));
+		}		
 		return Methods;
 	}
 	

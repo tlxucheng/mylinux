@@ -175,8 +175,15 @@ class CFileHandle extends FileHandle {
 	}
 	
 	public String GenInsertFunctionName() {
-		return "int " + GenColNamesStaticVar() + "DbInsert"+ GenTableNameCamelCase() + "(MYSQL pDb*, char *dbName, "
+		return "int " + GenColNamesStaticVar() + "DbInsert"+ GenTableNameCamelCase()
+		       + "(MYSQL pDb*, char *dbName, "
 			   + " Insert" + GenTableNameCamelCase() + "_REQUEST_PARMA *pInsert_paras)";
+	}
+	
+	public String GenGetFunctionName() {
+		return "int " + GenColNamesStaticVar() + "DbInsert"+ GenTableNameCamelCase()
+		       + "(MYSQL pDb*, char *dbName, unsigned long ccgeid, unsigned int limit, "
+		       + "EMICALL_DB_" + GenColNamesStaticVar().toUpperCase() + "_"+ m_table_name.toUpperCase() + " **list, unsigned int *count)"; 
 	}
 	
 	public void GenInsertMethodFunction() throws Exception {
@@ -212,13 +219,13 @@ class CFileHandle extends FileHandle {
 		filehandle.WriteFile(source_file_name, right_parenthesis);
 	}
 	
-	public void GenGetMethodFunction(String method_str) throws Exception {
+	public void GenGetMethodFunction() throws Exception {
 		String     	source_file_name  = GenSourceFileName();
 		String      left_parenthesis = "{\r\n";
 		String      right_parenthesis = "}\r\n\r\n";
 	    FileHandle 	filehandle = new FileHandle();
 
-		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, GenGetFunctionName()+"\r\n");
 		filehandle.WriteFile(source_file_name, left_parenthesis);
 		filehandle.WriteFile(source_file_name, right_parenthesis);
 	}
@@ -241,7 +248,7 @@ class CFileHandle extends FileHandle {
 					GenUpdateMethodFunction(method_str);
 					break;
 				case "get":
-					GenGetMethodFunction(method_str);
+					GenGetMethodFunction();
 					break;
 				default:
 					break;

@@ -174,13 +174,18 @@ class CFileHandle extends FileHandle {
 		filehandle.WriteFile(source_file_name, right_parenthesis);  
 	}
 	
-	public void GenInsertmMethodFunction(String method_str) throws Exception {
+	public String GenInsertFunctionName() {
+		return "int " + GenColNamesStaticVar() + "DbInsert"+ GenTableNameCamelCase() + "(MYSQL pDb*, char *dbName, "
+			   + " Insert" + GenTableNameCamelCase() + "_REQUEST_PARMA *pInsert_paras)";
+	}
+	
+	public void GenInsertMethodFunction() throws Exception {
 		String     	source_file_name  = GenSourceFileName();
 		String      left_parenthesis = "{\r\n";
 		String      right_parenthesis = "}\r\n\r\n";
 	    FileHandle 	filehandle = new FileHandle();
 
-		filehandle.WriteFile(source_file_name, method_str+"\r\n");
+		filehandle.WriteFile(source_file_name, GenInsertFunctionName()+"\r\n");
 		filehandle.WriteFile(source_file_name, left_parenthesis);
 		filehandle.WriteFile(source_file_name, right_parenthesis);
 	}
@@ -227,7 +232,7 @@ class CFileHandle extends FileHandle {
 			switch(method_str)
 			{
 				case "insert":
-					GenInsertmMethodFunction(method_str);
+					GenInsertMethodFunction();
 					break;
 				case "delete":
 					GenDeleteMethodFunction(method_str);

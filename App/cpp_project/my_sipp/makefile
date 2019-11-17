@@ -3,23 +3,28 @@
 #
 
 CC = gcc
+CPP = g++
 INCLUDE = -I./
 LIBRARY = -L 
 
-SRCS := $(wildcard *.c)
-#SRCS_CPP := $(wildcar *.cpp)
-#OBJECTS := $(patsubst %.c, patsubst %.cpp, %.o, $(SRCS_C), $(SRCS_CPP))
-OBJECTS := $(patsubst %.c, %.o, $(SRCS))
+SRCS_C := $(wildcard *.c)
+SRCS_CPP := $(wildcard *.cpp)
+OBJECTS_C := $(patsubst %.c, %.o, $(SRCS_C))
+OBJECTS_CPP := $(patsubst %.cpp, %.o, $(SRCS_CPP))
 
 TARGET = my_sipp
 
 all : $(TARGET)
 
-$(TARGET) : $(OBJECTS)
-	$(CC) -o $(TARGET) $(OBJECTS)
+$(TARGET) : $(OBJECTS_CPP) $(OBJECTS_C)
+	$(CPP) -o $(TARGET) $(OBJECTS_CPP) $(OBJECTS_C)
 	
-.c.cpp.o:
-	$(cc) -c $(INCLUDE) $< -o $@
+.c.o:
+	$(CC) -c $(INCLUDE) $< -o $@
+	
+.cpp.o:
+	$(CPP) -c $(INCLUDE) $< -o $@
 	
 clean :
-	rm -rf $(TARGET) $(OBJECTS)
+	rm -rf $(TARGET) $(OBJECTS_C)
+	rm -rf $(TARGET) $(OBJECTS_CPP)

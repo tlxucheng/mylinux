@@ -15,3 +15,54 @@ call::call(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr
 
 }
 
+int call::send_raw(const char * msg, int index, int len)
+{	
+    struct sipp_socket  *sock;
+    int                 rc;
+	
+    sock = call_socket;
+
+    /* server */
+    if ((use_remote_sending_addr) && (sendMode == MODE_SERVER)) 
+	{
+        sock=call_remote_socket ;
+    }
+	else
+	{
+	}
+
+    rc = write_socket(sock, msg, len, WS_BUFFER, &call_peer);
+}
+
+char * call::send_scene(int index, int *send_status, int *len)
+{
+
+}
+
+bool call::executeMessage(message *curmsg)
+{
+
+}
+
+bool call::run()
+{	
+    message *curmsg;
+    if(initCall)
+	{
+        curmsg = call_scenario->initmessages[msg_index];
+	}
+	else 
+	{
+        curmsg = call_scenario->message[msg_index];
+	}
+
+    return executeMessage(curmsg);
+}
+
+
+bool call::process_incoming(char * msg, struct sockaddr_storage *src)
+{
+	return true;
+}
+
+

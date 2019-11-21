@@ -10,6 +10,7 @@ public:
 protected:
     /* What socket is this call bound to. */
     struct sipp_socket *call_socket;
+};
 
 #endif
 

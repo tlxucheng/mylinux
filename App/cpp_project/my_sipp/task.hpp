@@ -1,6 +1,11 @@
 #ifndef __TASK__
 #define __TASK__
 
+#include <map>
+#include <list>
+#include <sys/types.h>
+#include <string.h>
+
 class task;
 
 typedef std::list<task *> task_list;

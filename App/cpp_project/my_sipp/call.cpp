@@ -53,7 +53,7 @@ bool call::run()
 	}
 	else 
 	{
-        curmsg = call_scenario->message[msg_index];
+        curmsg = call_scenario->messages[msg_index];
 	}
 
     return executeMessage(curmsg);

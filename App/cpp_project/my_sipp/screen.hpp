@@ -5,6 +5,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
     void ERROR(const char *fmt, ...) __attribute__ ((noreturn));
     void WARNING(const char *fmt, ...);
     void ERROR_NO(const char *fmt, ...);

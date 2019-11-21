@@ -1,6 +1,8 @@
 #ifndef __SIPP_SOCKET_H__
 #define __SIPP_SOCKET_H__
 
+#include <sys/socket.h>
+
 struct sipp_socket {
 	
     int ss_transport; /* T_TCP, T_UDP, or T_TLS. */

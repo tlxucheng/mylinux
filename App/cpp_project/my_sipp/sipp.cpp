@@ -5,6 +5,8 @@
  * clent:  ./sipp -sn uac 127.0.0.1
  */
 
+#define GLOBALS_FULL_DEFINITION
+
 void help()
 {
 	printf("need two para.");

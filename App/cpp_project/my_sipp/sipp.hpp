@@ -1,11 +1,52 @@
 #ifndef __SIPP__
 #define __SIPP__
 
+/* Std C includes */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <sys/time.h>
+#include <sys/poll.h>
+#include <sys/resource.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
+#include <ctype.h>
+#include <signal.h>
+#include <time.h>
+#include <limits.h>
+#include <vector>
+#include <string>
+#include <map>
+#include <set>
+#include <math.h>
+
+/* Sipp includes */
+
+#include "xp_parser.h"
+#include "scenario.hpp"
+#include "screen.hpp"
+#include "task.hpp"
+#include "listener.hpp"
+#include "socketowner.hpp"
+#include "socket.hpp"
+#include "call.hpp"
+#include "stat.hpp"
+#include "call_generation_task.hpp"
+
 /************************** Constants **************************/
 #define SIPP_MAXFDS                65536
 #define SIPP_MAX_MSG_SIZE          65536
 
-
+#ifdef GLOBALS_FULL_DEFINITION
 #define extern
 #define _DEFVAL(value) = value
 #else

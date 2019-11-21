@@ -27,6 +27,9 @@ private:
     struct sipp_socket *call_remote_socket;
 
 	bool executeMessage(message *curmsg);
+	
+    char * send_scene(int index, int *send_status, int *msgLen);
+    int send_raw(const char * msg, int index, int len);
 };
 
 #endif

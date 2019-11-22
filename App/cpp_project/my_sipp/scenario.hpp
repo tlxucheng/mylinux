@@ -31,6 +31,9 @@ private:
 	
 };
 
+/* There are external variable containing the current scenario */
+extern int           sendMode;
+
 extern const char * default_scenario[12];
 
 #endif

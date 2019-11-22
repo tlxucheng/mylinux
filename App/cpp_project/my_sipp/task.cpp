@@ -2,6 +2,7 @@
 
 task_list all_tasks;
 task_list running_tasks;
+timewheel paused_tasks;
 
 task_list* get_running_tasks()
 {

@@ -61,10 +61,12 @@ extern char               local_ip[40];
 
 extern bool               local_ip_is_ipv6;
 extern int                local_port              _DEFVAL(0);
+extern int                tcp_readsize            _DEFVAL(65535);
 
 /*********************** Global Sockets  **********************/
 extern set<struct sipp_socket *> sockets_pending_reset;
 
+extern short         use_remote_sending_addr      _DEFVAL(0);
 
 #define T_UDP                      0
 #define T_TCP                      1

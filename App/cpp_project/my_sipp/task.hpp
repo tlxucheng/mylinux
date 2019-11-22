@@ -8,6 +8,16 @@
 
 class task;
 
+class timewheel
+{
+public:
+	timewheel();
+
+	void remove_paused_task(task *task);
+private:
+	
+};
+
 typedef std::list<task *> task_list;
 
 class task
@@ -22,7 +32,10 @@ protected:
 
 private:
 	void add_to_runqueue();
-	void remove_from_runqueue();
+	bool remove_from_runqueue();
+	
+    /* If we are running, the iterator to remove us from the running list. */
+    task_list::iterator runit;
 };
 
 #endif

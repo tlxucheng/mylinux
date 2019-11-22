@@ -5,6 +5,8 @@
 
 struct sipp_socket  *sockets[SIPP_MAXFDS];
 
+extern char * get_call_id(char *msg);
+
 int open_connections()
 {	
     int status = 0;
@@ -103,8 +105,23 @@ void buffer_read(struct sipp_socket *socket, struct socketbuf *newbuf)
 int empty_socket(struct sipp_socket *socket)
 {
     int ret = -1;
+    int readsize=0;
+
+	if (socket->ss_transport == T_UDP || socket->ss_transport == T_SCTP) {
+        readsize = SIPP_MAX_MSG_SIZE;
+    } else {
+        readsize = tcp_readsize;
+    }
 
     struct socketbuf *socketbuf;
+    char *buffer;
+	
+    sipp_socklen_t addrlen = sizeof(struct sockaddr_storage);
+
+	buffer = (char *)malloc(readsize);
+    if (!buffer) {
+        ERROR("Could not allocate memory for read!");
+    }
 
     switch(socket->ss_transport) {
     case T_TCP:

@@ -1,9 +1,18 @@
+#define GLOBALS_FULL_DEFINITION
+
 #include "sipp.hpp"
+#include "sip_parser.hpp"
+#include "socket.hpp"
+#include "assert.h"
 
 /* start command
  * server: ./sipp -sn uas
  * clent:  ./sipp -sn uac 127.0.0.1
  */
+
+/******************** Recv Poll Processing *********************/
+
+extern struct sipp_socket  *sockets[SIPP_MAXFDS];
 
 #define GLOBALS_FULL_DEFINITION
 
@@ -40,6 +49,9 @@ void traffic_thread()
             sockets_pending_reset.erase(sockets_pending_reset.begin());
         }
         */
+		
+        /* Schedule all pending calls and process their timers */
+        task_list *running_tasks;
 
         /* We should never get so busy with running calls that we can't process some messages. */
         int loops = max_sched_loops;
@@ -47,7 +59,7 @@ void traffic_thread()
 		/* Now we process calls that are on the run queue. */
         running_tasks = get_running_tasks();
 
-		        task * last = NULL;
+		task * last = NULL;
 
         task_list::iterator iter;
         for(iter = running_tasks->begin(); iter != running_tasks->end(); iter++) {

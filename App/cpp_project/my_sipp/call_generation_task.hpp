@@ -14,8 +14,8 @@ public:
     bool run();
 	
 private:
-    CallGenerationTask();
-    virtual ~CallGenerationTask();
+    //CallGenerationTask();
+    //virtual ~CallGenerationTask();
 
 	static class CallGenerationTask *instance;
 	static unsigned long calls_since_last_rate_change;

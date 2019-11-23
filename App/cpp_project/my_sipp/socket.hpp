@@ -3,6 +3,11 @@
 
 #include <sys/socket.h>
 
+ssize_t read_message(struct sipp_socket *socket, char *buf, size_t len, struct sockaddr_storage *src);
+
+void setup_ctrl_socket();
+void process_message(struct sipp_socket *socket, char *msg, ssize_t msg_size, struct sockaddr_storage *src);
+
 struct sipp_socket {
 	
     int ss_transport; 			/* T_TCP, T_UDP, or T_TLS. */

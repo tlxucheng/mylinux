@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "xp_parser.h"
 
 #define XP_MAX_NAME_LEN   256

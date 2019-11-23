@@ -31,7 +31,12 @@ private:
 	
 };
 
+int find_scenario(const char *scenario);
+
 /* There are external variable containing the current scenario */
+extern scenario      *main_scenario;
+
+extern int           creationMode;
 extern int           sendMode;
 
 extern const char * default_scenario[12];

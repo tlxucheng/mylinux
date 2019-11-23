@@ -11,7 +11,8 @@ public:
     static call *add_call(int userId, bool ipv6, struct sockaddr_storage *dest);
     call(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitCall);
 
-    virtual ~call();
+    /* 先注释掉解决编译问题 */
+    //virtual ~call();
 
     virtual bool process_incoming(char * msg, struct sockaddr_storage *src = NULL);
 

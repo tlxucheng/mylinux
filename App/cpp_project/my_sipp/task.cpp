@@ -13,12 +13,18 @@ task_list* get_running_tasks()
 
 task::task()
 {
-
+    this->taskit = all_tasks.insert(all_tasks.end(), this);
+    add_to_runqueue();
 }
 
 task::~task()
 {
-
+    if (running) {
+        remove_from_runqueue();
+    } else {
+        paused_tasks.remove_paused_task(this);
+    }
+    all_tasks.erase(taskit);
 }
 
 void task::add_to_runqueue()
@@ -43,6 +49,19 @@ void task::setRunning()
         paused_tasks.remove_paused_task(this);
         add_to_runqueue();
     }
+}
+
+timewheel::timewheel()
+{
+    count = 0;
+    wheel_base = clock_tick;
+}
+
+void timewheel::remove_paused_task(task *task)
+{
+    task_list *list = task->pauselist;
+    list->erase(task->pauseit);
+    count--;
 }
 
 

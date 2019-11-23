@@ -39,14 +39,7 @@ int find_scenario(const char *scenario)
         }
     }
 
-    printf("Invalid default scenario name %s.\n", scenario);
-
-    /* Setting the rate and its dependant params (open_calls_allowed) */
-    /* If we are a client, then create the task to open new calls. */
-    if (creationMode == MODE_CLIENT) {
-        CallGenerationTask::initialize();
-        CallGenerationTask::set_rate(rate);
-    }
+    ERROR("Invalid default scenario name '%s'.\n", scenario);
 
     return -1;
 }
@@ -68,6 +61,23 @@ scenario::scenario(char * filename, int deflt)
             ERROR("Unable to load default xml scenario file");
         }
 	}
+}
+
+void scenario::runInit()
+{
+    call *initcall;
+    if (initmessages.size() > 0) {
+        /* ±àÒëÊ§°ÜÏÈ×¢µô */
+        //initcall = new call(main_scenario, NULL, NULL, "///main-init", 0, false, false, true);
+        initcall->run();
+    }
+}
+
+// Determine in which mode the sipp tool has been
+// launched (client, server, 3pcc client, 3pcc server, 3pcc extended master or slave)
+void scenario::computeSippMode()
+{
+
 }
 
 const char * default_scenario [] = {

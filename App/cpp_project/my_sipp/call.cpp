@@ -1,3 +1,11 @@
+#include <iterator>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <assert.h>
+
 #include "sipp.hpp"
 
 /******************* Call class implementation ****************/
@@ -32,6 +40,8 @@ int call::send_raw(const char * msg, int index, int len)
 	}
 
     rc = write_socket(sock, msg, len, WS_BUFFER, &call_peer);
+
+	return rc;
 }
 
 char * call::send_scene(int index, int *send_status, int *len)

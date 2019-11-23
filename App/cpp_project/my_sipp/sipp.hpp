@@ -46,6 +46,10 @@
 #define SIPP_MAXFDS                65536
 #define SIPP_MAX_MSG_SIZE          65536
 
+#define MAX_RECV_LOOPS_PER_CYCLE   1000
+#define MAX_SCHED_LOOPS_PER_CYCLE  1000
+#define NB_UPDATE_PER_CYCLE        1
+
 #ifdef GLOBALS_FULL_DEFINITION
 #define extern
 #define _DEFVAL(value) = value
@@ -61,12 +65,21 @@ extern char               local_ip[40];
 
 extern bool               local_ip_is_ipv6;
 extern int                local_port              _DEFVAL(0);
+
+extern int                max_recv_loops          _DEFVAL(MAX_RECV_LOOPS_PER_CYCLE);
+extern int                max_sched_loops         _DEFVAL(MAX_SCHED_LOOPS_PER_CYCLE);
+
 extern int                tcp_readsize            _DEFVAL(65535);
 
 /*********************** Global Sockets  **********************/
 extern set<struct sipp_socket *> sockets_pending_reset;
 
 extern short         use_remote_sending_addr      _DEFVAL(0);
+
+/********************** Clock variables ***********************/
+
+extern unsigned long clock_tick                   _DEFVAL(0);
+
 
 #define T_UDP                      0
 #define T_TCP                      1
@@ -75,5 +88,11 @@ extern short         use_remote_sending_addr      _DEFVAL(0);
 
 int open_connections();
 
+/********************* Reset global kludge  *******************/
+
+#ifdef GLOBALS_FULL_DEFINITION
+#undef extern
 #endif
+
+#endif  // __SIPP__
 

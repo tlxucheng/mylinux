@@ -8,7 +8,30 @@
 /* start command
  * server: ./sipp -sn uas
  * clent:  ./sipp -sn uac 127.0.0.1
+ *
+ * 有限次数运行命令
+ * server: ./sipp -sn uas
+ * clent:  ./sipp -sn uac 127.0.0.1 -m 100
+ *
+ * 进程启动流程
+ * 1. 命令行解析
+ * 2. 调用构造函数scenario(解析默认xml---->构造SendingMessage类----->解析出来需要替换的关键字)
+ * 3. 调用main_scenario->runInit()，构造call类
+ * 4. 初始化 CallGenerationTask 类, 根据rate创建任务
+ * 5. open_connections();
+ * 6. setup_ctrl_socket(); 用于接收进程运行时的命令
+ * 7. traffic_thread(); 循环执行已构造的任务
  */
+
+/* open_connections()函数流程分析
+ * 解析命令函数的IP和Port
+ * client端生成 local_sockaddr ----->创建 main_socket?
+ * erver端创建 socket--->local_sockaddr--->创建 main_socket?
+ */
+
+/* setup_ctrl_socket()流程分析 
+ */
+
 
 /******************** Recv Poll Processing *********************/
 
@@ -92,8 +115,10 @@ void traffic_thread()
 
 int main(int argc, char *argv[])
 {
-    int argi = 0;
-	int i    = 0;
+    int 				argi 	= 0;
+	int 				i    	= 0;
+    int 				pass 	= 0;
+	struct  sipp_option *option = NULL;
 
     if(argc < 2)
 	{
@@ -101,18 +126,64 @@ int main(int argc, char *argv[])
 		exit(EXIT_OTHER);
     }
 
-	for(argi = 1; argi < argc; argi++)
-	{
-		if(!strcmp(argv[argi - 1], "-sn"))
+    for(pass = 0 ; pass <= 3; pass++)
+    {
+		for(argi = 1; argi < argc; argi++)
 		{
-			i = find_scenario(argv[argi]);
-			main_scenario = new scenario(0, i);
+		    option = find_option(argv[argi]);
+            if(!option)
+        	{
+        		if (argv[argi][0] != '-') {
+                    strncpy(remote_host, argv[argi], sizeof(remote_host) - 1);
+                    continue;
+        		}
+
+				help();
+				ERROR("Invalid argument: '%s'.\n"
+                      "Use 'sipp -h' for details", argv[argi]);
+        	}
+
+			switch(option->type)
+			{
+				case SIPP_OPTION_HELP:
+					exit(EXIT_OTHER);
+				case SIPP_OPTION_INT:
+					break;
+				case SIPP_OPTION_TRANSPORT:
+					break;
+				case SIPP_OPTION_SCENARIO:
+					if(main_scenario)
+					{
+						ERROR("Internal error, main_scenario already set");
+					}
+					else if(!strcmp(argv[argi - 1], "-sn"))
+					{
+						i = find_scenario(argv[argi]);
+						//set_scenario(argv[argi]);
+						main_scenario = new scenario(0, i);
+						 //main_scenario->stats->setFileName(scenario_file, ".csv");
+						
+					}
+					else 
+					{
+			        	ERROR("Internal error, I don't recognize %s as a scenario option\n", argv[argi] - 1);
+			        }
+					break;
+				case SIPP_OPTION_INT:
+					break;
+				case SIPP_OPTION_LONG:
+					*((long*)option->data) = get_long(argv[argi], argv[argi-1]);
+					break;
+				default
+					ERROR("Internal error: I don't recognize the option type for %s", argv[argi]);				   
+			}
 		}
-		else 
-		{
-        	ERROR("Internal error, I don't recognize %s as a scenario option\n", argv[argi] - 1);
-        }
-	}
+    }
+
+	/* 操作log相关 */
+
+	/* 是否需要调用 */
+    init_default_messages();
 
 	main_scenario->runInit();
 	

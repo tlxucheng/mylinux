@@ -47,6 +47,10 @@ int find_scenario(const char *scenario)
 /********************** Scenario File analyser **********************/
 scenario::scenario(char * filename, int deflt)
 {
+    char *              elem = NULL;
+    const char*         cptr;
+    unsigned int        scenario_file_cursor = 0;
+
 	if(filename)
 	{
 	    if(!xp_set_xml_buffer_from_file(filename)) 
@@ -61,6 +65,36 @@ scenario::scenario(char * filename, int deflt)
             ERROR("Unable to load default xml scenario file");
         }
 	}
+
+	elem = xp_open_element(0);
+    if (!elem) {
+        ERROR("No element in xml scenario file");
+    }
+
+	if(strcmp("scenario", elem)) {
+        ERROR("No 'scenario' section in xml scenario file");
+    }
+
+	if ((cptr = xp_get_value("name"))) {
+        name = strdup(cptr);
+    } else {
+        name = strdup("");
+    }
+
+	 while ((elem = xp_open_element(scenario_file_cursor))) 
+    {    
+        char * ptr;
+        scenario_file_cursor ++;
+
+		if(!strcmp(elem, "CallLengthRepartition")) {
+
+		}
+		else /* Message Case */
+		{
+			message *curmsg = new message(messages.size(), name ? name : "unknown scenario");
+			messages.push_back(curmsg);
+		}
+    }
 }
 
 void scenario::runInit()

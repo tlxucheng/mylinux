@@ -23,6 +23,7 @@ public:
 
 	msgvec messages;
     msgvec initmessages;
+    char *name;
 	
     void computeSippMode();
 

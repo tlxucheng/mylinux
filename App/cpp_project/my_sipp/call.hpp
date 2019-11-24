@@ -35,5 +35,11 @@ private:
     int send_raw(const char * msg, int index, int len);
 };
 
+/* Default Message Functions. */
+void init_default_messages();
+void free_default_messages();
+SendingMessage *get_default_message(const char *which);
+void set_default_message(const char *which, char *message);
+
 #endif
 

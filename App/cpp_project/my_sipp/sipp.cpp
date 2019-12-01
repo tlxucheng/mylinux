@@ -11,7 +11,11 @@
  *
  * 有限次数运行命令
  * server: ./sipp -sn uas
- * clent:  ./sipp -sn uac 127.0.0.1 -m 100
+ * clent:  ./sipp -sn uac 127.0.0.1 -m 1
+ *
+ * 消息写入日志
+ * server: ./sipp -sn uas -trace_msg
+ * client: ./sipp -sn uac 127.0.0.1 -m 1 -trace_msg
  *
  * 进程启动流程
  * 1. 命令行解析
@@ -25,13 +29,25 @@
 
 /* open_connections()函数流程分析
  * 解析命令函数的IP和Port
- * client端生成 local_sockaddr ----->创建 main_socket?
- * erver端创建 socket--->local_sockaddr--->创建 main_socket?
+ * client端生成 local_sockaddr ----->创建 main_socket
+ * erver端创建 socket--->local_sockaddr--->创建 main_socket
  */
 
 /* setup_ctrl_socket()流程分析 
  */
 
+/* 
+ * 发包流程分析
+ * main_scenario->runInit()---> connect_socket_if_needed()---->associate_socket(new_sipp_call_socket)
+ * new call()-----> executeMessage()--->send_scene()--->send_raw()
+ * call::init ---> associate_socket();
+ * CallGenerationTask::run ---> call_ptr->associate_socket(main_socket);
+ */
+
+/*
+ * logger流程分析
+ * TRACE_MSG()
+ */
 
 /******************** Recv Poll Processing *********************/
 

@@ -71,6 +71,28 @@ void rotate_messagef()
     rotatef(&message_lfi);
 }
 
+int _trace (struct logfile_info *lfi, const char *fmt, va_list ap)
+{
+	int ret = 0;
+	if(lfi->fptr) {
+		ret = vfprintf(lfi->fptr, fmt, ap);
+		fflush(lfi->fptr);
+
+		lfi->count += ret;
+
+		if (max_log_size && lfi->count > max_log_size) {
+			fclose(lfi->fptr);
+			lfi->fptr = NULL;
+		}
+
+		if (ringbuffer_size && lfi->count > ringbuffer_size) {
+			rotatef(lfi);
+			lfi->count = 0;
+		}
+	}
+	return ret;
+}
+
 int TRACE_MSG(const char *fmt, ...)
 {
 	int ret;

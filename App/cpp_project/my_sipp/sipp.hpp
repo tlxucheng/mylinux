@@ -81,6 +81,8 @@ extern short         use_remote_sending_addr      _DEFVAL(0);
 
 extern unsigned long clock_tick                   _DEFVAL(0);
 
+/************ User controls and command line options ***********/
+extern char               remote_host[255];
 
 #define T_UDP                      0
 #define T_TCP                      1

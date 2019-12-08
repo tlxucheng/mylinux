@@ -6,12 +6,47 @@ int           creationMode  = MODE_CLIENT;
 /* Send mode. Do we send to a fixed address or to the last one we got. */
 int           sendMode  = MODE_CLIENT;
 
+/************************ Class Constructor *************************/
+
+message::message(int index, const char *desc)
+{
+    //this->index = index;
+    //this->desc = desc;
+    pause_variable = -1;
+}
+
+
 /******** Global variables which compose the scenario file **********/
 
 scenario      *main_scenario;
 scenario      *ooc_scenario;
 scenario      *aa_scenario;
 scenario      *display_scenario;
+
+/*************** Helper functions for various types *****************/
+long get_long(const char *ptr, const char *what)
+{
+    char *endptr;
+    long ret;
+
+    ret = strtol(ptr, &endptr, 0);
+    if (*endptr) {
+        ERROR("%s, \"%s\" is not a valid integer!\n", what, ptr);
+    }
+    return ret;
+}
+
+unsigned long long get_long_long(const char *ptr, const char *what)
+{
+    char *endptr;
+    unsigned long long ret;
+
+    ret = strtoull(ptr, &endptr, 0);
+    if (*endptr) {
+        ERROR("%s, \"%s\" is not a valid integer!\n", what, ptr);
+    }
+    return ret;
+}
 
 const char *scenario_table[] = {
     "uac",

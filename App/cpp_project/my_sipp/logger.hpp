@@ -16,6 +16,17 @@
 
 extern bool   useMessagef                         _DEFVAL(0);
 
+extern char * scenario_file;
+
+extern unsigned long long max_log_size		      _DEFVAL(0);
+extern unsigned long long ringbuffer_size	      _DEFVAL(0);
+extern int    ringbuffer_files			          _DEFVAL(0);
+
+struct logfile_id {
+    time_t start;
+    int n;
+};
+
 struct logfile_info {
     const char *name;
     bool check;
@@ -28,6 +39,19 @@ struct logfile_info {
     time_t starttime;
     unsigned int count;
 };
+
+#ifdef GLOBALS_FULL_DEFINITION
+#define LOGFILE(name, s, check) \
+	struct logfile_info name = { s, check, NULL, 0, NULL, "", true, false, 0, 0};
+#else
+#define LOGFILE(name, s, check) \
+	extern struct logfile_info name;
+#endif
+LOGFILE(calldebug_lfi, "calldebug", true);
+LOGFILE(message_lfi, "messages", true);
+LOGFILE(shortmessage_lfi, "shortmessages", true);
+LOGFILE(log_lfi, "logs", true);
+LOGFILE(error_lfi, "errors", false);
 
 void rotate_messagef();
 

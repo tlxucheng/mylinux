@@ -1,12 +1,19 @@
 #ifndef __SCENARIO__
 #define __SCENARIO__
 
+#include <map>
+#include <sys/socket.h>
+#include "message.hpp"
+
 #define MODE_CLIENT        0
 #define MODE_SERVER        1
 
 class message
 {
 public:
+    /* If this is a pause */
+    int		 pause_variable;
+
 	message(int index, const char *desc);
     ~message();
 };
@@ -41,6 +48,10 @@ extern int           creationMode;
 extern int           sendMode;
 
 extern const char * default_scenario[12];
+
+/* Useful utility functions for parsing integers, etc. */
+long get_long(const char *ptr, const char *what);
+unsigned long long get_long_long(const char *ptr, const char *what);
 
 #endif
 

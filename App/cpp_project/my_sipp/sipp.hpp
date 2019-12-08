@@ -41,6 +41,7 @@
 #include "call.hpp"
 #include "stat.hpp"
 #include "call_generation_task.hpp"
+#include "logger.hpp"
 
 /************************** Constants **************************/
 #define SIPP_MAXFDS                65536

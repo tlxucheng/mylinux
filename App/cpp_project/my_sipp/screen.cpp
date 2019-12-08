@@ -103,7 +103,7 @@ extern "C" {
         va_start(ap, fmt);
         _screen_error(true, false, 0, fmt, ap);
         va_end(ap);
-        assert(0);
+        //assert(0);
     }
 
     void ERROR_NO(const char *fmt, ...)

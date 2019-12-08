@@ -55,5 +55,7 @@ LOGFILE(error_lfi, "errors", false);
 
 void rotate_messagef();
 
+int TRACE_MSG(const char *fmt, ...);
+
 #endif /* __SIPP_LOGGER_H__ */
 

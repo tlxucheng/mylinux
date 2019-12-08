@@ -4,18 +4,19 @@
 #include "sip_parser.hpp"
 #include "socket.hpp"
 #include "assert.h"
+#include "logger.hpp"
 
 /* start command
- * server: ./sipp -sn uas
- * clent:  ./sipp -sn uac 127.0.0.1
+ * server: ./my_sipp -sn uas
+ * clent:  ./my_sipp -sn uac 127.0.0.1
  *
  * 有限次数运行命令
- * server: ./sipp -sn uas
- * clent:  ./sipp -sn uac 127.0.0.1 -m 1
+ * server: ./my_sipp -sn uas
+ * clent:  ./my_sipp -sn uac 127.0.0.1 -m 1
  *
  * 消息写入日志
- * server: ./sipp -sn uas -trace_msg
- * client: ./sipp -sn uac 127.0.0.1 -m 1 -trace_msg
+ * server: ./my_sipp -sn uas -trace_msg
+ * client: ./my_sipp -sn uac 127.0.0.1 -m 1 -trace_msg
  *
  * 进程启动流程
  * 1. 命令行解析
@@ -48,6 +49,13 @@
  * logger流程分析
  * TRACE_MSG()
  */
+
+/* 未解决问题
+ * 2019-12-8
+ * 1. 打印help程序如何自动退出的
+ * 2. ERROR 函数产生coredump
+ *
+ *
 
 /******************** Recv Poll Processing *********************/
 
@@ -109,8 +117,32 @@ struct sipp_option {
 
 /* Put each option, its help text, and type in this table. */
 struct sipp_option options_table[] = {
-    {"trace_msg", "Displays sent and received SIP messages in <scenario file name>_<pid>_messages.log", SIPP_OPTION_SETFLAG, &useMessagef, 1},
+    {"h", NULL, SIPP_OPTION_HELP, NULL, 0},		
+    {"help", NULL, SIPP_OPTION_HELP, NULL, 0},
 
+    {"trace_msg", "Displays sent and received SIP messages in <scenario file name>_<pid>_messages.log", SIPP_OPTION_SETFLAG, &useMessagef, 1},
+	{
+		"sn", "Use a default scenario (embedded in the SIPp executable). If this option is omitted, the Standard SipStone UAC scenario is loaded.\n"
+		"Available values in this version:\n\n"
+		"- 'uac'	  : Standard SipStone UAC (default).\n"
+		"- 'uas'	  : Simple UAS responder.\n"
+		"- 'regexp'   : Standard SipStone UAC - with regexp and variables.\n"
+		"- 'branchc'  : Branching and conditional branching in scenarios - client.\n"
+		"- 'branchs'  : Branching and conditional branching in scenarios - server.\n\n"
+		"Default 3pcc scenarios (see -3pcc option):\n\n"
+		"- '3pcc-C-A' : Controller A side (must be started after all other 3pcc scenarios)\n"
+		"- '3pcc-C-B' : Controller B side.\n"
+		"- '3pcc-A'   : A side.\n"
+		"- '3pcc-B'   : B side.\n", SIPP_OPTION_SCENARIO, NULL, 2
+	},
+    {"r", "Set the call rate (in calls per seconds).  This value can be"
+     "changed during test by pressing '+','_','*' or '/'. Default is 10.\n"
+     "pressing '+' key to increase call rate by 1 * rate_scale,\n"
+     "pressing '-' key to decrease call rate by 1 * rate_scale,\n"
+     "pressing '*' key to increase call rate by 10 * rate_scale,\n"
+     "pressing '/' key to decrease call rate by 10 * rate_scale.\n",
+     SIPP_OPTION_FLOAT, &rate, 1},
+    {"m", "Stop the test and exit when 'calls' calls are processed", SIPP_OPTION_LONG, &stop_after, 1},
 };
 
 void help()
@@ -236,8 +268,7 @@ int main(int argc, char *argv[])
         		}
 
 				help();
-				ERROR("Invalid argument: '%s'.\n"
-                      "Use 'sipp -h' for details", argv[argi]);
+				ERROR("Invalid argument: '%s'.\n" "Use 'sipp -h' for details", argv[argi]);
         	}
 
 			switch(option->type)
@@ -253,12 +284,15 @@ int main(int argc, char *argv[])
 					{
 						ERROR("Internal error, main_scenario already set");
 					}
-					else if(!strcmp(argv[argi - 1], "-sn"))
+					//else if(!strcmp(argv[argi - 1], "-sn"))
+                    else if(!strcmp(argv[argi], "-sn"))  /* 加入check后再修改 */
 					{
 						i = find_scenario(argv[argi]);
-						//set_scenario(argv[argi]);
+						/* set_scenario(argv[argi]); */
 						main_scenario = new scenario(0, i);
-						 //main_scenario->stats->setFileName(scenario_file, ".csv");
+						scenario_file = new char [strlen(argv[argi+1])+1] ;
+                        sprintf(scenario_file,"%s", argv[argi+1]);
+						/* main_scenario->stats->setFileName(scenario_file, ".csv"); */
 						
 					}
 					else 
@@ -273,12 +307,13 @@ int main(int argc, char *argv[])
 					*((bool *)option->data) = true;
 					break;
 				default:
+					break;
 					ERROR("Internal error: I don't recognize the option type for %s", argv[argi]);				   
 			}
 		}
     }
 
-	/* 操作log相关 */
+	/* 操作log相关 */	
 	if(useMessagef == 1) {
 		rotate_messagef();
 	}
@@ -286,6 +321,9 @@ int main(int argc, char *argv[])
 	/* 是否需要调用 */
     init_default_messages();
 
+	TRACE_MSG("start main_scenario->runInit().\n");
+
+#if 0
 	main_scenario->runInit();
 	
 	main_scenario->computeSippMode();
@@ -301,6 +339,7 @@ int main(int argc, char *argv[])
 	setup_ctrl_socket();
 
 	traffic_thread();
+#endif
 
     return 0;
 }

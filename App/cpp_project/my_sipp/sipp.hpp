@@ -84,6 +84,8 @@ extern unsigned long clock_tick                   _DEFVAL(0);
 /************ User controls and command line options ***********/
 extern char               remote_host[255];
 
+extern unsigned long      stop_after              _DEFVAL(0xffffffff);
+
 #define T_UDP                      0
 #define T_TCP                      1
 #define T_TLS                      2

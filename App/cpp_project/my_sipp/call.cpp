@@ -20,7 +20,28 @@ call::call(const char *p_id, struct sipp_socket *socket, struct sockaddr_storage
 
 call::call(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization) : listener(p_id, true)
 {
+    init(call_scenario, socket, dest, p_id, userId, ipv6, isAutomatic, isInitialization);
+}
 
+void call::init(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization)
+{
+	this->call_scenario = call_scenario;
+	
+    call_port = 0;
+    call_remote_socket = NULL;
+    if (socket) {
+        //associate_socket(socket);
+        //socket->ss_count++;
+    } else {
+        call_socket = NULL;
+    }
+    if (dest) {
+        memcpy(&call_peer, dest, sizeof(call_peer));
+    } else {
+        memset(&call_peer, 0, sizeof(call_peer));
+    }
+
+    setRunning();
 }
 
 int call::send_raw(const char * msg, int index, int len)

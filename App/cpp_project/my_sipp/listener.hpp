@@ -18,7 +18,8 @@ public:
     virtual ~listener();
     char *getId();
     virtual bool process_incoming(char * msg, struct sockaddr_storage *src) = 0;
-    virtual bool process_twinSippCom(char * msg) = 0;
+    /* 解决编译问题先注释掉 */
+	//virtual bool process_twinSippCom(char * msg) = 0;
 
 protected:
     void startListening();

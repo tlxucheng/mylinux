@@ -103,6 +103,7 @@ extern "C" {
         va_start(ap, fmt);
         _screen_error(true, false, 0, fmt, ap);
         va_end(ap);
+		/* 添加回产生crash，先注释掉 */
         //assert(0);
     }
 

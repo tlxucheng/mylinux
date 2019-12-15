@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
 					//else if(!strcmp(argv[argi - 1], "-sn"))
                     else if(!strcmp(argv[argi], "-sn"))  /* 加入check后再修改 */
 					{
-						i = find_scenario(argv[argi]);
+						i = find_scenario(argv[argi+1]);
 						/* set_scenario(argv[argi]); */
 						main_scenario = new scenario(0, i);
 						scenario_file = new char [strlen(argv[argi+1])+1] ;
@@ -323,12 +323,11 @@ int main(int argc, char *argv[])
 
 	TRACE_MSG("start main_scenario->runInit().\n");
 
-#if 0
 	main_scenario->runInit();
 	
 	main_scenario->computeSippMode();
-	
-	if (creationMode == MODE_CLIENT) 
+
+	if(creationMode == MODE_CLIENT) 
     {	    	
 		CallGenerationTask::initialize();
 		CallGenerationTask::set_rate(rate);
@@ -336,6 +335,7 @@ int main(int argc, char *argv[])
 
 	open_connections();
 
+#if 0
 	setup_ctrl_socket();
 
 	traffic_thread();

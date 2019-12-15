@@ -13,6 +13,8 @@ message::message(int index, const char *desc)
     //this->index = index;
     //this->desc = desc;
     pause_variable = -1;
+	
+    M_type = 0;
 }
 
 
@@ -116,7 +118,7 @@ scenario::scenario(char * filename, int deflt)
         name = strdup("");
     }
 
-	 while ((elem = xp_open_element(scenario_file_cursor))) 
+	while ((elem = xp_open_element(scenario_file_cursor))) 
     {    
         char * ptr;
         scenario_file_cursor ++;
@@ -128,7 +130,18 @@ scenario::scenario(char * filename, int deflt)
 		{
 			message *curmsg = new message(messages.size(), name ? name : "unknown scenario");
 			messages.push_back(curmsg);
+
+			if(!strcmp(elem, "send"))
+			{
+				curmsg->M_type = MSG_TYPE_SEND;
+			}
+			else if(!strcmp(elem, "recv"))
+			{
+				curmsg->M_type = MSG_TYPE_RECV;
+			}
 		}
+
+		xp_close_element();
     }
 }
 
@@ -136,8 +149,7 @@ void scenario::runInit()
 {
     call *initcall;
     if (initmessages.size() > 0) {
-        /* ±àÒëÊ§°ÜÏÈ×¢µô */
-        //initcall = new call(main_scenario, NULL, NULL, "///main-init", 0, false, false, true);
+        initcall = new call(main_scenario, NULL, NULL, "///main-init", 0, false, false, true);
         initcall->run();
     }
 }
@@ -146,7 +158,45 @@ void scenario::runInit()
 // launched (client, server, 3pcc client, 3pcc server, 3pcc extended master or slave)
 void scenario::computeSippMode()
 {
+    unsigned int i = 0;
 
+    creationMode = -1;
+	sendMode = -1;	
+
+	TRACE_MSG("computeSippMode messages.size: %d\n", messages.size());
+
+	//assert(messages.size() > 0);
+
+	for(i = 0; i < messages.size(); i++)
+	{
+		switch(messages[i]->M_type)
+		{
+			case MSG_TYPE_SEND:
+				if(-1 == sendMode)
+				{
+					sendMode = MODE_CLIENT;
+				}
+				if(-1 == creationMode)
+				{
+					creationMode = MODE_CLIENT;
+				}
+				break;
+			case MSG_TYPE_RECV:
+				if(-1 == sendMode)
+				{
+					sendMode = MODE_SERVER;
+				}
+				if(-1 == creationMode)
+				{
+					creationMode = MODE_SERVER;
+				}
+				break;
+		    default:
+				break;
+		}
+	}
+	
+	TRACE_MSG("computeSippMode sendMode, creationMode: %d %d\n", sendMode, creationMode);
 }
 
 const char * default_scenario [] = {

@@ -19,6 +19,9 @@ public:
     virtual bool run();
 
 private:
+    /* This is the core constructor function. */
+    void init(scenario * call_scenario, sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitCall);
+    /* This this call for initialization? */
 	bool initCall;
 	
     scenario *call_scenario;
@@ -33,6 +36,9 @@ private:
 	
     char * send_scene(int index, int *send_status, int *msgLen);
     int send_raw(const char * msg, int index, int len);
+
+protected:
+    int            call_port;
 };
 
 /* Default Message Functions. */

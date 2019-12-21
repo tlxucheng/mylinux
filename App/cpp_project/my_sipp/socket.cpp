@@ -3,6 +3,10 @@
 #include "sipp.hpp"
 #include "socket.hpp"
 
+/******************** Recv Poll Processing *********************/
+
+int pollnfds;
+struct pollfd        pollfiles[SIPP_MAXFDS];
 struct sipp_socket  *sockets[SIPP_MAXFDS];
 
 extern char * get_call_id(char *msg);
@@ -242,5 +246,129 @@ int empty_socket(struct sipp_socket *socket)
     buffer_read(socket, socketbuf);
 
 	return ret;
+}
+
+struct sipp_socket *sipp_allocate_socket(bool use_ipv6, int transport, int fd, int accepting) {
+	struct sipp_socket *ret = (struct sipp_socket *)malloc(sizeof(struct sipp_socket));
+	if (!ret) {
+	    ERROR("Could not allocate a sipp_socket structure.");
+	}
+	memset(ret, 0, sizeof(struct sipp_socket));
+
+	ret->ss_transport = transport;
+	ret->ss_control = false;
+	ret->ss_ipv6 = use_ipv6;
+	ret->ss_fd = fd;
+	ret->ss_comp_state = NULL;
+	ret->ss_count = 1;
+	ret->ss_changed_dest = false;
+
+	/* Initialize all sockets with our destination address. */
+	memcpy(&ret->ss_remote_sockaddr, &remote_sockaddr, sizeof(ret->ss_remote_sockaddr));
+
+	ret->ss_in = NULL;
+	ret->ss_out = NULL;
+	ret->ss_msglen = 0;
+	ret->ss_congested = false;
+	ret->ss_invalid = false;
+
+	/* Store this socket in the tables. */
+	ret->ss_pollidx = pollnfds++;
+	sockets[ret->ss_pollidx] = ret;
+
+	pollfiles[ret->ss_pollidx].fd      = ret->ss_fd;
+	pollfiles[ret->ss_pollidx].events  = POLLIN | POLLERR;
+	pollfiles[ret->ss_pollidx].revents = 0;
+
+    return ret;
+}
+
+
+static struct sipp_socket *sipp_allocate_socket(bool use_ipv6, int transport, int fd) {
+    return sipp_allocate_socket(use_ipv6, transport, fd, 0);
+}
+
+int socket_fd(bool use_ipv6, int transport)
+{
+	int socket_type = -1;
+    int protocol=0;
+    int fd;
+
+	
+    switch(transport) {
+	case T_UDP:
+		socket_type = SOCK_DGRAM;
+        protocol=IPPROTO_UDP;
+        break;
+    }
+
+	if((fd = socket(use_ipv6 ? AF_INET6 : AF_INET, socket_type, protocol))== -1) {
+        ERROR("Unable to get a %s socket (3)", TRANSPORT_TO_STRING(transport));
+    }
+
+	return fd;
+}
+
+struct sipp_socket *new_sipp_socket(bool use_ipv6, int transport) 
+{
+    struct sipp_socket *ret;
+    int fd = socket_fd(use_ipv6, transport);
+
+	ret  = sipp_allocate_socket(use_ipv6, transport, fd);
+    if (!ret) {
+        close(fd);
+        ERROR("Could not allocate new socket structure!");
+    }
+
+	return ret;
+}
+
+void sipp_customize_socket(struct sipp_socket *socket)
+{
+    unsigned int buffsize = buff_size;
+
+    /* Allows fast TCP reuse of the socket */
+    if (socket->ss_transport == T_TCP || socket->ss_transport == T_TLS ||
+            socket->ss_transport == T_SCTP) {
+
+	}
+
+	/* Increase buffer sizes for this sockets */
+    if(setsockopt(socket->ss_fd,
+                  SOL_SOCKET,
+                  SO_SNDBUF,
+                  &buffsize,
+                  sizeof(buffsize))) {
+        ERROR_NO("Unable to set socket sndbuf");
+    }
+
+    buffsize = buff_size;
+    if(setsockopt(socket->ss_fd,
+                  SOL_SOCKET,
+                  SO_RCVBUF,
+                  &buffsize,
+                  sizeof(buffsize))) {
+        ERROR_NO("Unable to set socket rcvbuf");
+    }
+}
+
+char * get_inet_address(struct sockaddr_storage * addr)
+{
+    static char * ip_addr = NULL;
+
+    if (!ip_addr) {
+        ip_addr = (char *)malloc(1024*sizeof(char));
+    }
+    if (getnameinfo(_RCAST(struct sockaddr *, addr),
+                    SOCK_ADDR_SIZE(addr),
+                    ip_addr,
+                    1024,
+                    NULL,
+                    0,
+                    NI_NUMERICHOST) != 0) {
+        strcpy(ip_addr, "addr not supported");
+    }
+
+    return ip_addr;
 }
 

@@ -24,6 +24,7 @@ int open_connections()
 	}
 	else 
 	{
+        /* client端执行 */
 		int temp_remote_port = 0;
         get_host_and_port(remote_host, remote_host, &temp_remote_port);
 	    if (temp_remote_port != 0) {
@@ -66,6 +67,7 @@ int open_connections()
         }
 	}
 
+    /* client和server端都执行 */
 	/* Resolving the local IP */
     char            * local_host = NULL;
     struct addrinfo * local_addr;

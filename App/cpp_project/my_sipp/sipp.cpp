@@ -172,23 +172,78 @@ struct sipp_option *find_option(const char *option) {
     return NULL;
 };
 
-
+/* poll模型，server端无法接收消息，需要调试 */
 void pollset_process(int wait)
-{	
+{
+	int rs;
+
     int loops = max_recv_loops;
 	
-    static int 			      read_index;
-	char                      msg[SIPP_MAX_MSG_SIZE];
-	struct sockaddr_storage   src;
-	
-	ssize_t len = read_message(sockets[read_index], msg, sizeof(msg), &src);
-	if (len > 0) {
-		process_message(sockets[read_index], msg, len, &src);
-	} else {
-		assert(0);
+    static int read_index;
+
+    while (pending_messages && (loops > 0)) {
+    getmilliseconds();
+    if (sockets[read_index]->ss_msglen) {
+        struct sockaddr_storage src;
+        char msg[SIPP_MAX_MSG_SIZE];
+        ssize_t len = read_message(sockets[read_index], msg, sizeof(msg), &src);
+        if (len > 0) {
+            process_message(sockets[read_index], msg, len, &src);
+        } else {
+            assert(0);
+        }
+        loops--;
+    }
+    	read_index = (read_index + 1) % pollnfds;
+    }
+
+	/* Don't read more data if we still have some left over. */
+	if (pending_messages) {
+	    return;
 	}
 
+    rs = poll(pollfiles, pollnfds, wait ? 1 : 0);
+
+    for (int poll_idx = 0; rs > 0 && poll_idx < pollnfds; poll_idx++) {
+    {
+        struct sipp_socket *sock = sockets[poll_idx];
+        int events = 0;
+
+		if (events) {
+					rs--;
+				}
+			pollfiles[poll_idx].revents = 0;
+			}
+		
+			if (read_index >= pollnfds) {
+				read_index = 0;
+			}
+
+		/* We need to process any new messages that we read. */
+		while (pending_messages && (loops > 0)) {
+			getmilliseconds();
+
+			if (sockets[read_index]->ss_msglen) {
+				char msg[SIPP_MAX_MSG_SIZE];
+				struct sockaddr_storage src;
+				ssize_t len;
+
+				len = read_message(sockets[read_index], msg, sizeof(msg), &src);
+				if (len > 0) {
+					process_message(sockets[read_index], msg, len, &src);
+				} else {
+					assert(0);
+				}
+				loops--;
+			}
+			read_index = (read_index + 1) % pollnfds;
+		}
+
+    }
+
+	return;
 }
+
 
 void traffic_thread()
 {
@@ -335,11 +390,10 @@ int main(int argc, char *argv[])
 
 	open_connections();
 
-#if 0
-	setup_ctrl_socket();
-
+    /* 用于命令行命令接受socket，暂时不使用 */
+	//setup_ctrl_socket();
+	
 	traffic_thread();
-#endif
 
     return 0;
 }

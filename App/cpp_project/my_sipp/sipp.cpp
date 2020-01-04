@@ -58,8 +58,11 @@
  *
 
 /******************** Recv Poll Processing *********************/
-
+extern int pollnfds;
 extern struct sipp_socket  *sockets[SIPP_MAXFDS];
+extern struct pollfd        pollfiles[SIPP_MAXFDS];
+
+extern int pending_messages;
 
 #define GLOBALS_FULL_DEFINITION
 
@@ -197,30 +200,6 @@ void pollset_process(int wait)
 
 	TRACE_MSG("pollset_process pollnfds: %d\n", pollnfds);
 
-    /* We need to process any messages that we have left over. */
-#if 0 
-    while (pending_messages && (loops > 0)) {
-        getmilliseconds();
-        if (sockets[read_index]->ss_msglen) {
-            struct sockaddr_storage src;
-            char msg[SIPP_MAX_MSG_SIZE];
-            ssize_t len = read_message(sockets[read_index], msg, sizeof(msg), &src);
-            if (len > 0) {
-                process_message(sockets[read_index], msg, len, &src);
-            } else {
-                assert(0);
-            }
-            loops--;
-        }
-        read_index = (read_index + 1) % pollnfds;
-    }
-
-    /* Don't read more data if we still have some left over. */
-    if (pending_messages) {
-        return;
-    }
-#endif
-
     /* Get socket events. */
     rs = poll(pollfiles, pollnfds, wait ? 1 : 0);
     if((rs < 0) && (errno == EINTR)) {
@@ -228,42 +207,27 @@ void pollset_process(int wait)
     }
 
     /* We need to flush all sockets and pull data into all of our buffers. */
-    for (int poll_idx = 0; rs > 0 && poll_idx < pollnfds; poll_idx++) {
+    for (int poll_idx = 0; rs > 0 && poll_idx < pollnfds; poll_idx++)
+	{
         struct sipp_socket *sock = sockets[poll_idx];
         int events = 0;
         int ret = 0;
-
+		
         assert(sock);
-
-        if (pollfiles[poll_idx].revents & POLLOUT) {
-                /* We can flush this socket. */
-                TRACE_MSG("Exit problem event on socket %d \n", sock->ss_fd);
-                pollfiles[poll_idx].events &= ~POLLOUT;
-                sock->ss_congested = false;
-
-                flush_socket(sock);
-                events++;
-        }
-
-        if (pollfiles[poll_idx].revents & POLLIN) {
+		
+        if (pollfiles[poll_idx].revents & POLLIN) 
+		{
             /* We can empty this socket. */ 
-                if ((ret = empty_socket(sock)) <= 0) {
-            ret = read_error(sock, ret);
-            if (ret == 0) {
-              poll_idx--;
-              events++;
-              rs--;
-              continue;
-            }
-        }
+			empty_socket(sock);
             events++;
         }
 
-    if (events) {
-        rs--;
-    }
+	    if (events) 
+		{
+	        rs--;
+	    }
 	
-    pollfiles[poll_idx].revents = 0;
+    	pollfiles[poll_idx].revents = 0;
     }
 
     if (read_index >= pollnfds) {
@@ -272,7 +236,7 @@ void pollset_process(int wait)
 
     /* We need to process any new messages that we read. */
     while (pending_messages && (loops > 0)) {
-        getmilliseconds();
+        //getmilliseconds();
 
         if (sockets[read_index]->ss_msglen) {
             char msg[SIPP_MAX_MSG_SIZE];

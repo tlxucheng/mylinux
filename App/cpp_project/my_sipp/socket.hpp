@@ -50,6 +50,7 @@ struct socketbuf {
 
 int write_socket(struct sipp_socket *socket, const char *buffer, ssize_t len, int flags, struct sockaddr_storage *dest);
 char * get_inet_address(struct sockaddr_storage * addr);
+int empty_socket(struct sipp_socket *socket);
 
 #define WS_BUFFER 2 /* Buffer the message if there is no room for writing the message. */
 

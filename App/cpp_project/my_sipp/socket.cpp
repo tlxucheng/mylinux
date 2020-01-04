@@ -9,6 +9,8 @@ int pollnfds;
 struct pollfd        pollfiles[SIPP_MAXFDS];
 struct sipp_socket  *sockets[SIPP_MAXFDS];
 
+int pending_messages = 0;
+
 extern char * get_call_id(char *msg);
 
 int open_connections()
@@ -247,6 +249,13 @@ int empty_socket(struct sipp_socket *socket)
 	
     buffer_read(socket, socketbuf);
 
+    /* Do we have a complete SIP message? */
+    if (!socket->ss_msglen) {
+        //if (int msg_len = check_for_message(socket)) {
+            //socket->ss_msglen = msg_len;
+            pending_messages++;
+        //}
+    }
 	return ret;
 }
 
@@ -373,4 +382,5 @@ char * get_inet_address(struct sockaddr_storage * addr)
 
     return ip_addr;
 }
+
 

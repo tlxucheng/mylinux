@@ -172,78 +172,124 @@ struct sipp_option *find_option(const char *option) {
     return NULL;
 };
 
-/* poll模型，server端无法接收消息，需要调试 */
+/* 替换sipp中实现，可以实现一次invite---200OK交互 */
 void pollset_process(int wait)
 {
-	int rs;
-
+    int rs; /* Number of times to execute recv().
+	     For TCP with 1 socket per call:
+	         no. of events returned by poll
+	     For UDP and TCP with 1 global socket:
+	         recv_count is a flag that stays up as
+	         long as there's data to read */
+	         
     int loops = max_recv_loops;
-	
+
+	TRACE_MSG("pollset_process wait: %d\n", pollnfds, wait);
+
+    /* What index should we try reading from? */
     static int read_index;
+	
+    // If not using epoll, we have a queue of pending messages to spin through.
 
+    if (read_index >= pollnfds) {
+        read_index = 0;
+    }
+
+	TRACE_MSG("pollset_process pollnfds: %d\n", pollnfds);
+
+    /* We need to process any messages that we have left over. */
+#if 0 
     while (pending_messages && (loops > 0)) {
-    getmilliseconds();
-    if (sockets[read_index]->ss_msglen) {
-        struct sockaddr_storage src;
-        char msg[SIPP_MAX_MSG_SIZE];
-        ssize_t len = read_message(sockets[read_index], msg, sizeof(msg), &src);
-        if (len > 0) {
-            process_message(sockets[read_index], msg, len, &src);
-        } else {
-            assert(0);
+        getmilliseconds();
+        if (sockets[read_index]->ss_msglen) {
+            struct sockaddr_storage src;
+            char msg[SIPP_MAX_MSG_SIZE];
+            ssize_t len = read_message(sockets[read_index], msg, sizeof(msg), &src);
+            if (len > 0) {
+                process_message(sockets[read_index], msg, len, &src);
+            } else {
+                assert(0);
+            }
+            loops--;
         }
-        loops--;
-    }
-    	read_index = (read_index + 1) % pollnfds;
+        read_index = (read_index + 1) % pollnfds;
     }
 
-	/* Don't read more data if we still have some left over. */
-	if (pending_messages) {
-	    return;
-	}
+    /* Don't read more data if we still have some left over. */
+    if (pending_messages) {
+        return;
+    }
+#endif
 
+    /* Get socket events. */
     rs = poll(pollfiles, pollnfds, wait ? 1 : 0);
+    if((rs < 0) && (errno == EINTR)) {
+        return;
+    }
 
+    /* We need to flush all sockets and pull data into all of our buffers. */
     for (int poll_idx = 0; rs > 0 && poll_idx < pollnfds; poll_idx++) {
-    {
         struct sipp_socket *sock = sockets[poll_idx];
         int events = 0;
+        int ret = 0;
 
-		if (events) {
-					rs--;
-				}
-			pollfiles[poll_idx].revents = 0;
-			}
-		
-			if (read_index >= pollnfds) {
-				read_index = 0;
-			}
+        assert(sock);
 
-		/* We need to process any new messages that we read. */
-		while (pending_messages && (loops > 0)) {
-			getmilliseconds();
+        if (pollfiles[poll_idx].revents & POLLOUT) {
+                /* We can flush this socket. */
+                TRACE_MSG("Exit problem event on socket %d \n", sock->ss_fd);
+                pollfiles[poll_idx].events &= ~POLLOUT;
+                sock->ss_congested = false;
 
-			if (sockets[read_index]->ss_msglen) {
-				char msg[SIPP_MAX_MSG_SIZE];
-				struct sockaddr_storage src;
-				ssize_t len;
+                flush_socket(sock);
+                events++;
+        }
 
-				len = read_message(sockets[read_index], msg, sizeof(msg), &src);
-				if (len > 0) {
-					process_message(sockets[read_index], msg, len, &src);
-				} else {
-					assert(0);
-				}
-				loops--;
-			}
-			read_index = (read_index + 1) % pollnfds;
-		}
+        if (pollfiles[poll_idx].revents & POLLIN) {
+            /* We can empty this socket. */ 
+                if ((ret = empty_socket(sock)) <= 0) {
+            ret = read_error(sock, ret);
+            if (ret == 0) {
+              poll_idx--;
+              events++;
+              rs--;
+              continue;
+            }
+        }
+            events++;
+        }
 
+    if (events) {
+        rs--;
+    }
+	
+    pollfiles[poll_idx].revents = 0;
     }
 
-	return;
-}
+    if (read_index >= pollnfds) {
+        read_index = 0;
+    }
 
+    /* We need to process any new messages that we read. */
+    while (pending_messages && (loops > 0)) {
+        getmilliseconds();
+
+        if (sockets[read_index]->ss_msglen) {
+            char msg[SIPP_MAX_MSG_SIZE];
+            struct sockaddr_storage src;
+            ssize_t len;
+
+            len = read_message(sockets[read_index], msg, sizeof(msg), &src);
+            if (len > 0) {
+                process_message(sockets[read_index], msg, len, &src);
+            } else {
+                assert(0);
+            }
+            loops--;
+        }
+        read_index = (read_index + 1) % pollnfds;
+    }
+}
 
 void traffic_thread()
 {

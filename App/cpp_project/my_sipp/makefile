@@ -17,13 +17,13 @@ TARGET = my_sipp
 all : $(TARGET)
 
 $(TARGET) : $(OBJECTS_CPP) $(OBJECTS_C)
-	$(CPP) -g -o $(TARGET) $(OBJECTS_CPP) $(OBJECTS_C)
+	$(CPP) -g -O0 -o $(TARGET) $(OBJECTS_CPP) $(OBJECTS_C)
 	
 .c.o:
-	$(CC) -g -c $(INCLUDE) $< -o $@
+	$(CC) -g -O0 -c $(INCLUDE) $< -o $@
 	
 .cpp.o:
-	$(CPP) -g -c $(INCLUDE) $< -o $@
+	$(CPP) -g -O0 -c $(INCLUDE) $< -o $@
 	
 clean :
 	rm -rf $(TARGET) $(OBJECTS_C)

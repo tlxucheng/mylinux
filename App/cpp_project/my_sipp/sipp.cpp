@@ -368,10 +368,11 @@ int main(int argc, char *argv[])
 						/* main_scenario->stats->setFileName(scenario_file, ".csv"); */
 						
 					}
-					else 
-					{
-			        	ERROR("Internal error, I don't recognize %s as a scenario option\n", argv[argi] - 1);
-			        }
+					/* 此时加上会走到下面一个break, 原因没有查找 */
+					//else 
+					//{
+			        //	ERROR("Internal error, I don't recognize %s as a scenario option\n", argv[argi] - 1);
+			        //}
 					break;
 				case SIPP_OPTION_LONG:
 					REQUIRE_ARG();

@@ -148,6 +148,12 @@ struct sipp_option options_table[] = {
     {"m", "Stop the test and exit when 'calls' calls are processed", SIPP_OPTION_LONG, &stop_after, 1},
 };
 
+/* Command line parsing */
+#define REQUIRE_ARG() if((++argi) >= argc) { ERROR("Missing argument for param '%s'.\n" \
+				     "Use 'sipp -h' for details",  argv[argi - 1]); }
+#define CHECK_PASS() if (option->pass != pass) { break; }
+
+
 void help()
 {
 	printf("need two para.");
@@ -345,6 +351,8 @@ int main(int argc, char *argv[])
 				case SIPP_OPTION_TRANSPORT:
 					break;
 				case SIPP_OPTION_SCENARIO:
+					REQUIRE_ARG();
+					CHECK_PASS();
 					if(main_scenario)
 					{
 						ERROR("Internal error, main_scenario already set");
@@ -366,9 +374,13 @@ int main(int argc, char *argv[])
 			        }
 					break;
 				case SIPP_OPTION_LONG:
+					REQUIRE_ARG();
+					CHECK_PASS();
 					*((long*)option->data) = get_long(argv[argi], argv[argi-1]);
 					break;
 		        case SIPP_OPTION_SETFLAG:
+					REQUIRE_ARG();
+					CHECK_PASS();
 					*((bool *)option->data) = true;
 					break;
 				default:

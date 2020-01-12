@@ -69,6 +69,10 @@ int open_connections()
         }
 	}
 
+	if(gethostname(hostname,64) != 0) {
+        ERROR_NO("Can't get local hostname in 'gethostname(hostname,64)'");
+    }
+
     /* clientºÍserver¶Ë¶¼Ö´ÐÐ */
 	/* Resolving the local IP */
     char            * local_host = NULL;

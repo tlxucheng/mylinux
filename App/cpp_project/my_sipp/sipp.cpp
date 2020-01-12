@@ -193,8 +193,6 @@ void pollset_process(int wait)
 	         
     int loops = max_recv_loops;
 
-	TRACE_MSG("pollset_process wait: %d\n", pollnfds, wait);
-
     /* What index should we try reading from? */
     static int read_index;
 	
@@ -203,8 +201,6 @@ void pollset_process(int wait)
     if (read_index >= pollnfds) {
         read_index = 0;
     }
-
-	TRACE_MSG("pollset_process pollnfds: %d\n", pollnfds);
 
     /* Get socket events. */
     rs = poll(pollfiles, pollnfds, wait ? 1 : 0);

@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_OTHER);
     }
 
-    for(pass = 0 ; pass <= 3; pass++)
+    for(pass = 0 ; pass <= 3; pass++)       /* pass循环的作用是什么? */
     {
 		for(argi = 1; argi < argc; argi++)
 		{
@@ -357,14 +357,13 @@ int main(int argc, char *argv[])
 					{
 						ERROR("Internal error, main_scenario already set");
 					}
-					//else if(!strcmp(argv[argi - 1], "-sn"))
-                    else if(!strcmp(argv[argi], "-sn"))  /* 加入check后再修改 */
+                    else if(!strcmp(argv[argi-1], "-sn"))
 					{
-						i = find_scenario(argv[argi+1]);
+						i = find_scenario(argv[argi]);
 						/* set_scenario(argv[argi]); */
 						main_scenario = new scenario(0, i);
-						scenario_file = new char [strlen(argv[argi+1])+1] ;
-                        sprintf(scenario_file,"%s", argv[argi+1]);
+						scenario_file = new char [strlen(argv[argi])+1] ;
+                        sprintf(scenario_file,"%s", argv[argi]);
 						/* main_scenario->stats->setFileName(scenario_file, ".csv"); */
 						
 					}

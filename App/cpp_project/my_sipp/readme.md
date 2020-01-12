@@ -8,3 +8,22 @@ Program terminated with signal SIGSEGV, Segmentation fault.
 #0  0x000055859116b6ec in std::vector<message*, std::allocator<message*> >::size (this=0x18) at /usr/include/c++/7/bits/stl_vector.h:671
 #1  0x000055859116b4d3 in scenario::runInit (this=0x0) at scenario.cpp:151
 #2  0x000055859116aa68 in main (argc=4, argv=0x7fff3cb556e8) at sipp.cpp:405
+
+2020-01-11 17:40
+加
+        /*
+        while (sockets_pending_reset.begin() != sockets_pending_reset.end()) {
+            reset_connection(*(sockets_pending_reset.begin()));
+            sockets_pending_reset.erase(sockets_pending_reset.begin());
+        }
+        */
+
+        /* Update the clock. */
+        getmilliseconds();
+        /* Receive incoming messages */
+        if(MODE_SERVER == sendMode)
+    	{
+    		pollset_process(running_tasks->empty());
+    	}
+
+client重传invite

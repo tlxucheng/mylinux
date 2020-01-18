@@ -91,7 +91,10 @@ extern struct        addrinfo * local_addr_storage;
 extern struct        sockaddr_storage   local_sockaddr;
 extern struct	     sockaddr_storage   remote_sockaddr;
 
+extern struct	     sockaddr_storage remote_sockaddr;
 extern short         use_remote_sending_addr      _DEFVAL(0);
+extern struct        sockaddr_storage remote_sending_sockaddr;
+
 
 /********************** Clock variables ***********************/
 
@@ -104,6 +107,8 @@ extern char               remote_ip_escaped[42];
 extern int                remote_port             _DEFVAL(DEFAULT_PORT);
 extern char               local_ip_escaped[42];
 extern int                transport               _DEFVAL(DEFAULT_TRANSPORT);
+extern int                multisocket             _DEFVAL(0);
+
 extern int                buff_size               _DEFVAL(65535);
 
 extern unsigned long      stop_after              _DEFVAL(0xffffffff);

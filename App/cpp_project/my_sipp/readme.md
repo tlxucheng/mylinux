@@ -27,3 +27,39 @@ Program terminated with signal SIGSEGV, Segmentation fault.
     	}
 
 client重传invite
+
+2020-01-18
+gdb sipp client信息
+第一次 run  : screentask::run()
+第二次 run  : bool watchdog::run()  
+第三次 run  : bool CallGenerationTask::run()      call_generation_task.cp:93
+第三次 run  : bool call::run()                    call.cpp:1570                   执行完毕后，server收到invite消息，并回消息
+
+修改CallGenerationTask::run(), socketowner.cpp没编译通过
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

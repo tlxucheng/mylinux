@@ -8,6 +8,9 @@
 
 #include "sipp.hpp"
 
+/************** Call map and management routines **************/
+static unsigned int next_number = 1;
+
 /******************* Call class implementation ****************/
 call::call(const char *p_id, bool use_ipv6, int userId, struct sockaddr_storage *dest) : listener(p_id, true)
 {
@@ -21,6 +24,43 @@ call::call(const char *p_id, struct sipp_socket *socket, struct sockaddr_storage
 call::call(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization) : listener(p_id, true)
 {
     init(call_scenario, socket, dest, p_id, userId, ipv6, isAutomatic, isInitialization);
+}
+
+call *call::add_call(int userId, bool ipv6, struct sockaddr_storage *dest)
+{
+    static char call_id[MAX_HEADER_LEN];
+
+    const char * src = call_id_string;
+    int count = 0;
+
+    if(!next_number) {
+        next_number ++;
+    }
+
+    while (*src && count < MAX_HEADER_LEN-1) {
+        if (*src == '%') {
+            ++src;
+            switch(*src++) {
+            case 'u':
+                count += snprintf(&call_id[count], MAX_HEADER_LEN-count-1,"%u", next_number);
+                break;
+            case 'p':
+                count += snprintf(&call_id[count], MAX_HEADER_LEN-count-1,"%u", pid);
+                break;
+            case 's':
+                count += snprintf(&call_id[count], MAX_HEADER_LEN-count-1,"%s", local_ip);
+                break;
+            default:      // treat all unknown sequences as %%
+                call_id[count++] = '%';
+                break;
+            }
+        } else {
+            call_id[count++] = *src++;
+        }
+    }
+    call_id[count] = 0;
+
+    return new call(main_scenario, NULL, dest, call_id, userId, ipv6, false /* Not Auto. */, false);
 }
 
 void call::init(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization)

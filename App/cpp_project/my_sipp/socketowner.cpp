@@ -1,5 +1,6 @@
 #include "sipp.hpp"
 
+socket_owner_map_map socket_to_owners;
 
 socketowner::socketowner()
 {

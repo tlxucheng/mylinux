@@ -91,7 +91,6 @@ extern struct        addrinfo * local_addr_storage;
 extern struct        sockaddr_storage   local_sockaddr;
 extern struct	     sockaddr_storage   remote_sockaddr;
 
-extern struct	     sockaddr_storage remote_sockaddr;
 extern short         use_remote_sending_addr      _DEFVAL(0);
 extern struct        sockaddr_storage remote_sending_sockaddr;
 
@@ -112,6 +111,10 @@ extern int                multisocket             _DEFVAL(0);
 extern int                buff_size               _DEFVAL(65535);
 
 extern unsigned long      stop_after              _DEFVAL(0xffffffff);
+
+/************ User controls and command line options ***********/
+extern const char       * call_id_string          _DEFVAL("%u-%p@%s");
+extern unsigned int       pid                     _DEFVAL(0);
 
 int open_connections();
 

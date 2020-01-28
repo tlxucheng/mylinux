@@ -37,6 +37,27 @@ gdb sipp client信息
 
 修改CallGenerationTask::run(), socketowner.cpp没编译通过
 
+2020-01-28
+完成编译，待验证一次invite-200OK流程
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

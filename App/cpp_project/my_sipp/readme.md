@@ -40,7 +40,8 @@ gdb sipp client信息
 2020-01-28
 完成编译，待验证一次invite-200OK流程
 
-
+2020-01-29
+完善 call::send_scene，编译通过，待验证一次invite-200OK流程
 
 
 

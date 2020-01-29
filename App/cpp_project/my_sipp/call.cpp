@@ -8,6 +8,11 @@
 
 #include "sipp.hpp"
 
+int call::dynamicId       = 0;
+int call::maxDynamicId    = 10000+2000*4;      // FIXME both param to be in command line !!!!
+int call::startDynamicId  = 10000;             // FIXME both param to be in command line !!!!
+int call::stepDynamicId   = 4;                // FIXME both param to be in command line !!!!
+
 /************** Call map and management routines **************/
 static unsigned int next_number = 1;
 
@@ -63,11 +68,50 @@ call *call::add_call(int userId, bool ipv6, struct sockaddr_storage *dest)
     return new call(main_scenario, NULL, dest, call_id, userId, ipv6, false /* Not Auto. */, false);
 }
 
-void call::init(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization)
+void call::init(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitCall)
 {
-	this->call_scenario = call_scenario;
-	
+    this->call_scenario = call_scenario;
+    zombie = false;
+
+    msg_index = 0;
+    last_send_index = 0;
+    last_send_msg = NULL;
+    last_send_len = 0;
+
+    last_recv_hash = 0;
+    last_recv_index = -1;
+    last_recv_msg = NULL;
+
+    recv_retrans_hash = 0;
+    recv_retrans_recv_index = -1;
+    recv_retrans_send_index = -1;
+
+    dialog_route_set = NULL;
+    next_req_url = NULL;
+
+    cseq = 0;
+
+    next_retrans = 0;
+    nb_retrans = 0;
+    nb_last_delay = 0;
+
+    paused_until = 0;
+
     call_port = 0;
+
+    start_time = clock_tick;
+    call_established=false ;
+    ack_is_pending=false ;
+    last_recv_msg = NULL;
+    cseq = base_cseq;
+    nb_last_delay = 0;
+    use_ipv6 = ipv6;
+    queued_msg = NULL;
+
+    dialog_authentication = NULL;
+    dialog_challenge_type = 0;
+
+    
     call_remote_socket = NULL;
     if (socket) {
         //associate_socket(socket);
@@ -80,6 +124,8 @@ void call::init(scenario * call_scenario, struct sipp_socket *socket, struct soc
     } else {
         memset(&call_peer, 0, sizeof(call_peer));
     }
+
+    this->initCall = isInitCall;
 
     setRunning();
 }
@@ -107,12 +153,518 @@ int call::send_raw(const char * msg, int index, int len)
 
 char * call::send_scene(int index, int *send_status, int *len)
 {
+#define MAX_MSG_NAME_SIZE 30
+    static char msg_name[MAX_MSG_NAME_SIZE];
+    char *L_ptr1 ;
+    char *L_ptr2 ;
+    int uselen = 0;
+    int tmplen;
+    char *hdrbdry;
 
+    assert(send_status);
+
+    /* Socket port must be known before string substitution */
+    /*
+    if (!connect_socket_if_needed()) {
+        *send_status = -2;
+        return NULL;
+    }
+    */
+
+    assert(call_socket);
+
+    assert(call_scenario->messages[index]->send_scheme);
+
+    if (!len) {
+        len = &uselen;
+    }
+
+    char * dest;
+    dest = createSendingMessage(call_scenario->messages[index] -> send_scheme, index, len);
+
+    if (dest) {
+        L_ptr1=msg_name ;
+        L_ptr2=dest ;
+        while ((*L_ptr2 != ' ') && (*L_ptr2 != '\n') && (*L_ptr2 != '\t'))  {
+            *L_ptr1 = *L_ptr2;
+            L_ptr1 ++;
+            L_ptr2 ++;
+        }
+        *L_ptr1 = '\0' ;
+    }
+
+    if (strcmp(msg_name,"ACK") == 0) {
+        call_established = true ;
+        ack_is_pending = false ;
+    }
+
+    /* Fix: Remove extra "\r\n" if message body ends with "\r\n\r\n" */
+    tmplen = (*len) - 1;
+    if ((dest[tmplen] == dest[tmplen-2] && dest[tmplen] == '\n')
+            && (dest[tmplen-1] == dest[tmplen-3] && dest[tmplen-1] == '\r'))  {
+        hdrbdry = strstr(dest, "\r\n\r\n");
+        if (NULL != hdrbdry &&  hdrbdry != dest+(tmplen-3))  {
+            *len = (*len) - 2;
+        }
+    }
+
+    *send_status = send_raw(dest, index, *len);
+
+    return dest;
 }
+
+char* call::createSendingMessage(SendingMessage *src, int P_index, int *msgLen)
+{
+    static char msg_buffer[SIPP_MAX_MSG_SIZE+2];
+    return createSendingMessage(src, P_index, msg_buffer, sizeof(msg_buffer), msgLen);
+}
+
+char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buffer, int buf_len, int *msgLen)
+{
+    char * length_marker = NULL;
+    char * auth_marker = NULL;
+    MessageComponent *auth_comp = NULL;
+    bool auth_comp_allocated = false;
+    int    len_offset = 0;
+    char *dest = msg_buffer;
+    bool supresscrlf = false;
+
+    *dest = '\0';
+
+    for (int i = 0; i < src->numComponents(); i++) {
+        MessageComponent *comp = src->getComponent(i);
+        int left = buf_len - (dest - msg_buffer);
+        switch(comp->type) {
+        case E_Message_Literal:
+            if (supresscrlf) {
+                char *ptr = comp->literal;
+                while (isspace(*ptr)) ptr++;
+                dest += snprintf(dest, left, "%s", ptr);
+                supresscrlf = false;
+            } else {
+                memcpy(dest, comp->literal, comp->literalLen);
+                dest += comp->literalLen;
+                *dest = '\0';
+            }
+            break;
+        case E_Message_Remote_IP:
+            dest += snprintf(dest, left, "%s", remote_ip_escaped);
+            break;
+        case E_Message_Remote_Host:
+            dest += snprintf(dest, left, "%s", remote_host);
+            break;
+        case E_Message_Remote_Port:
+            dest += snprintf(dest, left, "%d", remote_port + comp->offset);
+            break;
+        case E_Message_Local_IP:
+            dest += snprintf(dest, left, "%s", local_ip_escaped);
+            break;
+        case E_Message_Local_Port:
+            int port;
+            if((transport == T_UDP) && (multisocket) && (sendMode != MODE_SERVER)) {
+                port = call_port;
+            } else {
+                port =  local_port;
+            }
+            dest += snprintf(dest, left, "%d", port + comp->offset);
+            break;
+        case E_Message_Transport:
+            dest += snprintf(dest, left, "%s", TRANSPORT_TO_STRING(transport));
+            break;
+        case E_Message_Local_IP_Type:
+            dest += snprintf(dest, left, "%s", (local_ip_is_ipv6 ? "6" : "4"));
+            break;
+        case E_Message_Server_IP: {
+            /* We should do this conversion once per socket creation, rather than
+             * repeating it every single time. */
+            struct sockaddr_storage server_sockaddr;
+
+            sipp_socklen_t len = SOCK_ADDR_SIZE(&server_sockaddr);
+            getsockname(call_socket->ss_fd,
+                        (sockaddr *)(void *)&server_sockaddr, &len);
+
+            if (server_sockaddr.ss_family == AF_INET6) {
+                char * temp_dest;
+                temp_dest = (char *) malloc(INET6_ADDRSTRLEN);
+                memset(temp_dest,0,INET6_ADDRSTRLEN);
+                inet_ntop(AF_INET6,
+                          &((_RCAST(struct sockaddr_in6 *,&server_sockaddr))->sin6_addr),
+                          temp_dest,
+                          INET6_ADDRSTRLEN);
+                dest += snprintf(dest, left, "%s",temp_dest);
+            } else {
+                dest += snprintf(dest, left, "%s",
+                                 inet_ntoa((_RCAST(struct sockaddr_in *,&server_sockaddr))->sin_addr));
+            }
+        }
+        break;
+        case E_Message_Media_IP:
+            dest += snprintf(dest, left, "%s", media_ip_escaped);
+            break;
+        case E_Message_Media_Port:
+        case E_Message_Auto_Media_Port: {
+            int port = media_port + comp->offset;
+            if (comp->type == E_Message_Auto_Media_Port) {
+                port = media_port + (4 * (number - 1)) % 10000 + comp->offset;
+            }
+
+            dest += sprintf(dest, "%u", port);
+            break;
+        }
+        case E_Message_Media_IP_Type:
+            dest += snprintf(dest, left, "%s", (media_ip_is_ipv6 ? "6" : "4"));
+            break;
+        case E_Message_Call_Number:
+            dest += snprintf(dest, left, "%u", number);
+            break;
+        case E_Message_DynamicId:
+            dest += snprintf(dest, left, "%u", call::dynamicId);
+            // increment at each request
+            dynamicId += stepDynamicId;
+            if ( this->dynamicId > maxDynamicId ) {
+                call::dynamicId = call::startDynamicId;
+            } ;
+            break;
+        case E_Message_Call_ID:
+            dest += snprintf(dest, left, "%s", id);
+            break;
+        case E_Message_CSEQ:
+            dest += snprintf(dest, left, "%u", cseq + comp->offset);
+            break;
+        case E_Message_PID:
+            dest += snprintf(dest, left, "%d", pid);
+            break;
+        case E_Message_Service:
+            dest += snprintf(dest, left, "%s", service);
+            break;
+        case E_Message_Branch:
+            /* Branch is magic cookie + call number + message index in scenario */
+            if(P_index == -2) {
+                dest += snprintf(dest, left, "z9hG4bK-%u-%u-%d", pid, number, msg_index-1 + comp->offset);
+            } else {
+                dest += snprintf(dest, left, "z9hG4bK-%u-%u-%d", pid, number, P_index + comp->offset);
+            }
+            break;
+        case E_Message_Index:
+            dest += snprintf(dest, left, "%d", P_index);
+            break;
+        case E_Message_Next_Url:
+            if (next_req_url) {
+                dest += sprintf(dest, "%s", next_req_url);
+            }
+            break;
+        case E_Message_Len:
+            length_marker = dest;
+            dest += snprintf(dest, left, "     ");
+            len_offset = comp->offset;
+            break;
+        case E_Message_Authentication:
+            if (auth_marker) {
+                ERROR("Only one [authentication] keyword is currently supported!\n");
+            }
+            auth_marker = dest;
+            dest += snprintf(dest, left, "[authentication place holder]");
+            auth_comp = comp;
+            break;
+        case E_Message_Peer_Tag_Param:
+            if(peer_tag) {
+                dest += snprintf(dest, left, ";tag=%s", peer_tag);
+            }
+            break;
+        case E_Message_Routes:
+            if (dialog_route_set) {
+                dest += sprintf(dest, "Route: %s", dialog_route_set);
+            } else if (*(dest - 1) == '\n') {
+                supresscrlf = true;
+            }
+            break;
+        case E_Message_ClockTick:
+            dest += snprintf(dest, left, "%lu", clock_tick);
+            break;
+        case E_Message_Timestamp:
+            struct timeval currentTime;
+            gettimeofday(&currentTime, NULL);
+            dest += snprintf(dest, left, "%s", CStat::formatTime(&currentTime));
+            break;
+        case E_Message_Users:
+            dest += snprintf(dest, left, "%d", users);
+            break;
+        case E_Message_UserID:
+            dest += snprintf(dest, left, "%d", userId);
+            break;
+        case E_Message_SippVersion:
+            dest += snprintf(dest, left, "%s", SIPP_VERSION);
+            break;
+        /*
+        case E_Message_Variable: {
+            int varId = comp->varId;
+            CCallVariable *var = M_callVariableTable->getVar(varId);
+            if(var->isSet()) {
+                if (var->isRegExp()) {
+                    dest += sprintf(dest, "%s", var->getMatchingValue());
+                } else if (var->isDouble()) {
+                    dest += sprintf(dest, "%lf", var->getDouble());
+                } else if (var->isString()) {
+                    dest += sprintf(dest, "%s", var->getString());
+                } else if (var->isBool()) {
+                    dest += sprintf(dest, "true");
+                }
+            } else if (var->isBool()) {
+                dest += sprintf(dest, "false");
+            }
+            if (*(dest - 1) == '\n') {
+                supresscrlf = true;
+            }
+            break;
+        }
+        */
+        /*
+        case E_Message_Fill: {
+            int varId = comp->varId;
+            int length = (int) M_callVariableTable->getVar(varId)->getDouble();
+            if (length < 0) {
+                length = 0;
+            }
+            char *filltext = comp->literal;
+            int filllen = strlen(filltext);
+            if (filllen == 0) {
+                ERROR("Internal error: [fill] keyword has zero-length text.");
+            }
+            for (int i = 0, j = 0; i < length; i++, j++) {
+                *dest++ = filltext[j % filllen];
+            }
+            *dest = '\0';
+            break;
+        }
+        */
+        case E_Message_File: {
+            char buffer[MAX_HEADER_LEN];
+            createSendingMessage(comp->comp_param.filename, -2, buffer, sizeof(buffer));
+            FILE *f = fopen(buffer, "r");
+            if (!f) {
+                ERROR("Could not open '%s': %s\n", buffer, strerror(errno));
+            }
+            int ret;
+            while ((ret = fread(dest, 1, left, f)) > 0) {
+                left -= ret;
+                dest += ret;
+            }
+            if (ret < 0) {
+                ERROR("Error reading '%s': %s\n", buffer, strerror(errno));
+            }
+            fclose(f);
+            break;
+        }
+        /*
+        case E_Message_Injection: {
+            char *orig_dest = dest;
+            getFieldFromInputFile(comp->comp_param.field_param.filename, comp->comp_param.field_param.field, comp->comp_param.field_param.line, dest);
+            if (char *tmp = strstr(orig_dest, "[authentication")) {
+                if (auth_marker) {
+                    ERROR("Only one [authentication] keyword is currently supported!\n");
+                }
+                auth_marker = tmp;
+                auth_comp = (struct MessageComponent *)calloc(1, sizeof(struct MessageComponent));
+                if (!auth_comp) {
+                    ERROR("Out of memory!");
+                }
+                auth_comp_allocated = true;
+
+                tmp = strchr(auth_marker, ']');
+                char c = *tmp;
+                *tmp = '\0';
+                SendingMessage::parseAuthenticationKeyword(call_scenario, auth_comp, auth_marker);
+                *tmp = c;
+            }
+            if (*(dest - 1) == '\n') {
+                supresscrlf = true;
+            }
+            break;
+        }
+        */
+        /*
+        case E_Message_Last_Header: {
+            char * last_header = get_last_header(comp->literal);
+            if(last_header) {
+                dest += sprintf(dest, "%s", last_header);
+            }
+            if (*(dest - 1) == '\n') {
+                supresscrlf = true;
+            }
+            break;
+        }
+        */
+        case E_Message_Custom: {
+            dest += comp->comp_param.fxn(this, comp, dest, left);
+            break;
+        }
+        case E_Message_Last_Message:
+            if(last_recv_msg && strlen(last_recv_msg)) {
+                dest += sprintf(dest, "%s", last_recv_msg);
+            }
+            break;
+        /*
+        case E_Message_Last_Request_URI: {
+            char * last_request_uri = get_last_request_uri();
+            dest += sprintf(dest, "%s", last_request_uri);
+            free(last_request_uri);
+            break;
+        }
+        */
+        /*
+        case E_Message_Last_CSeq_Number: {
+            int last_cseq = 0;
+
+            char *last_header = get_last_header("CSeq:");
+            if(last_header) {
+                last_header += 5;
+                while(isspace(*last_header)) last_header++;
+                sscanf(last_header,"%d", &last_cseq);
+            }
+            dest += sprintf(dest, "%d", last_cseq + comp->offset);
+            break;
+        }
+        */
+        /*
+        case E_Message_TDM_Map:
+            if (!use_tdmmap)
+                ERROR("[tdmmap] keyword without -tdmmap parameter on command line");
+            dest += snprintf(dest, left, "%d.%d.%d/%d",
+                             tdm_map_x+(int((tdm_map_number)/((tdm_map_b+1)*(tdm_map_c+1))))%(tdm_map_a+1),
+                             tdm_map_h,
+                             tdm_map_y+(int((tdm_map_number)/(tdm_map_c+1)))%(tdm_map_b+1),
+                             tdm_map_z+(tdm_map_number)%(tdm_map_c+1)
+                            );
+            break;
+        */
+        }
+    }
+    /* Need the body for length and auth-int calculation */
+    char *body;
+    const char *auth_body = NULL;
+    if (length_marker || auth_marker) {
+        body = strstr(msg_buffer, "\r\n\r\n");
+        if (body) {
+            auth_body = body;
+            auth_body += strlen("\r\n\r\n");
+        }
+    }
+
+    /* Fix up the length. */
+    if (length_marker) {
+        if (auth_marker > body) {
+            ERROR("The authentication keyword should appear in the message header, not the body!");
+        }
+
+        if (body && dest - body > 4 && dest - body < 100004) {
+            char tmp = length_marker[5];
+            sprintf(length_marker, "%5u", (unsigned)(dest - body - 4 + len_offset));
+            length_marker[5] = tmp;
+        } else {
+            // Other cases: Content-Length is 0
+            sprintf(length_marker, "    0\r\n\r\n");
+        }
+    }
+
+    if (msgLen) {
+        *msgLen = dest - msg_buffer;
+    }
+
+    return msg_buffer;
+}
+
 
 bool call::executeMessage(message *curmsg)
 {
+    //if (curmsg->pause_distribution || curmsg->pause_variable != -1)
+    if(0)
+    {
+    }
+    else if(curmsg -> M_type == MSG_TYPE_SENDCMD)
+    {
+    }
+    else if(curmsg -> M_type == MSG_TYPE_NOP)
+    {
+    }
+    /* client send invite */
+    else if(curmsg -> send_scheme)
+    {
+        char * msg_snd;
+        int msgLen;
+        int send_status;
 
+         /* Do not send a new message until the previous one which had
+         * retransmission enabled is acknowledged */
+
+        if(next_retrans) {
+            //setPaused();
+            return true;
+        }
+
+        /* Handle counters and RTDs for this message. */
+        //do_bookkeeping(curmsg);
+
+        /* decide whether to increment cseq or not
+         * basically increment for anything except response, ACK or CANCEL
+         * Note that cseq is only used by the [cseq] keyword, and
+         * not by default
+         */
+
+        int incr_cseq = 0;
+        if (!curmsg->send_scheme->isAck() &&
+                !curmsg->send_scheme->isCancel() &&
+                !curmsg->send_scheme->isResponse()) {
+            ++cseq;
+            incr_cseq = 1;
+        }
+
+        msg_snd = send_scene(msg_index, &send_status, &msgLen);
+        if(send_status < 0 && errno == EWOULDBLOCK) 
+        {
+        }
+
+        /* We have sent the message, so the timeout is no longer needed. */
+        send_timeout = 0;
+
+        last_send_index = curmsg->index;
+        last_send_len = msgLen;
+        realloc_ptr = (char *) realloc(last_send_msg, msgLen+1);
+        if (realloc_ptr) {
+            last_send_msg = realloc_ptr;
+        } else {
+            free(last_send_msg);
+            ERROR("Out of memory!");
+            return false;
+        }
+        memcpy(last_send_msg, msg_snd, msgLen);
+        last_send_msg[msgLen] = '\0';
+
+        /* Update retransmission information */
+        /*
+        if(curmsg -> retrans_delay) {
+            if((transport == T_UDP) && (retrans_enabled)) {
+                next_retrans = clock_tick + curmsg -> retrans_delay;
+                nb_retrans = 0;
+                nb_last_delay = curmsg->retrans_delay;
+            }
+        } else {
+            next_retrans = 0;
+        }
+        */
+        
+        // executeAction(msg_snd, curmsg);
+        
+        /* Update scenario statistics */
+        //curmsg -> nb_sent++;
+        
+        //return next();
+    }
+    else if(curmsg->M_type == MSG_TYPE_RECV
+            || curmsg->M_type == MSG_TYPE_RECVCMD)
+    {
+    }
+
+    return true;
 }
 
 bool call::run()

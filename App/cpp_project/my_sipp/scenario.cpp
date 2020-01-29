@@ -10,8 +10,8 @@ int           sendMode  = MODE_CLIENT;
 
 message::message(int index, const char *desc)
 {
-    //this->index = index;
-    //this->desc = desc;
+    this->index = index;
+    this->desc = desc;
     pause_variable = -1;
 	
     M_type = 0;

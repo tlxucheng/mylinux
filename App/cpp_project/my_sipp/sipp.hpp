@@ -45,6 +45,16 @@
 #include "strings.hpp"
 
 /************************** Constants **************************/
+#ifdef SVN_VERSION
+# ifdef LOCAL_VERSION_EXTRA
+#  define SIPP_VERSION               SVN_VERSION LOCAL_VERSION_EXTRA
+# else
+#  define SIPP_VERSION               SVN_VERSION
+# endif
+#else
+# define SIPP_VERSION               "unknown"
+#endif
+
 #define T_UDP                      0
 #define T_TCP                      1
 #define T_TLS                      2
@@ -70,6 +80,9 @@
 #define DEFAULT_RATE                 10.0
 #define DEFAULT_PORT                 5060
 #define DEFAULT_TRANSPORT            T_UDP
+
+#define DEFAULT_SERVICE              ((char *)"service")
+#define DEFAULT_AUTH_PASSWORD        ((char *)"password")
 
 extern double             rate                    _DEFVAL(DEFAULT_RATE);
 
@@ -112,9 +125,16 @@ extern int                buff_size               _DEFVAL(65535);
 
 extern unsigned long      stop_after              _DEFVAL(0xffffffff);
 
-/************ User controls and command line options ***********/
 extern const char       * call_id_string          _DEFVAL("%u-%p@%s");
 extern unsigned int       pid                     _DEFVAL(0);
+extern unsigned int       base_cseq               _DEFVAL(0);
+
+extern char               media_ip_escaped[42];
+extern int                media_port              _DEFVAL(0);
+extern bool               media_ip_is_ipv6;
+
+extern const char       * service                 _DEFVAL(DEFAULT_SERVICE);
+extern int                users                   _DEFVAL(-1);
 
 int open_connections();
 

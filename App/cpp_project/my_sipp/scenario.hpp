@@ -20,10 +20,16 @@
 class message
 {
 public:
+    SendingMessage *send_scheme;
+
     /* If this is a pause */
     int		 pause_variable;
 
     int      M_type;
+
+    int            index;
+
+    const char *   desc;
 
 	message(int index, const char *desc);
     ~message();

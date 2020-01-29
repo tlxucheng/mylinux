@@ -57,7 +57,63 @@ class SendingMessage
 {
 public:
     SendingMessage(scenario *msg_scenario, char *msg, bool skip_sanity = false);
+
+    struct MessageComponent *getComponent(int);
+    int numComponents();
+
+    char *getMethod();
+    int getCode();
+
+    bool isResponse();
+    bool isAck();
+    bool isCancel();
+
+    static void parseAuthenticationKeyword(scenario *msg_scenario, struct MessageComponent *dst, char *keyword);
+    static void freeMessageComponent(struct MessageComponent *comp);
 private:
+    std::vector <struct MessageComponent *> messageComponents;
+
+    char *method;
+    int code;
+
+    bool ack;
+    bool cancel;
+    bool response;
+
+    scenario *msg_scenario;
+};
+
+/* Custom Keyword Function Type. */
+struct MessageComponent;
+class call;
+typedef int (*customKeyword)(call *, struct MessageComponent *, char *, int);
+/* Custom Keyword Registration Function. */
+int registerKeyword(char *keyword, customKeyword fxn);
+
+struct MessageComponent {
+    MessageCompType type;
+    char *literal;
+    int literalLen;
+    int offset;
+    int varId;
+    union u {
+        /* Authentication Parameters. */
+        struct {
+            SendingMessage *auth_user;
+            SendingMessage *auth_pass;
+            SendingMessage *aka_OP;
+            SendingMessage *aka_AMF;
+            SendingMessage *aka_K;
+        } auth_param;
+        /* Field Substitution. */
+        struct {
+            char *filename;
+            int field;
+            SendingMessage *line;
+        } field_param;
+        SendingMessage *filename;
+        customKeyword fxn;
+    } comp_param;
 };
 
 #endif

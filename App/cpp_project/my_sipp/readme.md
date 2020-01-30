@@ -49,7 +49,16 @@ gdb sipp client信息
 16:47 client能发送invite，但是server端收不到，invite消息可能有错误
 17:53 client能发送invite，但是server端收不到，invite消息可能有错误，
       server端走到 empty_socket，recvfrom ret: 503, socket->ss_fd: 4, 产生crash, check_for_message 还没加
+21:38 （1）get_listener 获取出来空指针，server端产生crash, 先去除 process_message 中的 listener_ptr -> process_incoming(msg, src)
+      （2）增加 g_test_one_send 测试发现 server端收到的消息有
+	       place this symlink by a static file or a different symlink.
+			#
+			# See man:systemd-resolved.service(8) for details about the supported modes of
+			# operation for /etc/resolv.conf.
 
+			nameserver 127.0.0.53
+			options edns0
+			search DHCP HOST
 
 
 

@@ -322,6 +322,9 @@ int main(int argc, char *argv[])
 		exit(EXIT_OTHER);
     }
 
+    /* Initialize the tolower table. */
+    init_tolower_table();
+
     for(pass = 0 ; pass <= 3; pass++)       /* pass循环的作用是什么? */
     {
 		for(argi = 1; argi < argc; argi++)

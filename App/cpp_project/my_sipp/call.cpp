@@ -573,6 +573,7 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
     return msg_buffer;
 }
 
+int g_test_one_send = 0;
 
 bool call::executeMessage(message *curmsg)
 {
@@ -592,6 +593,12 @@ bool call::executeMessage(message *curmsg)
         char * msg_snd;
         int msgLen;
         int send_status;
+
+        if(g_test_one_send)
+        {
+            return false;
+        }
+        g_test_one_send = 1;
 
          /* Do not send a new message until the previous one which had
          * retransmission enabled is acknowledged */

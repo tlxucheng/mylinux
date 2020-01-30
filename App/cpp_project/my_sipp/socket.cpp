@@ -13,6 +13,164 @@ int pending_messages = 0;
 
 extern char * get_call_id(char *msg);
 
+/****************************** Network Interface *******************/
+
+/* Our message detection states: */
+#define CFM_NORMAL 0 /* No CR Found, searchign for \r\n\r\n. */
+#define CFM_CONTROL 1 /* Searching for 27 */
+#define CFM_CR 2 /* CR Found, Searching for \n\r\n */
+#define CFM_CRLF 3 /* CRLF Found, Searching for \r\n */
+#define CFM_CRLFCR 4 /* CRLFCR Found, Searching for \n */
+#define CFM_CRLFCRLF 5 /* We've found the end of the headers! */
+
+void merge_socketbufs(struct socketbuf *socketbuf)
+{
+    struct socketbuf *next = socketbuf->next;
+    int newsize;
+    char *newbuf;
+
+    if (!next) {
+        return;
+    }
+
+    if (next->offset) {
+        ERROR("Internal error: can not merge a socketbuf with a non-zero offset.");
+    }
+
+    if (socketbuf->offset) {
+        memmove(socketbuf->buf, socketbuf->buf + socketbuf->offset, socketbuf->len - socketbuf->offset);
+        socketbuf->len -= socketbuf->offset;
+        socketbuf->offset = 0;
+    }
+
+    newsize = socketbuf->len + next->len;
+
+    newbuf = (char *)realloc(socketbuf->buf, newsize);
+    if (!newbuf) {
+        ERROR("Could not allocate memory to merge socket buffers!");
+    }
+    memcpy(newbuf + socketbuf->len, next->buf, next->len);
+    socketbuf->buf = newbuf;
+    socketbuf->len = newsize;
+    socketbuf->next = next->next;
+    free_socketbuf(next);
+}
+
+/* Check for a message in the socket and return the length of the first
+ * message.  If this is UDP, the only check is if we have buffers.  If this is
+ * TCP or TLS we need to parse out the content-length. */
+static int check_for_message(struct sipp_socket *socket)
+{
+    struct socketbuf *socketbuf = socket->ss_in;
+    int state = socket->ss_control ? CFM_CONTROL : CFM_NORMAL;
+    const char *l;
+
+    if (!socketbuf)
+        return 0;
+
+    if (socket->ss_transport == T_UDP || socket->ss_transport == T_SCTP) {
+        return socketbuf->len;
+    }
+
+    int len = 0;
+
+    while (socketbuf->offset + len < socketbuf->len) {
+        char c = socketbuf->buf[socketbuf->offset + len];
+
+        switch(state) {
+        case CFM_CONTROL:
+            /* For CMD Message the escape char is the end of message */
+            if (c == 27) {
+                return len + 1; /* The plus one includes the control character. */
+            }
+            break;
+        case CFM_NORMAL:
+            if (c == '\r') {
+                state = CFM_CR;
+            }
+            break;
+        case CFM_CR:
+            if (c == '\n') {
+                state = CFM_CRLF;
+            } else {
+                state = CFM_NORMAL;
+            }
+            break;
+        case CFM_CRLF:
+            if (c == '\r') {
+                state = CFM_CRLFCR;
+            } else {
+                state = CFM_NORMAL;
+            }
+            break;
+        case CFM_CRLFCR:
+            if (c == '\n') {
+                state = CFM_CRLFCRLF;
+            } else {
+                state = CFM_NORMAL;
+            }
+            break;
+        }
+
+        /* Head off failing because the buffer does not contain the whole header. */
+        if (socketbuf->offset + len == socketbuf->len - 1) {
+            merge_socketbufs(socketbuf);
+        }
+
+        if (state == CFM_CRLFCRLF) {
+            break;
+        }
+
+        len++;
+    }
+
+    /* We did not find the end-of-header marker. */
+    if (state != CFM_CRLFCRLF) {
+        return 0;
+    }
+
+    /* Find the content-length header. */
+    if ((l = strncasestr(socketbuf->buf + socketbuf->offset, "\r\nContent-Length:", len))) {
+        l += strlen("\r\nContent-Length:");
+    } else if ((l = strncasestr(socketbuf->buf + socketbuf->offset, "\r\nl:", len))) {
+        l += strlen("\r\nl:");
+    } else {
+        /* There is no header, so the content-length is zero. */
+        return len + 1;
+    }
+
+    /* Skip spaces. */
+    while(isspace(*l)) {
+        if (*l == '\r' || *l == '\n') {
+            /* We ran into an end-of-line, so there is no content-length. */
+            return len + 1;
+        }
+        l++;
+    }
+
+    /* Do the integer conversion, we only allow '\r' or spaces after the integer. */
+    char *endptr;
+    int content_length = strtol(l, &endptr, 10);
+    if (*endptr != '\r' && !isspace(*endptr)) {
+        content_length = 0;
+    }
+
+    /* Now that we know how large this message is, we make sure we have the whole thing. */
+    do {
+        /* It is in this buffer. */
+        if (socketbuf->offset + len + content_length < socketbuf->len) {
+            return len + content_length + 1;
+        }
+        if (socketbuf->next == NULL) {
+            /* There is no buffer to merge, so we fail. */
+            return 0;
+        }
+        /* We merge ourself with the next buffer. */
+        merge_socketbufs(socketbuf);
+    } while (1);
+}
+
+
 int open_connections()
 {	
     int status = 0;
@@ -339,8 +497,42 @@ ssize_t read_message(struct sipp_socket *socket, char *buf, size_t len, struct s
 {
     size_t avail;
 
+    if (!socket->ss_msglen)
+        return 0;
+    if (socket->ss_msglen > len)
+        ERROR("There is a message waiting in sockfd(%d) that is bigger (%d bytes) than the read size.",
+              socket->ss_fd, socket->ss_msglen);
+    
+    len = socket->ss_msglen;
+
+    avail = socket->ss_in->len - socket->ss_in->offset;
+    if (avail > len) {
+        avail = len;
+    }
+
     memcpy(buf, socket->ss_in->buf + socket->ss_in->offset, avail);
     memcpy(src, &socket->ss_in->addr, SOCK_ADDR_SIZE(&socket->ss_in->addr));
+
+    /* Update our buffer and return value. */
+    buf[avail] = '\0';
+    /* For CMD Message the escape char is the end of message */
+    if((socket->ss_control) && buf[avail-1] == 27 ) buf[avail-1] = '\0';
+
+    socket->ss_in->offset += avail;
+
+    /* Have we emptied the buffer? */
+    if (socket->ss_in->offset == socket->ss_in->len) {
+        struct socketbuf *next = socket->ss_in->next;
+        free_socketbuf(socket->ss_in);
+        socket->ss_in = next;
+    }
+
+    if (int msg_len = check_for_message(socket)) {
+        socket->ss_msglen = msg_len;
+    } else {
+        socket->ss_msglen = 0;
+        pending_messages--;
+    }
 
 	return avail;
 }
@@ -365,7 +557,7 @@ void process_message(struct sipp_socket *socket, char *msg, ssize_t msg_size, st
                   msg_size, msg);
     }
 
-    listener_ptr -> process_incoming(msg, src);
+    //listener_ptr -> process_incoming(msg, src);
 
 }
 
@@ -467,10 +659,10 @@ int empty_socket(struct sipp_socket *socket)
 
     /* Do we have a complete SIP message? */
     if (!socket->ss_msglen) {
-        //if (int msg_len = check_for_message(socket)) {
-            socket->ss_msglen = ret;
+        if (int msg_len = check_for_message(socket)) {
+            socket->ss_msglen = msg_len;
             pending_messages++;
-        //}
+        }
     }
 	return ret;
 }

@@ -113,7 +113,7 @@ extern struct	     sockaddr_storage   remote_sockaddr;
 
 extern short         use_remote_sending_addr      _DEFVAL(0);
 extern struct        sockaddr_storage remote_sending_sockaddr;
-
+extern int           user_port                    _DEFVAL(0);
 
 /********************** Clock variables ***********************/
 
@@ -160,6 +160,7 @@ extern char *default_file _DEFVAL(NULL);
 
 extern struct   sipp_socket *new_sipp_socket(bool use_ipv6, int transport);
 extern void	sipp_customize_socket(struct sipp_socket *socket);
+extern int	sipp_bind_socket(struct sipp_socket *socket, struct sockaddr_storage *saddr, int *port);
 
 #endif  // __SIPP__
 

@@ -34,6 +34,12 @@ struct sipp_socket {
     struct socketbuf *ss_out; /* Buffered output. */
 };
 
+/* Socket Buffer Management. */
+#define NO_COPY 0
+#define DO_COPY 1
+struct socketbuf *alloc_socketbuf(char *buffer, size_t size, int copy);
+void free_socketbuf(struct socketbuf *socketbuf);
+
 struct socketbuf {
     char *buf;
     size_t len;

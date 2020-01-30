@@ -27,6 +27,15 @@ public:
 
     int      M_type;
 
+
+    typedef enum {
+        ContentLengthNoPresent = 0,
+        ContentLengthValueZero,
+        ContentLengthValueNoZero
+    } ContentLengthFlag;
+
+    ContentLengthFlag   content_length_flag ;
+
     int            index;
 
     const char *   desc;
@@ -50,10 +59,14 @@ public:
     char *name;
 	
     void computeSippMode();
+    
+    int get_var(const char *varName, const char *what);
 
 private:
-   int msg_index;
-	
+    void checkOptionalRecv(char *elem, unsigned int scenario_file_cursor);
+    
+    int msg_index;
+    bool last_recv_optional;
 };
 
 int find_scenario(const char *scenario);
@@ -69,6 +82,8 @@ extern const char * default_scenario[12];
 /* Useful utility functions for parsing integers, etc. */
 long get_long(const char *ptr, const char *what);
 unsigned long long get_long_long(const char *ptr, const char *what);
+
+extern int get_cr_number(const char *msg);
 
 #endif
 

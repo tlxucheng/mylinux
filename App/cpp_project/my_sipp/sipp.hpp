@@ -43,6 +43,7 @@
 #include "call_generation_task.hpp"
 #include "logger.hpp"
 #include "strings.hpp"
+#include "infile.hpp"
 
 /************************** Constants **************************/
 #ifdef SVN_VERSION
@@ -136,7 +137,14 @@ extern bool               media_ip_is_ipv6;
 extern const char       * service                 _DEFVAL(DEFAULT_SERVICE);
 extern int                users                   _DEFVAL(-1);
 
+extern char             **generic[100];
+
 int open_connections();
+
+// extern field file management
+typedef std::map<string, FileContents *> file_map;
+extern file_map inFiles;
+extern char *default_file _DEFVAL(NULL);
 
 /********************* Reset global kludge  *******************/
 

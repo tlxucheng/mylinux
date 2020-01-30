@@ -81,6 +81,11 @@ private:
     bool response;
 
     scenario *msg_scenario;
+    
+    // Get parameters from a [keyword]
+    static void getQuotedParam(char * dest, char * src, int * len);
+    static void getHexStringParam(char * dest, char * src, int * len);
+    static void getKeywordParam(char * src, const char * param, char * output);
 };
 
 /* Custom Keyword Function Type. */

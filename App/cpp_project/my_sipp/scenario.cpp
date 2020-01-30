@@ -15,6 +15,8 @@ message::message(int index, const char *desc)
     pause_variable = -1;
 	
     M_type = 0;
+
+    send_scheme = NULL; // delete on exit
 }
 
 
@@ -81,12 +83,79 @@ int find_scenario(const char *scenario)
     return -1;
 }
 
+int get_cr_number(const char *src)
+{
+    int res=0;
+    while(*src) {
+        if(*src == '\n') res++;
+        src++;
+    }
+    return res;
+}
+
+char *clean_cdata(char *ptr, int *removed_crlf = NULL)
+{
+    char * msg;
+
+    while((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\n')) ptr++;
+
+    msg = (char *) malloc(strlen(ptr) + 3);
+    if(!msg) {
+        ERROR("Memory Overflow");
+    }
+    strcpy(msg, ptr);
+
+    ptr = msg + strlen(msg);
+    ptr --;
+
+    while((ptr >= msg) &&
+            ((*ptr == ' ')  ||
+             (*ptr == '\t') ||
+             (*ptr == '\n'))) {
+        if(*ptr == '\n' && removed_crlf) {
+            (*removed_crlf)++;
+        }
+        *ptr-- = 0;
+    }
+
+    if(!strstr(msg, "\n\n")) {
+        strcat(msg, "\n\n");
+    }
+
+    if(ptr == msg) {
+        ERROR("Empty cdata in xml scenario file");
+    }
+    while ((ptr = strstr(msg, "\n "))) {
+        memmove(ptr + 1, ptr + 2, strlen(ptr) - 1);
+    }
+    while ((ptr = strstr(msg, " \n"))) {
+        memmove(ptr, ptr + 1, strlen(ptr));
+    }
+    while ((ptr = strstr(msg, "\n\t"))) {
+        memmove(ptr + 1, ptr + 2, strlen(ptr) - 1);
+    }
+    while ((ptr = strstr(msg, "\t\n"))) {
+        memmove(ptr, ptr + 1, strlen(ptr));
+    }
+
+    return msg;
+}
+
 /********************** Scenario File analyser **********************/
+void scenario::checkOptionalRecv(char *elem, unsigned int scenario_file_cursor)
+{
+    if (last_recv_optional) {
+        ERROR("<recv> before <%s> sequence without a mandatory message. Please remove one 'optional=true' (element %d).", elem, scenario_file_cursor);
+    }
+    last_recv_optional = false;
+}
+
 scenario::scenario(char * filename, int deflt)
 {
     char *              elem = NULL;
     const char*         cptr;
     unsigned int        scenario_file_cursor = 0;
+    int                 L_content_length = 0 ;
 
 	if(filename)
 	{
@@ -133,7 +202,38 @@ scenario::scenario(char * filename, int deflt)
 
 			if(!strcmp(elem, "send"))
 			{
-				curmsg->M_type = MSG_TYPE_SEND;
+			    checkOptionalRecv(elem, scenario_file_cursor);
+				curmsg->M_type = MSG_TYPE_SEND;           
+                /* Sent messages descriptions */
+                if(!(ptr = xp_get_cdata())) {
+                    ERROR("No CDATA in 'send' section of xml scenario file");
+                }
+
+                int removed_clrf = 0;
+                char * msg = clean_cdata(ptr, &removed_clrf);
+
+                L_content_length = xp_get_content_length(msg);
+                switch (L_content_length) {
+                case  -1 :
+                    // the msg does not contain content-length field
+                    break ;
+                case  0 :
+                    curmsg -> content_length_flag =
+                        message::ContentLengthValueZero;   // Initialize to No present
+                    break ;
+                default :
+                    curmsg -> content_length_flag =
+                        message::ContentLengthValueNoZero;   // Initialize to No present
+                    break ;
+                }
+
+                if((msg[strlen(msg) - 1] != '\n') && (removed_clrf)) {
+                    strcat(msg, "\n");
+                }
+                char *tsrc = msg;
+                while(*tsrc++);
+                curmsg -> send_scheme = new SendingMessage(this, msg);
+                free(msg);
 			}
 			else if(!strcmp(elem, "recv"))
 			{

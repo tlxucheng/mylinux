@@ -176,6 +176,46 @@ int write_socket(struct sipp_socket *socket, const char *buffer, ssize_t len, in
 	}
 
     rc = socket_write_primitive(socket, buffer, len, dest);
+    struct timeval currentTime;
+    GET_TIME (&currentTime);
+
+    if (rc == len) {
+        /* Everything is great. */
+        if (useMessagef == 1) {
+            TRACE_MSG("----------------------------------------------- %s\n"
+                      "%s %smessage sent (%d bytes):\n\n%.*s\n",
+                      CStat::formatTime(&currentTime, true),
+                      TRANSPORT_TO_STRING(socket->ss_transport),
+                      socket->ss_control ? "control " : "",
+                      len, len, buffer);
+        }
+
+    } else if (rc <= 0) {
+        if ((errno == EWOULDBLOCK) && (flags & WS_BUFFER)) {
+            //buffer_write(socket, buffer, len, dest);
+            //enter_congestion(socket, errno);
+            return len;
+        }
+        if (useMessagef == 1) {
+            TRACE_MSG("----------------------------------------------- %s\n"
+                      "Error sending %s message:\n\n%.*s\n",
+                      CStat::formatTime(&currentTime, true),
+                      TRANSPORT_TO_STRING(socket->ss_transport),
+                      len, buffer);
+        }
+        //return write_error(socket, errno);
+    } else {
+        /* We have a truncated message, which must be handled internally to the write function. */
+        if (useMessagef == 1) {
+            TRACE_MSG("----------------------------------------------- %s\n"
+                      "Truncation sending %s message (%d of %d sent):\n\n%.*s\n",
+                      CStat::formatTime(&currentTime, true),
+                      TRANSPORT_TO_STRING(socket->ss_transport),
+                      rc, len, len, buffer);
+        }
+        //buffer_write(socket, buffer + rc, len - rc, dest);
+        //enter_congestion(socket, errno);
+    }
 
 	return rc;
 }

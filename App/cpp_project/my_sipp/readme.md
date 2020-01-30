@@ -46,7 +46,7 @@ gdb sipp client信息
 2020-01-30
 完善 SendingMessage::SendingMessage，编译通过，待验证一次invite-200OK流程
 
-
+16:47 client能发送invite，但是server端收不到，invite消息可能有错误
 
 
 

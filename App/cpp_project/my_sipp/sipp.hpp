@@ -97,6 +97,12 @@ extern int                max_sched_loops         _DEFVAL(MAX_SCHED_LOOPS_PER_CY
 
 extern int                tcp_readsize            _DEFVAL(65535);
 
+#define GET_TIME(clock)       \
+{                             \
+  struct timezone tzp;        \
+  gettimeofday (clock, &tzp); \
+}
+
 /*********************** Global Sockets  **********************/
 extern struct sipp_socket *main_socket            _DEFVAL(NULL);
 extern set<struct sipp_socket *> sockets_pending_reset;

@@ -59,7 +59,11 @@ gdb sipp client信息
 			nameserver 127.0.0.53
 			options edns0
 			search DHCP HOST
-
+			
+2020-01-31
+21:38 (1) check_for_message 返回出的长度不是收到sip消息的真实长度
+      (2) read_message 调用 check_for_message 返回一个非0的长度，导致 read_message 执行2次
+	  (3) 当前代码强制在empty_socket将消息长度赋值成真实的sip消息长度
 
 
 

@@ -220,7 +220,8 @@ void pollset_process(int wait)
         if (pollfiles[poll_idx].revents & POLLIN) 
 		{
             /* We can empty this socket. */ 
-			empty_socket(sock);
+            printf("poll_idx: %d\n", poll_idx);
+	        empty_socket(sock);
             events++;
         }
 
@@ -245,6 +246,7 @@ void pollset_process(int wait)
             struct sockaddr_storage src;
             ssize_t len;
 
+            printf("read_index: %d\n", read_index);
             len = read_message(sockets[read_index], msg, sizeof(msg), &src);
             if (len > 0) {
                 process_message(sockets[read_index], msg, len, &src);

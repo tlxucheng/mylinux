@@ -46,6 +46,7 @@ public:
     ContentLengthFlag   content_length_flag ;
 
     int            index;
+    int            test;
 
     const char *   desc;
 
@@ -82,9 +83,9 @@ int find_scenario(const char *scenario);
 
 /* There are external variable containing the current scenario */
 extern scenario      *main_scenario;
-
 extern int           creationMode;
 extern int           sendMode;
+extern int           thirdPartyMode;
 
 extern const char * default_scenario[12];
 

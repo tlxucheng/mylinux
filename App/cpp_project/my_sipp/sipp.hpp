@@ -144,6 +144,7 @@ extern const char       * service                 _DEFVAL(DEFAULT_SERVICE);
 extern int                users                   _DEFVAL(-1);
 
 extern char             **generic[100];
+extern bool               pause_msg_ign           _DEFVAL(0);
 
 int open_connections();
 
@@ -151,6 +152,13 @@ int open_connections();
 typedef std::map<string, FileContents *> file_map;
 extern file_map inFiles;
 extern char *default_file _DEFVAL(NULL);
+
+/********************* Mini-Parser Routines *******************/
+
+int get_method(char *msg);
+char * get_peer_tag(char *msg);
+unsigned long int get_cseq_value(char *msg);
+unsigned long get_reply_code(char *msg);
 
 /********************* Reset global kludge  *******************/
 

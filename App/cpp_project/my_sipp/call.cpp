@@ -16,6 +16,30 @@ int call::stepDynamicId   = 4;                // FIXME both param to be in comma
 /************** Call map and management routines **************/
 static unsigned int next_number = 1;
 
+/* When should this call wake up? */
+unsigned int call::wake()
+{
+    unsigned int wake = 0;
+
+    if (zombie) {
+        return wake;
+    }
+
+    if (paused_until) {
+        wake = paused_until;
+    }
+
+    if (next_retrans && (!wake || (next_retrans < wake))) {
+        wake = next_retrans;
+    }
+
+    if (recv_timeout && (!wake || (recv_timeout < wake))) {
+        wake = recv_timeout;
+    }
+
+    return wake;
+}
+
 /******************* Call class implementation ****************/
 call::call(const char *p_id, bool use_ipv6, int userId, struct sockaddr_storage *dest) : listener(p_id, true)
 {
@@ -691,17 +715,17 @@ bool call::run()
     return executeMessage(curmsg);
 }
 
-
 bool call::process_incoming(char * msg, struct sockaddr_storage *src)
 {    
     int             reply_code;
     static char     request[65];
     char            responsecseqmethod[65];
+    char            txn[MAX_HEADER_LEN];
     unsigned long   cookie = 0;
     char          * ptr;
     int             search_index;
     bool            found = false;
-    T_ActionResult  actionResult;
+    //T_ActionResult  actionResult;
 
     //getmilliseconds();
 
@@ -716,11 +740,14 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
     }
 
     /* Authorize nop as a first command, even in server mode */
+    #if 0
     if((msg_index == 0) && (call_scenario->messages[msg_index] -> M_type == MSG_TYPE_NOP)) {
         queue_up (msg);
         paused_until = 0;
         return run();
     }
+    #endif
+    
     responsecseqmethod[0] = '\0';
 
     /* Is it a response ? */
@@ -732,6 +759,29 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
             (msg[5] == '.') &&
             (msg[6] == '0')    )
     {
+        reply_code = get_reply_code(msg);
+        if(!reply_code) {
+            //if (!process_unexpected(msg)) {
+            //    return false; // Call aborted by unexpected message handling
+            }
+       /* It is a response: update peer_tag */
+        ptr = get_peer_tag(msg);
+        if (ptr) {
+            if(strlen(ptr) > (MAX_HEADER_LEN - 1)) {
+                ERROR("Peer tag too long. Change MAX_HEADER_LEN and recompile sipp");
+            }
+            if(peer_tag) {
+                free(peer_tag);
+            }
+            peer_tag = strdup(ptr);
+            if (!peer_tag) {
+                ERROR("Out of memory allocating peer tag.");
+            }
+        }
+        request[0]=0;
+        // extract the cseq method from the response
+        //extract_cseq_method (responsecseqmethod, msg);
+        //extract_transaction (txn, msg);
     }
     else if((ptr = strchr(msg, ' ')))
     {
@@ -754,13 +804,13 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
     for(search_index = msg_index;
             search_index < (int)call_scenario->messages.size();
             search_index++) {
-        if(!matches_scenario(search_index, reply_code, request, responsecseqmethod, txn)) {
-            if(call_scenario->messages[search_index] -> optional) {
-                continue;
-            }
+        //if(!matches_scenario(search_index, reply_code, request, responsecseqmethod, txn)) {
+        //    if(call_scenario->messages[search_index] -> optional) {
+        //        continue;
+        //    }
             /* The received message is different for the expected one */
-            break;
-        }
+        //    break;
+        //}
 
         found = true;
         /* TODO : this is a little buggy: If a 100 trying from an INVITE
@@ -770,8 +820,121 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
         break;
     }
 
-=	return true;
+    int test = (!found) ? -1 : call_scenario->messages[search_index]->test;
+    /* test==0: No branching"
+     * test==-1 branching without testing"
+     * test>0   branching with testing
+     */
+
+    // Action treatment
+    if (found) 
+    {
+    }
+
+    if (*request) { // update [cseq] with received CSeq
+        unsigned long int rcseq = get_cseq_value(msg);
+        if (rcseq > cseq) cseq = rcseq;
+    }
+
+    /* This is an ACK/PRACK or a response, and its index is greater than the
+     * current active retransmission message, so we stop the retrans timer.
+     * True also for CANCEL and BYE that we also want to answer to */
+    if(((reply_code) ||
+            ((!strcmp(request, "ACK")) ||
+             (!strcmp(request, "CANCEL")) || (!strcmp(request, "BYE")) ||
+             (!strcmp(request, "PRACK"))))  &&
+            (search_index > last_send_index)) {
+        /*
+         * We should stop any retransmission timers on receipt of a provisional response only for INVITE
+         * transactions. Non INVITE transactions continue to retransmit at T2 until a final response is
+         * received
+         */
+        if ( (0 == reply_code) || // means this is a request.
+                (200 <= reply_code) ||  // final response
+                ((0 != reply_code) && (0 == strncmp (responsecseqmethod, "INVITE", strlen(responsecseqmethod)))) ) { // prov for INVITE
+            next_retrans = 0;
+        } else {
+            /*
+             * We are here due to a provisional response for non INVITE. Update our next retransmit.
+             */
+            //next_retrans = clock_tick + global_t2;
+            //nb_last_delay = global_t2;
+
+        }
+
+        /* This is a response with 200 so set the flag indicating that an
+         * ACK is pending (used to prevent from release a call with CANCEL
+         * when an ACK+BYE should be sent instead)                         */
+        if (reply_code == 200) {
+            ack_is_pending = true;
+        }
+
+        /* Store last received message information for all messages so that we can
+         * correctly identify retransmissions, and use its body for inclusion
+         * in our messages. */
+        last_recv_index = search_index;
+        last_recv_hash = cookie;
+        realloc_ptr = (char *) realloc(last_recv_msg, strlen(msg) + 1);
+        if (realloc_ptr) {
+            last_recv_msg = realloc_ptr;
+        } else {
+            free(last_recv_msg);
+            ERROR("Out of memory!");
+            return false;
+        }
+
+        strcpy(last_recv_msg, msg);
+
+        /* If this was a mandatory message, or if there is an explicit next label set
+        * we must update our state machine.  */
+        if(-1 == test)
+        {
+            /* If we are paused, then we need to wake up so that we properly go through the state machine. */
+            paused_until = 0;
+            msg_index = search_index;
+            return next();
+        }
+        else
+        {
+            setPaused();
+        }
+    }
+
+	return true;
 }
+
+bool call::next()
+{
+    msgvec * msgs = &call_scenario->messages;
+    if (initCall) {
+        msgs = &call_scenario->initmessages;
+    }
+
+    int test = (*msgs)[msg_index]->test;
+    /* What is the next message index? */
+    /* Default without branching: use the next message */
+    int new_msg_index = msg_index+1;
+    /* If branch needed, overwrite this default */
+    #if 0
+    if ( ((*msgs)[msg_index]->next >= 0) &&
+            ((test == -1) || M_callVariableTable->getVar(test)->isSet())
+       ) {
+        int chance = (*msgs)[msg_index]->chance;
+        if ((chance <= 0) || (rand() > chance )) {
+            new_msg_index = (*msgs)[msg_index]->next;
+        }
+    }
+    #endif
+    msg_index=new_msg_index;
+    recv_timeout = 0;
+    //if(msg_index >= (int)((*msgs).size())) {
+    //    terminate(CStat::E_CALL_SUCCESSFULLY_ENDED);
+    //    return false;
+    //}
+
+    return run();
+}
+
 
 const char *default_message_names[] = {
     "3pcc_abort",

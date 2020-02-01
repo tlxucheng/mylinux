@@ -12,7 +12,10 @@ public:
     static void set_rate(double new_rate);
 
     bool run();
-	
+
+protected:
+    unsigned int wake();
+    
 private:
     CallGenerationTask();
     virtual ~CallGenerationTask();

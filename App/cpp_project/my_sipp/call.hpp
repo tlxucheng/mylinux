@@ -18,6 +18,9 @@ public:
 
     virtual bool run();
 
+    /* When should this call wake up? */
+    virtual unsigned int wake();
+
 public:
     static   int   maxDynamicId;    // max value for dynamicId; this value is reached !
     static   int   startDynamicId;  // offset for first dynamicId  FIXME:in CmdLine
@@ -29,6 +32,8 @@ private:
     void init(scenario * call_scenario, sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitCall);
     /* This this call for initialization? */
     bool initCall;
+
+    scenario *call_scenario;
 
     unsigned int   number;
 
@@ -68,9 +73,7 @@ private:
 
     /* cseq value for [cseq] keyword */
     unsigned int   cseq;
-	
-    scenario *call_scenario;
-	
+		
     struct sockaddr_storage call_peer;
 
     /* holds the auth header and if the challenge was 401 or 407 */
@@ -114,6 +117,9 @@ private:
     char* createSendingMessage(SendingMessage *src, int P_index, char *msg_buffer, int buflen, int *msgLen=NULL);
 
     int    userId;
+
+    /* rc == true means call not deleted by processing */
+    bool next();
 
 protected:
     int            call_port;

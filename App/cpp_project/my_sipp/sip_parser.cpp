@@ -4,6 +4,77 @@
 #include "sip_parser.hpp"
 
 /*************************** Mini SIP parser ***************************/
+char * get_peer_tag(char *msg)
+{
+    char        * to_hdr;
+    char        * ptr;
+    char        * end_ptr;
+    static char   tag[MAX_HEADER_LEN];
+    int           tag_i = 0;
+
+    to_hdr = strstr(msg, "\r\nTo:");
+    if(!to_hdr) to_hdr = strstr(msg, "\r\nto:");
+    if(!to_hdr) to_hdr = strstr(msg, "\r\nTO:");
+    if(!to_hdr) to_hdr = strstr(msg, "\r\nt:");
+    if(!to_hdr) {
+        ERROR("No valid To: header in reply");
+    }
+
+    // Remove CRLF
+    to_hdr += 2;
+
+    end_ptr = strchr(to_hdr,'\n');
+
+    ptr = strchr(to_hdr, '>');
+    if (!ptr) {
+        return NULL;
+    }
+
+    ptr = strchr(to_hdr, ';');
+
+    if(!ptr) {
+        return NULL;
+    }
+
+    to_hdr = ptr;
+
+    ptr = strstr(to_hdr, "tag");
+    if(!ptr) {
+        ptr = strstr(to_hdr, "TAG");
+    }
+    if(!ptr) {
+        ptr = strstr(to_hdr, "Tag");
+    }
+
+    if(!ptr) {
+        return NULL;
+    }
+
+    if (ptr>end_ptr) {
+        return NULL ;
+    }
+
+    ptr = strchr(ptr, '=');
+
+    if(!ptr) {
+        ERROR("Invalid tag param in To: header");
+    }
+
+    ptr ++;
+
+    while((*ptr != ' ')  &&
+            (*ptr != ';')  &&
+            (*ptr != '\t') &&
+            (*ptr != '\r') &&
+            (*ptr != '\n') &&
+            (*ptr)) {
+        tag[tag_i++] = *(ptr++);
+    }
+    tag[tag_i] = 0;
+
+    return tag;
+}
+
 char * get_call_id(char *msg)
 {
     static char call_id[MAX_HEADER_LEN];
@@ -77,6 +148,53 @@ char * get_call_id(char *msg)
     strcpy(call_id, ptr1);
     *ptr2 = backup;
     return (char *) call_id;
+}
+
+unsigned long int get_cseq_value(char *msg)
+{
+    char *ptr1;
+
+
+    // no short form for CSeq:
+    ptr1 = strstr(msg, "\r\nCSeq:");
+    if(!ptr1) {
+        ptr1 = strstr(msg, "\r\nCSEQ:");
+    }
+    if(!ptr1) {
+        ptr1 = strstr(msg, "\r\ncseq:");
+    }
+    if(!ptr1) {
+        ptr1 = strstr(msg, "\r\nCseq:");
+    }
+    if(!ptr1) {
+        WARNING("No valid Cseq header in request %s", msg);
+        return 0;
+    }
+
+    ptr1 += 7;
+
+    while((*ptr1 == ' ') || (*ptr1 == '\t')) {
+        ++ptr1;
+    }
+
+    if(!(*ptr1)) {
+        WARNING("No valid Cseq data in header");
+        return 0;
+    }
+
+    return strtoul(ptr1, NULL, 10);
+}
+
+unsigned long get_reply_code(char *msg)
+{
+    while((msg) && (*msg != ' ') && (*msg != '\t')) msg ++;
+    while((msg) && ((*msg == ' ') || (*msg == '\t'))) msg ++;
+
+    if ((msg) && (strlen(msg)>0)) {
+        return atol(msg);
+    } else {
+        return 0;
+    }
 }
 
 

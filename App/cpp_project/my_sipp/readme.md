@@ -68,7 +68,18 @@ gdb sipp client信息
 
 2020-02-01
 11:32 去除g_test_one_send，消息会快速重传，缺少sipp 1s重传一次的逻辑
-
+21:13 (1)server端第二次执行send_scene函数时crash
+      (2)if(0 == test)  // 已替换了sipp的含义
+		{
+			/* If we are paused, then we need to wake up so that we properly go through the state machine. */
+			paused_until = 0;
+			msg_index = search_index;
+			return next();
+		}
+		else
+		{
+			setPaused();
+		}
 
 
 

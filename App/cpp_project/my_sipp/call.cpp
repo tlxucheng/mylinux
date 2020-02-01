@@ -43,11 +43,12 @@ unsigned int call::wake()
 /******************* Call class implementation ****************/
 call::call(const char *p_id, bool use_ipv6, int userId, struct sockaddr_storage *dest) : listener(p_id, true)
 {
+    init(main_scenario, NULL, dest, p_id, userId, use_ipv6, false, false);
 }
 
 call::call(const char *p_id, struct sipp_socket *socket, struct sockaddr_storage *dest) : listener(p_id, true)
 {
-
+    init(main_scenario, socket, dest, p_id, 0 /* No User. */, socket->ss_ipv6, false /* Not Auto. */, false);
 }
 
 call::call(scenario * call_scenario, struct sipp_socket *socket, struct sockaddr_storage *dest, const char * p_id, int userId, bool ipv6, bool isAutomatic, bool isInitialization) : listener(p_id, true)
@@ -861,43 +862,43 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
             //nb_last_delay = global_t2;
 
         }
+    }
 
-        /* This is a response with 200 so set the flag indicating that an
-         * ACK is pending (used to prevent from release a call with CANCEL
-         * when an ACK+BYE should be sent instead)                         */
-        if (reply_code == 200) {
-            ack_is_pending = true;
-        }
+    /* This is a response with 200 so set the flag indicating that an
+     * ACK is pending (used to prevent from release a call with CANCEL
+     * when an ACK+BYE should be sent instead)                         */
+    if (reply_code == 200) {
+        ack_is_pending = true;
+    }
 
-        /* Store last received message information for all messages so that we can
-         * correctly identify retransmissions, and use its body for inclusion
-         * in our messages. */
-        last_recv_index = search_index;
-        last_recv_hash = cookie;
-        realloc_ptr = (char *) realloc(last_recv_msg, strlen(msg) + 1);
-        if (realloc_ptr) {
-            last_recv_msg = realloc_ptr;
-        } else {
-            free(last_recv_msg);
-            ERROR("Out of memory!");
-            return false;
-        }
+    /* Store last received message information for all messages so that we can
+     * correctly identify retransmissions, and use its body for inclusion
+     * in our messages. */
+    last_recv_index = search_index;
+    last_recv_hash = cookie;
+    realloc_ptr = (char *) realloc(last_recv_msg, strlen(msg) + 1);
+    if (realloc_ptr) {
+        last_recv_msg = realloc_ptr;
+    } else {
+        free(last_recv_msg);
+        ERROR("Out of memory!");
+        return false;
+    }
 
-        strcpy(last_recv_msg, msg);
+    strcpy(last_recv_msg, msg);
 
-        /* If this was a mandatory message, or if there is an explicit next label set
-        * we must update our state machine.  */
-        if(-1 == test)
-        {
-            /* If we are paused, then we need to wake up so that we properly go through the state machine. */
-            paused_until = 0;
-            msg_index = search_index;
-            return next();
-        }
-        else
-        {
-            setPaused();
-        }
+    /* If this was a mandatory message, or if there is an explicit next label set
+    * we must update our state machine.  */
+    if(0 == test)
+    {
+        /* If we are paused, then we need to wake up so that we properly go through the state machine. */
+        paused_until = 0;
+        msg_index = search_index;
+        return next();
+    }
+    else
+    {
+        setPaused();
     }
 
 	return true;

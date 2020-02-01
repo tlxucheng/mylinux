@@ -555,7 +555,31 @@ void process_message(struct sipp_socket *socket, char *msg, ssize_t msg_size, st
                   msg_size, msg);
     }
 
-    //listener_ptr -> process_incoming(msg, src);
+    if(!listener_ptr)
+    {
+        if(thirdPartyMode == MODE_3PCC_CONTROLLER_B || thirdPartyMode == MODE_3PCC_A_PASSIVE
+            || thirdPartyMode == MODE_MASTER_PASSIVE || thirdPartyMode == MODE_SLAVE)
+        {
+        }
+        else if(creationMode == MODE_SERVER)
+        {
+            /* 判断是否要退出进程 */
+
+            // Adding a new INCOMING call !
+            // main_scenario->stats->computeStat(CStat::E_CREATE_INCOMING_CALL);
+            listener_ptr = new call(call_id, socket, use_remote_sending_addr ? &remote_sending_sockaddr : src);
+            if (!listener_ptr) {
+                ERROR("Out of memory allocating a call!");
+            }
+        }
+    }
+
+    /* If the call was not created above, we just drop this message. */
+    if (!listener_ptr) {
+        return;
+    }
+
+    listener_ptr -> process_incoming(msg, src);
 
 }
 

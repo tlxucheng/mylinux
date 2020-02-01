@@ -66,6 +66,8 @@ gdb sipp client信息
 	  (3) 当前代码强制在empty_socket将消息长度赋值成真实的sip消息长度
 
 
+2020-02-01
+11:32 去除g_test_one_send，消息会快速重传，缺少sipp 1s重传一次的逻辑
 
 
 

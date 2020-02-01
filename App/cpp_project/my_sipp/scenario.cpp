@@ -5,6 +5,8 @@
 int           creationMode  = MODE_CLIENT;
 /* Send mode. Do we send to a fixed address or to the last one we got. */
 int           sendMode  = MODE_CLIENT;
+/* This describes what our 3PCC behavior is. */
+int	      thirdPartyMode = MODE_3PCC_NONE;
 
 /************************ Class Constructor *************************/
 

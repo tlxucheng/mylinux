@@ -16,6 +16,15 @@
 #define MODE_CLIENT        0
 #define MODE_SERVER        1
 
+#define MODE_3PCC_NONE		0
+#define MODE_3PCC_CONTROLLER_A  2
+#define MODE_3PCC_CONTROLLER_B  3
+#define MODE_3PCC_A_PASSIVE     4
+
+/* 3pcc extended mode*/
+#define MODE_MASTER             5
+#define MODE_MASTER_PASSIVE     6
+#define MODE_SLAVE              7
 
 class message
 {

@@ -573,7 +573,7 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
     return msg_buffer;
 }
 
-int g_test_one_send = 0;
+//int g_test_one_send = 0;
 
 bool call::executeMessage(message *curmsg)
 {
@@ -594,11 +594,13 @@ bool call::executeMessage(message *curmsg)
         int msgLen;
         int send_status;
 
+        /*
         if(g_test_one_send)
         {
             return false;
         }
         g_test_one_send = 1;
+        */
 
          /* Do not send a new message until the previous one which had
          * retransmission enabled is acknowledged */
@@ -691,8 +693,84 @@ bool call::run()
 
 
 bool call::process_incoming(char * msg, struct sockaddr_storage *src)
-{
-	return true;
+{    
+    int             reply_code;
+    static char     request[65];
+    char            responsecseqmethod[65];
+    unsigned long   cookie = 0;
+    char          * ptr;
+    int             search_index;
+    bool            found = false;
+    T_ActionResult  actionResult;
+
+    //getmilliseconds();
+
+    setRunning();
+
+    /* Ignore the messages received during a pause if -pause_msg_ign is set */
+    if(call_scenario->messages[msg_index] -> M_type == MSG_TYPE_PAUSE && pause_msg_ign) return(true);
+
+    /* Get our destination if we have none. */
+    if (call_peer.ss_family == AF_UNSPEC && src) {
+        memcpy(&call_peer, src, SOCK_ADDR_SIZE(src));
+    }
+
+    /* Authorize nop as a first command, even in server mode */
+    if((msg_index == 0) && (call_scenario->messages[msg_index] -> M_type == MSG_TYPE_NOP)) {
+        queue_up (msg);
+        paused_until = 0;
+        return run();
+    }
+    responsecseqmethod[0] = '\0';
+
+    /* Is it a response ? */
+    if((msg[0] == 'S') &&
+            (msg[1] == 'I') &&
+            (msg[2] == 'P') &&
+            (msg[3] == '/') &&
+            (msg[4] == '2') &&
+            (msg[5] == '.') &&
+            (msg[6] == '0')    )
+    {
+    }
+    else if((ptr = strchr(msg, ' ')))
+    {
+        if((ptr - msg) < 64) {
+            memcpy(request, msg, ptr - msg);
+            request[ptr - msg] = 0;
+            // Check if we received an ACK => call established
+            if (strcmp(request,"ACK")==0) {
+                call_established=true;
+            }
+            reply_code = 0;
+        } else {
+            ERROR("SIP method too long in received message '%s'",
+                  msg);
+        }
+    }
+
+    /* Try to find it in the expected non mandatory responses
+     * until the first mandatory response  in the scenario */
+    for(search_index = msg_index;
+            search_index < (int)call_scenario->messages.size();
+            search_index++) {
+        if(!matches_scenario(search_index, reply_code, request, responsecseqmethod, txn)) {
+            if(call_scenario->messages[search_index] -> optional) {
+                continue;
+            }
+            /* The received message is different for the expected one */
+            break;
+        }
+
+        found = true;
+        /* TODO : this is a little buggy: If a 100 trying from an INVITE
+         * is delayed by the network until the BYE is sent, it may
+         * stop BYE transmission erroneously, if the BYE also expects
+         * a 100 trying. */
+        break;
+    }
+
+=	return true;
 }
 
 const char *default_message_names[] = {

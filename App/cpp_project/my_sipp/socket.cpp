@@ -505,8 +505,6 @@ ssize_t read_message(struct sipp_socket *socket, char *buf, size_t len, struct s
     
     len = socket->ss_msglen;
 
-    //printf("read_message len :%zu\n", len);
-
     avail = socket->ss_in->len - socket->ss_in->offset;
     if (avail > len) {
         avail = len;
@@ -547,8 +545,6 @@ void process_message(struct sipp_socket *socket, char *msg, ssize_t msg_size, st
     
     struct timeval currentTime;
     GET_TIME (&currentTime);
-
-    printf("process_message msg_size: %zd msg: %s\n", msg_size, msg);
     
     if (useMessagef == 1) {
         TRACE_MSG("----------------------------------------------- %s\n"
@@ -654,16 +650,18 @@ int empty_socket(struct sipp_socket *socket)
 
 	}
 
-    printf("recvfrom ret: %d\n", ret);
-    printf("socket->ss_fd: %d\n", socket->ss_fd);
-    
+    if (ret <= 0) {
+        free_socketbuf(socketbuf);
+        return ret;
+    }
+
+    socketbuf->len = ret;
     buffer_read(socket, socketbuf);
 
     /* Do we have a complete SIP message? */
     if (!socket->ss_msglen) {
         if (int msg_len = check_for_message(socket)) {
-            //socket->ss_msglen = msg_len;
-            socket->ss_msglen = ret;
+            socket->ss_msglen = msg_len;
             pending_messages++;
         }
     }

@@ -139,7 +139,7 @@ void call::init(scenario * call_scenario, struct sipp_socket *socket, struct soc
     
     call_remote_socket = NULL;
     if (socket) {
-        //associate_socket(socket);
+        associate_socket(socket);
         //socket->ss_count++;
     } else {
         call_socket = NULL;
@@ -889,7 +889,7 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
 
     /* If this was a mandatory message, or if there is an explicit next label set
     * we must update our state machine.  */
-    if(0 == test)
+    if(-1 == test)
     {
         /* If we are paused, then we need to wake up so that we properly go through the state machine. */
         paused_until = 0;

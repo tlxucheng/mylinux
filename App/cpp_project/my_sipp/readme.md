@@ -81,6 +81,12 @@ gdb sipp client信息
 			setPaused();
 		}
 
+		
+2020-02-03
+11:47 server端 running_tasks->begin() 为 NULL
+16:13 server端可以发送180 200OK，但是client收到180和200 OK后还继续发送invite
+
+
 
 
 

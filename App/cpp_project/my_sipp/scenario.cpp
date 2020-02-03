@@ -15,7 +15,9 @@ message::message(int index, const char *desc)
     this->index = index;
     this->desc = desc;
     pause_variable = -1;
-	
+
+    /* Anyway */
+    test = -1;
     M_type = 0;
 
     send_scheme = NULL; // delete on exit

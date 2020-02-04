@@ -85,9 +85,14 @@ gdb sipp client信息
 2020-02-03
 11:47 server端 running_tasks->begin() 为 NULL
 16:13 server端可以发送180 200OK，但是client收到180和200 OK后还继续发送invite
+18:07 不重传时 msg_index = 1 获取出来的 curmsg -> send_scheme 为空指针
 
 
-
+2020-02-04
+10:52 （1）加了 g_test_one_send 无法发送2次消息，暂时没有找到sipp是怎么只发送一次invite的（./sipp -sn uac 127.0.0.1 -m 1 -trace_msg -nr）
+            client发送的180和200 OK
+      （2）下一步研究一下sipp的socket实现方式。
+	  （3） call.cpp:3340 加了//return next()，模式sipp client收不到 180
 
 
 

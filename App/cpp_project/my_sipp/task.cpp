@@ -9,6 +9,11 @@ task_list* get_running_tasks()
     return &running_tasks;
 }
 
+int expire_paused_tasks()
+{
+    return paused_tasks.expire_paused_tasks();
+}
+
 // Methods for the task class
 
 task::task()
@@ -31,6 +36,10 @@ void task::add_to_runqueue()
 {
 	this->runit = running_tasks.insert(running_tasks.end(), this);
     this->running = true;
+}
+
+void task::recalculate_wheel() {
+  add_to_paused_tasks(false);
 }
 
 bool task::remove_from_runqueue()
@@ -142,4 +151,75 @@ void timewheel::remove_paused_task(task *task)
     count--;
 }
 
+/* Iterate through our sorted set of paused tasks, removing those that
+ * should no longer be paused, and adding them to the run queue. */
+int timewheel::expire_paused_tasks()
+{
+    int found = 0;
+
+    // This while loop counts up from the wheel_base (i.e. the time
+    // this function last ran) to the current scheduler time (i.e. clock_tick).
+    while (wheel_base < clock_tick) {
+        int slot1 = wheel_base % LEVEL_ONE_SLOTS;
+
+        /* If slot1 is 0 (i.e. wheel_base is a multiple of 4096ms),
+         * we need to repopulate the first timer wheel with the
+         * contents of the first available slot of the second wheel. */
+        if (slot1 == 0) {
+
+          /* slot2 represents the slot in the second timer wheel
+           * containing the tasks for the next ~4s. So when
+           * wheel_base is 4096, wheel2[1] will be moved into wheel 1,
+           * when wheel_base of 8192 wheel2[2] will be moved into
+           * wheel 1, etc. */
+            int slot2 = (wheel_base / LEVEL_ONE_SLOTS) % LEVEL_TWO_SLOTS;
+
+            /* If slot2 is also zero, we must migrate tasks from slot3 into slot2. */
+            if (slot2 == 0) {
+              /* Same logic above, except that each slot of wheel3
+                contains the next 69 minutes of tasks, enough to
+                completely fill wheel 2. */
+                int slot3 = ((wheel_base / LEVEL_ONE_SLOTS) / LEVEL_TWO_SLOTS);
+                assert(slot3 < LEVEL_THREE_SLOTS);
+
+                for (task_list::iterator l3it = wheel_three[slot3].begin();
+                        l3it != wheel_three[slot3].end();
+                        l3it++) {
+                    /* Migrate this task to wheel two. */
+                  (*l3it)->recalculate_wheel();
+                }
+
+                wheel_three[slot3].clear();
+            }
+
+            /* Repopulate wheel 1 from wheel 2 (which will now be full
+               of the tasks pulled from wheel 3, if that was
+               necessary) */
+            for (task_list::iterator l2it = wheel_two[slot2].begin();
+                    l2it != wheel_two[slot2].end();
+                    l2it++) {
+                /* Migrate this task to wheel one. */
+              (*l2it)->recalculate_wheel();
+            }
+
+            wheel_two[slot2].clear();
+        }
+
+        /* Move tasks from the current slot of wheel 1 (i.e. the tasks
+        scheduled to fire in the 1ms interval represented by
+        wheel_base) onto a run queue. */
+        found += wheel_one[slot1].size();
+        for(task_list::iterator it = wheel_one[slot1].begin();
+                it != wheel_one[slot1].end(); it++) {
+            (*it)->add_to_runqueue();
+            // Decrement the total number of tasks in this wheel.
+            count--;
+        }
+        wheel_one[slot1].clear();
+
+        wheel_base++; // Move wheel_base to the next 1ms interval
+    }
+
+    return found;
+}
 

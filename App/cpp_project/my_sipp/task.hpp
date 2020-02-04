@@ -81,6 +81,7 @@ private:
 	void add_to_runqueue();
 	bool remove_from_runqueue();
     void add_to_paused_tasks(bool increment);
+    void recalculate_wheel();
 
 	/* This is for our complete task list. */
     task_list::iterator taskit;
@@ -95,6 +96,7 @@ private:
 };
 
 task_list * get_running_tasks();
+int expire_paused_tasks();
 
 #endif
 

@@ -598,7 +598,7 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
     return msg_buffer;
 }
 
-//int g_test_one_send = 0;
+int g_test_one_send = 0;
 
 bool call::executeMessage(message *curmsg)
 {
@@ -619,19 +619,17 @@ bool call::executeMessage(message *curmsg)
         int msgLen;
         int send_status;
 
-        /*
         if(g_test_one_send)
         {
             return false;
         }
         g_test_one_send = 1;
-        */
 
          /* Do not send a new message until the previous one which had
          * retransmission enabled is acknowledged */
 
         if(next_retrans) {
-            //setPaused();
+            setPaused();
             return true;
         }
 
@@ -691,13 +689,25 @@ bool call::executeMessage(message *curmsg)
         /* Update scenario statistics */
         //curmsg -> nb_sent++;
         
-        //return next();
+        return next();
     }
     else if(curmsg->M_type == MSG_TYPE_RECV
             || curmsg->M_type == MSG_TYPE_RECVCMD)
     {
+        if (queued_msg) {
+            char *msg = queued_msg;
+            queued_msg = NULL;
+            bool ret = process_incoming(msg);
+            free(msg);
+            return ret;
+        }
+        else
+        {
+            /* We are going to wait forever. */
+            setPaused();
+        }    
     }
-
+ 
     return true;
 }
 

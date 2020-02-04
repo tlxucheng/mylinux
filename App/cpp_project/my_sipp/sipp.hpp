@@ -85,6 +85,8 @@
 #define DEFAULT_SERVICE              ((char *)"service")
 #define DEFAULT_AUTH_PASSWORD        ((char *)"password")
 
+#define DEFAULT_TIMER_RESOLUTION     1
+
 extern double             rate                    _DEFVAL(DEFAULT_RATE);
 
 extern char               local_ip[40];
@@ -115,9 +117,16 @@ extern short         use_remote_sending_addr      _DEFVAL(0);
 extern struct        sockaddr_storage remote_sending_sockaddr;
 extern int           user_port                    _DEFVAL(0);
 
+/************* Rate Control & Contexts variables **************/
+extern int           last_running_calls           _DEFVAL(0);
+extern int           last_woken_calls             _DEFVAL(0);
+extern int           last_paused_calls            _DEFVAL(0);
+
 /********************** Clock variables ***********************/
 
 extern unsigned long clock_tick                   _DEFVAL(0);
+extern unsigned long scheduling_loops             _DEFVAL(0);
+extern unsigned long last_timer_cycle             _DEFVAL(0);
 
 /************ User controls and command line options ***********/
 extern char               remote_host[255];
@@ -146,6 +155,8 @@ extern int                users                   _DEFVAL(-1);
 extern char             **generic[100];
 extern bool               pause_msg_ign           _DEFVAL(0);
 
+extern unsigned int       timer_resolution        _DEFVAL(DEFAULT_TIMER_RESOLUTION);
+
 int open_connections();
 
 // extern field file management
@@ -165,6 +176,8 @@ unsigned long get_reply_code(char *msg);
 #ifdef GLOBALS_FULL_DEFINITION
 #undef extern
 #endif
+
+#include "time.hpp"
 
 extern struct   sipp_socket *new_sipp_socket(bool use_ipv6, int transport);
 extern void	sipp_customize_socket(struct sipp_socket *socket);

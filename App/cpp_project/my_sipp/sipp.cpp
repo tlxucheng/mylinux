@@ -261,6 +261,8 @@ void traffic_thread()
 {
 	while(1)
 	{
+	    getmilliseconds();
+        
 	    /*
 		while (sockets_pending_reset.begin() != sockets_pending_reset.end())
 		{
@@ -268,10 +270,22 @@ void traffic_thread()
             sockets_pending_reset.erase(sockets_pending_reset.begin());
         }
         */
-		
+
+        getmilliseconds();
+        
         /* Schedule all pending calls and process their timers */
         task_list *running_tasks;
+        if((clock_tick - last_timer_cycle) > timer_resolution) {
+            running_tasks = get_running_tasks();
+            last_running_calls = running_tasks->size();
 
+            last_woken_calls += expire_paused_tasks();
+
+            //last_paused_calls = paused_tasks_count();
+
+            last_timer_cycle = clock_tick;
+        }
+        
         /* We should never get so busy with running calls that we can't process some messages. */
         int loops = max_sched_loops;
 
@@ -304,7 +318,10 @@ void traffic_thread()
             sockets_pending_reset.erase(sockets_pending_reset.begin());
         }
         */
-		
+
+        /* Update the clock. */
+        getmilliseconds();
+        /* Receive incoming messages */
         pollset_process(running_tasks->empty());
 	}
 }

@@ -54,11 +54,16 @@ unsigned int CallGenerationTask::wake() {
   return retval;
 }
 
-
+extern int g_test_one_send;
 bool CallGenerationTask::run()
 {
     /* 先不加while(calls_to_open--)，只跑一次消息交互 */
     int userid = 0;
+
+    if (g_test_one_send) {
+        delete this;
+        return false;
+    }
 
     call* call_ptr = call::add_call(userid,
                                  local_ip_is_ipv6,

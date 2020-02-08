@@ -152,6 +152,8 @@ void call::init(scenario * call_scenario, struct sipp_socket *socket, struct soc
 
     this->initCall = isInitCall;
 
+    peer_tag = NULL;
+    
     setRunning();
 }
 

@@ -176,6 +176,72 @@ int call::send_raw(const char * msg, int index, int len)
 	return rc;
 }
 
+char * call::get_last_header(const char * name)
+{
+    int len;
+
+    if((!last_recv_msg) || (!strlen(last_recv_msg))) {
+        return NULL;
+    }
+
+    len = strlen(name);
+
+    /* Ideally this check should be moved to the XML parser so that it is not
+     * along a critical path.  We could also handle lowercasing there. */
+    if (len > MAX_HEADER_LEN) {
+        ERROR("call::get_last_header: Header to parse bigger than %d (%zu)", MAX_HEADER_LEN, strlen(name));
+    }
+
+    if (name[len - 1] == ':') {
+        return get_header(last_recv_msg, name, false);
+    } else {
+        char with_colon[MAX_HEADER_LEN];
+        sprintf(with_colon, "%s:", name);
+        return get_header(last_recv_msg, with_colon, false);
+    }
+}
+
+/* Return the last request URI from the To header. On any error returns the
+ * empty string.  The caller must free the result. */
+char * call::get_last_request_uri ()
+{
+    char * tmp;
+    char * tmp2;
+    char * last_request_uri;
+    int tmp_len;
+
+    char * last_To = get_last_header("To:");
+    if (!last_To) {
+        return strdup("");
+    }
+
+    tmp = strchr(last_To, '<');
+    if (!tmp) {
+        return strdup("");
+    }
+    tmp++;
+
+    tmp2 = strchr(last_To, '>');
+    if (!tmp2) {
+        return strdup("");
+    }
+
+    tmp_len = strlen(tmp) - strlen(tmp2);
+    if (tmp_len < 0) {
+        return strdup("");
+    }
+
+    if(!(last_request_uri = (char *) malloc(tmp_len+1))) ERROR("Cannot allocate !\n");
+    memset(last_request_uri, 0, sizeof(*last_request_uri));
+    if(tmp && (tmp_len > 0)) {
+        strncpy(last_request_uri, tmp, tmp_len);
+    }
+    last_request_uri[tmp_len] = '\0';
+    return last_request_uri;
+
+}
+
+
 char * call::send_scene(int index, int *send_status, int *len)
 {
 #define MAX_MSG_NAME_SIZE 30
@@ -507,7 +573,6 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
             break;
         }
         */
-        /*
         case E_Message_Last_Header: {
             char * last_header = get_last_header(comp->literal);
             if(last_header) {
@@ -518,7 +583,6 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
             }
             break;
         }
-        */
         case E_Message_Custom: {
             dest += comp->comp_param.fxn(this, comp, dest, left);
             break;
@@ -528,15 +592,12 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
                 dest += sprintf(dest, "%s", last_recv_msg);
             }
             break;
-        /*
         case E_Message_Last_Request_URI: {
             char * last_request_uri = get_last_request_uri();
             dest += sprintf(dest, "%s", last_request_uri);
             free(last_request_uri);
             break;
         }
-        */
-        /*
         case E_Message_Last_CSeq_Number: {
             int last_cseq = 0;
 
@@ -549,7 +610,6 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
             dest += sprintf(dest, "%d", last_cseq + comp->offset);
             break;
         }
-        */
         /*
         case E_Message_TDM_Map:
             if (!use_tdmmap)

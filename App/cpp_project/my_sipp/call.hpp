@@ -99,6 +99,9 @@ private:
 
     struct sipp_socket *call_remote_socket;
 
+    char * get_last_header(const char * name);
+    char * get_last_request_uri();
+
 	bool executeMessage(message *curmsg);
 	
     char * send_scene(int index, int *send_status, int *msgLen);

@@ -95,6 +95,19 @@ gdb sipp client信息
 	  （3） call.cpp:3340 加了//return next()，模式sipp client收不到 180
 
 
+2020-02-08
+18:06 运行
+（1） CallGenerationTask::run()   	(delete)
+  |92      {                                                                                                                                                             |
+   |93          int calls_to_open = 0;                                                                                                                                    |
+   |94                                                                                                                                                                    |
+   |95          if (quitting) {                                                                                                                                           |
+  >|96              delete this;                                                                                                                                          |
+   |97              return false;                                                                                                                                         |
+   |98          }   
+  可保证只发送一次invite
+（2）可能是没有 get_last_request_uri 和 get_last_header 导致发送的180和200 OK 不对
+ 
 
 
 

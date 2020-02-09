@@ -116,6 +116,12 @@ sipp调试结果
    new_msg_index = 5
    
 
+2020-02-09
+commit 180e049a912c5bb7fb240cfd7b1f4290e79f4ae2 (HEAD -> master, origin/master, origin/HEAD)
+Author: tlxucheng <15850795746@163.com>
+Date:   Sun Feb 9 10:00:27 2020 +0800
+
+    invite --- 200OK success.
 
 
 

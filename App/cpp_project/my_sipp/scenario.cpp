@@ -20,7 +20,15 @@ message::message(int index, const char *desc)
     test = -1;
     M_type = 0;
 
+    recv_response = 0;
+    recv_request = NULL; // free on exit
+    optional = 0;
+    regexp_match = 0;
+    //regexp_compile = NULL; // regfree (if not NULL) and free on exit
+
     send_scheme = NULL; // delete on exit
+
+    recv_response_for_cseq_method_list = NULL; // free on exit
 }
 
 
@@ -145,6 +153,71 @@ char *clean_cdata(char *ptr, int *removed_crlf = NULL)
     return msg;
 }
 
+int xp_get_optional(const char *name, const char *what)
+{
+    char *ptr = xp_get_value(name);
+
+    if (!(ptr = xp_get_value(name))) {
+        return OPTIONAL_FALSE;
+    }
+
+    if(!strcmp(ptr, "true")) {
+        return OPTIONAL_TRUE;
+    } else if(!strcmp(ptr, "global")) {
+        return OPTIONAL_GLOBAL;
+    } else if(!strcmp(ptr, "false")) {
+        return OPTIONAL_FALSE;
+    } else {
+        ERROR("Could not understand optional value for %s: %s", what, ptr);
+    }
+
+    return OPTIONAL_FALSE;
+}
+
+bool get_bool(const char *ptr, const char *what)
+{
+    char *endptr;
+    long ret;
+
+    if (!strcasecmp(ptr, "true")) {
+        return true;
+    }
+    if (!strcasecmp(ptr, "false")) {
+        return false;
+    }
+
+    ret = strtol(ptr, &endptr, 0);
+    if (*endptr) {
+        ERROR("%s, \"%s\" is not a valid boolean!\n", what, ptr);
+    }
+    return ret ? true : false;
+}
+
+double xp_get_bool(const char *name, const char *what)
+{
+    char *ptr;
+    char *helptext;
+    bool val;
+
+    if (!(ptr = xp_get_value(name))) {
+        ERROR("%s is missing the required '%s' parameter.", what, name);
+    }
+    helptext = (char *)malloc(100 + strlen(name) + strlen(what));
+    sprintf(helptext, "%s '%s' parameter", what, name);
+    val = get_bool(ptr, helptext);
+    free(helptext);
+
+    return val;
+}
+
+double xp_get_bool(const char *name, const char *what, bool defval)
+{
+    if (!(xp_get_value(name))) {
+        return defval;
+    }
+    return xp_get_bool(name, what);
+}
+
 /********************** Scenario File analyser **********************/
 void scenario::checkOptionalRecv(char *elem, unsigned int scenario_file_cursor)
 {
@@ -160,6 +233,7 @@ scenario::scenario(char * filename, int deflt)
     const char*         cptr;
     unsigned int        scenario_file_cursor = 0;
     int                 L_content_length = 0 ;
+    char                *method_list = NULL;
 
 	if(filename)
 	{
@@ -242,6 +316,33 @@ scenario::scenario(char * filename, int deflt)
 			else if(!strcmp(elem, "recv"))
 			{
 				curmsg->M_type = MSG_TYPE_RECV;
+
+                /* Received messages descriptions */
+                if((ptr = xp_get_value((char *)"response"))) {
+                    curmsg ->recv_response = get_long(ptr, "response code");
+                    if (method_list) {
+                        curmsg->recv_response_for_cseq_method_list = strdup(method_list);
+                    }
+                    /*
+                    if ((ptr = xp_get_value("response_txn"))) {
+                        curmsg->response_txn = get_txn(ptr, "transaction response", false, false, false);
+                    }
+                    */
+                }
+
+                if((ptr = xp_get_value((char *)"request"))) {
+                    curmsg -> recv_request = strdup(ptr);
+                    if ((ptr = xp_get_value("response_txn"))) {
+                        ERROR("response_txn can only be used for received responses.");
+                    }
+                }
+
+                curmsg->optional = xp_get_optional("optional", "recv");
+                last_recv_optional = curmsg->optional;
+                curmsg->advance_state = xp_get_bool("advance_state", "recv", true);
+                if (!curmsg->advance_state && curmsg->optional == OPTIONAL_FALSE) {
+                    ERROR("advance_state is allowed only for optional messages (index = %d)\n", messages.size() - 1);
+                }
 			}
 		}
 

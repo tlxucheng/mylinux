@@ -103,7 +103,9 @@ private:
     char * get_last_request_uri();
 
 	bool executeMessage(message *curmsg);
-	
+    
+    bool matches_scenario(unsigned int index, int reply_code, char * request, char * responsecseqmethod, char *txn);
+
     char * send_scene(int index, int *send_status, int *msgLen);
     int send_raw(const char * msg, int index, int len);
 

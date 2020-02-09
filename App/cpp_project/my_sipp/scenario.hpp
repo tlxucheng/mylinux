@@ -26,10 +26,22 @@
 #define MODE_MASTER_PASSIVE     6
 #define MODE_SLAVE              7
 
+#define OPTIONAL_TRUE      1
+#define OPTIONAL_FALSE     0
+#define OPTIONAL_GLOBAL    2
+
 class message
 {
 public:
     SendingMessage *send_scheme;
+
+    /* If this is a recv */
+    int   	 recv_response;
+    char         * recv_request;
+    int            optional;
+    bool           advance_state;
+    int            regexp_match;
+    //regex_t      * regexp_compile;
 
     /* If this is a pause */
     int		 pause_variable;
@@ -49,6 +61,8 @@ public:
     int            test;
 
     const char *   desc;
+
+    char           *recv_response_for_cseq_method_list;
 
 	message(int index, const char *desc);
     ~message();

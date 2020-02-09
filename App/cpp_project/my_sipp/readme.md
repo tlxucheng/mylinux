@@ -108,7 +108,13 @@ gdb sipp client信息
   可保证只发送一次invite
 （2）可能是没有 get_last_request_uri 和 get_last_header 导致发送的180和200 OK 不对
  
-
+20:30 加入 matches_scenario ， client仍然不发送ack
+sipp调试结果
+   client收到 200 OK 后
+   search_index = 4
+   msg_index = 4
+   new_msg_index = 5
+   
 
 
 

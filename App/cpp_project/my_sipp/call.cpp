@@ -788,6 +788,58 @@ bool call::run()
     return executeMessage(curmsg);
 }
 
+bool call::matches_scenario(unsigned int index, int reply_code, char * request, char * responsecseqmethod, char *txn)
+{
+    message *curmsg = call_scenario->messages[index];
+
+#if 0
+    if ((curmsg -> recv_request)) {
+        if (curmsg->regexp_match) {
+            if (curmsg -> regexp_compile == NULL) {
+                regex_t *re = new regex_t;
+                if (regcomp(re, curmsg -> recv_request, REG_EXTENDED|REG_NOSUB)) {
+                    ERROR("Invalid regular expression for index %d: %s", curmsg->recv_request);
+                }
+                curmsg -> regexp_compile = re;
+            }
+            return !regexec(curmsg -> regexp_compile, request, (size_t)0, NULL, 0);
+        } else {
+            return !strcmp(curmsg -> recv_request, request);
+        }
+    }
+#endif
+    if(0)
+    {
+    }
+    else if (curmsg->recv_response && (curmsg->recv_response == reply_code)) {
+        /* This is a potential candidate, we need to match transactions. */
+        /*
+        if (curmsg->response_txn) {
+            if (transactions[curmsg->response_txn - 1].txnID && !strcmp(transactions[curmsg->response_txn - 1].txnID, txn)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        */
+        if(0)
+        {
+        }
+        else if (index == 0) {
+            /* Always true for the first message. */
+            return true;
+        } else if (curmsg->recv_response_for_cseq_method_list &&
+                   strstr(curmsg->recv_response_for_cseq_method_list, responsecseqmethod)) {
+            /* If we do not have a transaction defined, we just check the CSEQ method. */
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    return false;
+}
+
 bool call::process_incoming(char * msg, struct sockaddr_storage *src)
 {    
     int             reply_code;
@@ -877,13 +929,13 @@ bool call::process_incoming(char * msg, struct sockaddr_storage *src)
     for(search_index = msg_index;
             search_index < (int)call_scenario->messages.size();
             search_index++) {
-        //if(!matches_scenario(search_index, reply_code, request, responsecseqmethod, txn)) {
-        //    if(call_scenario->messages[search_index] -> optional) {
-        //        continue;
-        //    }
+        if(!matches_scenario(search_index, reply_code, request, responsecseqmethod, txn)) {
+            if(call_scenario->messages[search_index] -> optional) {
+                continue;
+           }
             /* The received message is different for the expected one */
-        //    break;
-        //}
+            break;
+        }
 
         found = true;
         /* TODO : this is a little buggy: If a 100 trying from an INVITE

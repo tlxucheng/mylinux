@@ -10,6 +10,17 @@
 #define T_TLS                      2
 #define T_SCTP                     3
 
+#define MSG_MAX_SIZE               4096
+
+#define SERVER_TAG                 "-s"
+#define CLIENT_TAG                 "-c"
+
+typedef enum cmd_mode
+{
+    SERVER_MODE = 1,
+    CLIENT_MODE,
+}CMD_MODE;
+
 int create_socket(int transport)
 {
     int fd           = -1;
@@ -51,29 +62,80 @@ void set_sockaddr_in(struct sockaddr_in *pAddr, int local_port, char *pLocal_ip)
 }
 
 /* sockaddr_in */
-int bind_socket(int sock_fd, struct sockaddr_in *pAddr, int local_port, char *pLocal_ip)
+int bind_socket(int sock_fd, struct sockaddr_in *pAddr)
 {
     struct sockaddr *addr = NULL; 
 
-    set_sockaddr_in(pAddr, local_port,  pLocal_ip);
     addr = ((struct sockaddr *)pAddr);
     bind(sock_fd, addr, sizeof(struct sockaddr));
 
     return 0;
 }
 
-int main()
+int recv_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pSrc_addr, socklen_t addrlen)
+{
+    int ret = 0;
+    
+    ret = recvfrom(sock_fd, pBuf, len, 0, pSrc_addr, &addrlen);
+
+    return 0;
+}
+
+int send_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pDest_addr, socklen_t addrlen)
+{
+    int ret = 0;
+
+    ret = sendto(sock_fd, pBuf, len, 0, pDest_addr, addrlen);
+
+    return 0;
+}
+
+int prase_cmd(char *pCmd)
+{
+    if(0 == strcmp(pCmd, SERVER_TAG))
+    {
+        return SERVER_MODE;
+    }
+    else if(0 == strcmp(pCmd, CLIENT_TAG))
+    {
+        return CLIENT_MODE;
+    }
+
+    return 0;
+}
+
+int main(int argc, char *argv[])
 {
     int                   fd;
     struct sockaddr_in    addr;
+    int                   readsize = 0;
+    char                  buf[MSG_MAX_SIZE] = {0};
+    int                   mode = 0;
+
+    mode = prase_cmd(argv[1]);
 
     fd = create_socket(T_UDP);
     memset((char *)&addr, 0x0, sizeof(addr));
-    bind_socket(fd, &addr, 5060, "192.168.0.105");
+    set_sockaddr_in(&addr, 5060,  "192.168.0.105");
 
-    while(1)
+    if(SERVER_MODE == mode)
     {
-        sleep(1000);
+        bind_socket(fd, &addr);
+        recv_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+        printf("recv message from client: %s\n", buf);
+    }
+    else if(CLIENT_MODE == mode) 
+    {
+        strncpy(buf, "hello, I am is client!", sizeof(buf));
+        send_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+    }
+
+    if(SERVER_MODE == mode)
+    {
+        while(1)
+        {
+            sleep(1000);
+        }
     }
 
     return 0;

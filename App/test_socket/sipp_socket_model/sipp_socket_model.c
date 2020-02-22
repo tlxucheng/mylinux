@@ -6,6 +6,7 @@
 #include <string.h>
 #include <poll.h>
 #include <sys/select.h>
+#include <sys/epoll.h>
 
 #define T_UDP                      0
 #define T_TCP                      1
@@ -14,17 +15,32 @@
 
 #define MSG_MAX_SIZE               4096
 
+/* 问题 */
+/* epoll模型，客户端连续快速发送，server第二个socket有时会收不到消息
+ *
+ /*
+
+/* select和epoll client套用poll client， 暂未区分 */
 #define SERVER_TAG                 "-s"
 #define CLIENT_TAG                 "-c"
 #define MUTIL_SERVER_TAG           "-ms"   /* poll server */
 #define MUTIL_CLIENT_TAG           "-mc"
 #define MUTIL_SERVER_SELECT_TAG    "-mss"  /* select server */
+#define MUTIL_SERVER_EPOLL_TAG     "-mse"  /* epoll server */
 
-/*********************epoll**********************/
+/*********************poll**********************/
 int g_pollnfds = 2;
 int g_pollfd[2];
 struct pollfd g_pollfiles[2];
+/***********************************************/
 
+/*********************epoll**********************/
+int MAX_EVENT = 20;
+int g_epollnfds = 2;
+int g_epfd;
+struct epoll_event g_epollfiles[20];
+struct epoll_event g_epollevents[20];
+int g_epollfd[2];
 /***********************************************/
 
 typedef enum cmd_mode
@@ -34,6 +50,7 @@ typedef enum cmd_mode
     MUTIL_SERVER_MODE,
     MUTIL_CLIENT_MODE,
     MUTIL_SERVER_SELECT_MODE,
+    MUTIL_SERVER_EPOLL_MODE,
 }CMD_MODE;
 
 int max(int a, int b)
@@ -72,6 +89,18 @@ void create_mutil_socket(int transport)
     for(i = 0; i < g_pollnfds; i++)
     {
         g_pollfd[i] = create_socket(transport);
+    }
+
+    return;
+}
+
+void create_mutil_epoll_socket(int transport)
+{
+    int i = 0;
+
+    for(i = 0; i < g_epollnfds; i++)
+    {
+        g_epollfd[i] = create_socket(transport);
     }
 
     return;
@@ -201,6 +230,41 @@ int select_socket(struct sockaddr_in *pMutil_addr)
     return 0;
 }
 
+int epoll_scoket(struct sockaddr_in *pMutil_addr)
+{   
+    int     i                 = 0;
+    int     fds               = 0;
+    char    buf[MSG_MAX_SIZE] = {0};
+    int     ret               = 0;
+
+    g_epfd = epoll_create(MAX_EVENT);
+    for(i = 0; i < g_epollnfds; i++)
+    {
+        g_epollfiles[i].events = EPOLLIN;
+        g_epollfiles[i].data.fd = g_epollfd[i];
+        epoll_ctl(g_epfd, EPOLL_CTL_ADD, g_epollfd[i], &g_epollfiles[i]);
+    }
+
+    while(1)
+    {
+        fds = epoll_wait(g_epfd, g_epollevents, MAX_EVENT, -1);
+        for(i = 0; i < fds; i++)
+        {
+            if(g_epollevents[i].events & EPOLLIN)
+            {
+                //ret = recv_socket(g_epollfd[i], buf, MSG_MAX_SIZE, (struct sockaddr *)pMutil_addr+i, sizeof(struct sockaddr_in));
+                ret = recv_socket(g_epollevents[i].data.fd, buf, MSG_MAX_SIZE, (struct sockaddr *)pMutil_addr+i, sizeof(struct sockaddr_in));
+                printf("index %d, fd: %d, epoll server recv: %s\n", i, g_epollfd[i], buf);
+                memset(buf, 0x0, sizeof(buf));
+                //close(g_epollevents[i].data.fd);
+                g_epollevents[i].data.fd = -1;
+            }
+        }
+    }
+    
+    return 0;
+}
+
 int send_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pDest_addr, socklen_t addrlen)
 {
     int ret = 0;
@@ -232,6 +296,10 @@ int prase_cmd(char *pCmd)
     {
         return MUTIL_SERVER_SELECT_MODE;
     }
+    else if(0 == strcmp(pCmd, MUTIL_SERVER_EPOLL_TAG))
+    {
+        return MUTIL_SERVER_EPOLL_MODE;
+    }    
 
     return 0;
 }
@@ -264,6 +332,15 @@ int main(int argc, char *argv[])
             set_sockaddr_in(&mutil_addr[i], 5060+i,  "192.168.0.105");
         }
     }
+    else if(MUTIL_SERVER_EPOLL_MODE == mode)
+    {
+        create_mutil_epoll_socket(T_UDP);
+        memset((char *)mutil_addr, 0x0, 2*sizeof(struct sockaddr_in));
+        for(i = 0; i < g_epollnfds; i++)
+        {     
+            set_sockaddr_in(&mutil_addr[i], 5060+i,  "192.168.0.105");
+        }
+    }
 
     if(SERVER_MODE == mode)
     {
@@ -286,7 +363,7 @@ int main(int argc, char *argv[])
         poll_socket(mutil_addr);
     }
     else if(MUTIL_CLIENT_MODE == mode)
-    {
+    {    
         for(i = 0; i < g_pollnfds; i++)
         {
             snprintf(buf, sizeof(buf), "hello, I am is client %d", i);            
@@ -303,8 +380,18 @@ int main(int argc, char *argv[])
 
         select_socket(mutil_addr);
     }
+    else if(MUTIL_SERVER_EPOLL_MODE == mode)
+    {
+        for(i = 0; i < g_epollnfds; i++)
+        {
+            bind_socket(g_epollfd[i], &mutil_addr[i]);
+        }
+        
+        epoll_scoket(mutil_addr);
+    }
 
-    if(SERVER_MODE == mode || MUTIL_SERVER_MODE == mode || MUTIL_SERVER_SELECT_MODE == mode)
+    if(SERVER_MODE == mode || MUTIL_SERVER_MODE == mode
+       || MUTIL_SERVER_SELECT_MODE == mode || MUTIL_SERVER_EPOLL_MODE == mode)
     {
         while(1)
         {

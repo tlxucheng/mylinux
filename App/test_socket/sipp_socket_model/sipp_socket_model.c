@@ -15,11 +15,6 @@
 
 #define MSG_MAX_SIZE               4096
 
-/* 问题 */
-/* epoll模型，客户端连续快速发送，server第二个socket有时会收不到消息
- *
- /*
-
 /* select和epoll client套用poll client， 暂未区分 */
 #define SERVER_TAG                 "-s"
 #define CLIENT_TAG                 "-c"
@@ -38,7 +33,6 @@ struct pollfd g_pollfiles[2];
 int MAX_EVENT = 20;
 int g_epollnfds = 2;
 int g_epfd;
-struct epoll_event g_epollfiles[20];
 struct epoll_event g_epollevents[20];
 int g_epollfd[2];
 /***********************************************/
@@ -220,10 +214,11 @@ int select_socket(struct sockaddr_in *pMutil_addr)
             if(FD_ISSET(g_pollfd[i], &rset))
             {
                 ret = recv_socket(g_pollfd[i], buf, MSG_MAX_SIZE, (struct sockaddr *)pMutil_addr+i, sizeof(struct sockaddr_in));
-                printf("index %d, fd: %d, recv: %s\n", i, g_pollfiles[i].fd, buf);
+                printf("index %d, fd: %d, select server recv: len: %d %s\n", i, g_pollfiles[i].fd, ret, buf);
                 memset(buf, 0x0, sizeof(buf));
             }
         }
+        printf("\n");
     }
 
 
@@ -232,22 +227,25 @@ int select_socket(struct sockaddr_in *pMutil_addr)
 
 int epoll_scoket(struct sockaddr_in *pMutil_addr)
 {   
-    int     i                 = 0;
-    int     fds               = 0;
-    char    buf[MSG_MAX_SIZE] = {0};
-    int     ret               = 0;
+    int                  i                 = 0;
+    int                  fds               = 0;
+    char                 buf[MSG_MAX_SIZE] = {0};
+    int                  ret               = 0;
+    int                  sockfd            = 0;
+    struct  epoll_event  epv               = {0};
 
     g_epfd = epoll_create(MAX_EVENT);
     for(i = 0; i < g_epollnfds; i++)
     {
-        g_epollfiles[i].events = EPOLLIN;
-        g_epollfiles[i].data.fd = g_epollfd[i];
-        epoll_ctl(g_epfd, EPOLL_CTL_ADD, g_epollfd[i], &g_epollfiles[i]);
+        epv.events = EPOLLIN;
+        epv.data.fd = g_epollfd[i];
+        epoll_ctl(g_epfd, EPOLL_CTL_ADD, g_epollfd[i], &epv);
     }
 
     while(1)
     {
         fds = epoll_wait(g_epfd, g_epollevents, MAX_EVENT, -1);
+        printf("fds: %d\n",fds);
         for(i = 0; i < fds; i++)
         {
             if(g_epollevents[i].events & EPOLLIN)
@@ -256,10 +254,9 @@ int epoll_scoket(struct sockaddr_in *pMutil_addr)
                 ret = recv_socket(g_epollevents[i].data.fd, buf, MSG_MAX_SIZE, (struct sockaddr *)pMutil_addr+i, sizeof(struct sockaddr_in));
                 printf("index %d, fd: %d, epoll server recv: %s\n", i, g_epollfd[i], buf);
                 memset(buf, 0x0, sizeof(buf));
-                //close(g_epollevents[i].data.fd);
-                g_epollevents[i].data.fd = -1;
             }
         }
+        printf("\n");
     }
     
     return 0;
@@ -270,7 +267,7 @@ int send_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pDest_addr, s
     int ret = 0;
 
     ret = sendto(sock_fd, pBuf, len, 0, pDest_addr, addrlen);
-
+        
     return 0;
 }
 
@@ -367,6 +364,7 @@ int main(int argc, char *argv[])
         for(i = 0; i < g_pollnfds; i++)
         {
             snprintf(buf, sizeof(buf), "hello, I am is client %d", i);            
+            //send_socket(g_pollfd[i], buf, strlen(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
             send_socket(g_pollfd[i], buf, sizeof(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
             memset(buf, 0x0, sizeof(buf));
         }

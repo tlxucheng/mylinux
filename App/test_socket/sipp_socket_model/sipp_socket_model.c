@@ -15,6 +15,8 @@
 
 #define MSG_MAX_SIZE               4096
 
+#define LISTENQ                    5
+
 /* select和epoll client套用poll client， 暂未区分 */
 #define SERVER_TAG                 "-s"
 #define CLIENT_TAG                 "-c"
@@ -22,6 +24,9 @@
 #define MUTIL_CLIENT_TAG           "-mc"
 #define MUTIL_SERVER_SELECT_TAG    "-mss"  /* select server */
 #define MUTIL_SERVER_EPOLL_TAG     "-mse"  /* epoll server */
+
+#define UDP_TYPE                   "-un"
+#define TCP_TYPE                   "-tn"
 
 /*********************poll**********************/
 int g_pollnfds = 2;
@@ -65,7 +70,7 @@ int create_socket(int transport)
             protocol = IPPROTO_UDP;
             break;
         case T_TCP:
-            socket_type = SOCK_DGRAM;
+            socket_type = SOCK_STREAM;
             break;
         default:
             return -1;
@@ -125,6 +130,37 @@ int bind_socket(int sock_fd, struct sockaddr_in *pAddr)
     bind(sock_fd, addr, sizeof(struct sockaddr));
 
     return 0;
+}
+
+/* tcp */
+int connect_socket(int sock_fd, struct sockaddr_in *pAddr)
+{
+    
+    struct sockaddr *addr = NULL; 
+
+    addr = ((struct sockaddr *)pAddr);
+    connect(sock_fd, addr, sizeof(struct sockaddr));
+
+    return 0;
+}
+
+/* tcp */
+int listen_socket(int listen_fd)
+{
+    listen(listen_fd, LISTENQ);
+
+    return 0;
+}
+
+/* tcp */
+int connect_accept(int listen_fd, struct sockaddr_in *pRemoteAddr)
+{
+    int       connfd;
+    socklen_t len     =  sizeof(struct sockaddr_in);
+
+    connfd = accept(listen_fd, (struct sockaddr *)pRemoteAddr, &len);
+
+    return connfd;
 }
 
 int recv_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pSrc_addr, socklen_t addrlen)
@@ -297,7 +333,20 @@ int prase_cmd(char *pCmd)
     {
         return MUTIL_SERVER_EPOLL_MODE;
     }    
+    return 0;
+}
 
+int prase_cmd_protocol(char *pCmd)
+{
+    if(0 == strcmp(pCmd, UDP_TYPE))
+    {
+        return T_UDP;
+    }
+    else if(0 == strcmp(pCmd, TCP_TYPE))
+    {
+        return T_TCP;
+    }
+    
     return 0;
 }
 
@@ -308,21 +357,25 @@ int main(int argc, char *argv[])
     int                   readsize = 0;
     char                  buf[MSG_MAX_SIZE]         = {0};
     int                   mode = 0;
+    int                   sock_type = 0;
 
     struct sockaddr_in    mutil_addr[g_pollnfds];
     int                   i                         = 0;
+    struct sockaddr_in    remote_addr;
+    int    connfd;
 
     mode = prase_cmd(argv[1]);
+    sock_type = prase_cmd_protocol(argv[2]);
 
     if(CLIENT_MODE  == mode || SERVER_MODE == mode)
     {
-        fd = create_socket(T_UDP);
+        fd = create_socket(sock_type);
         memset((char *)&addr, 0x0, sizeof(addr));
         set_sockaddr_in(&addr, 5060,  "192.168.0.105");
     }
     else if(MUTIL_CLIENT_MODE  == mode || MUTIL_SERVER_MODE == mode || MUTIL_SERVER_SELECT_MODE == mode)
     {
-        create_mutil_socket(T_UDP);
+        create_mutil_socket(sock_type);
         memset((char *)mutil_addr, 0x0, 2*sizeof(struct sockaddr_in));
         for(i = 0; i < g_pollnfds; i++)
         {     
@@ -331,7 +384,7 @@ int main(int argc, char *argv[])
     }
     else if(MUTIL_SERVER_EPOLL_MODE == mode)
     {
-        create_mutil_epoll_socket(T_UDP);
+        create_mutil_epoll_socket(sock_type);
         memset((char *)mutil_addr, 0x0, 2*sizeof(struct sockaddr_in));
         for(i = 0; i < g_epollnfds; i++)
         {     
@@ -339,16 +392,31 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(SERVER_MODE == mode)
+    if(CLIENT_MODE == mode) 
     {
-        bind_socket(fd, &addr);
-        recv_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
-        printf("recv message from client: %s\n", buf);
-    }
-    else if(CLIENT_MODE == mode) 
-    {
+        if(T_TCP == sock_type)
+        {
+            connect_socket(fd, &addr);    
+        }
+    
         strncpy(buf, "hello, I am is client!", sizeof(buf));
         send_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+    }
+    else if(SERVER_MODE == mode)
+    {
+        bind_socket(fd, &addr);
+
+        if(T_UDP == sock_type)
+        {
+            recv_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+        }
+        else if(T_TCP == sock_type)
+        {
+            listen_socket(fd);    
+            connfd = connect_accept(fd, &remote_addr);
+            recv_socket(connfd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+        }
+        printf("recv message from client: %s\n", buf);
     }
     else if(MUTIL_SERVER_MODE == mode)
     {
@@ -364,8 +432,8 @@ int main(int argc, char *argv[])
         for(i = 0; i < g_pollnfds; i++)
         {
             snprintf(buf, sizeof(buf), "hello, I am is client %d", i);            
-            //send_socket(g_pollfd[i], buf, strlen(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
-            send_socket(g_pollfd[i], buf, sizeof(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
+            send_socket(g_pollfd[i], buf, strlen(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
+            //send_socket(g_pollfd[i], buf, sizeof(buf), (struct sockaddr *)&mutil_addr[i], sizeof(struct sockaddr_in));
             memset(buf, 0x0, sizeof(buf));
         }
     }

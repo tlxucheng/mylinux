@@ -80,7 +80,8 @@ int main(int argc, char const *const *argv) {
   /*
   die_on_amqp_error(amqp_login(conn, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN,
                                "guest", "guest"),
-                    "Logging in");*/
+                    "Logging in");
+  */
                     
   die_on_amqp_error(amqp_login(conn, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN,
                                "admin", "123456"),
@@ -104,5 +105,6 @@ int main(int argc, char const *const *argv) {
   die_on_amqp_error(amqp_connection_close(conn, AMQP_REPLY_SUCCESS),
                     "Closing connection");
   die_on_error(amqp_destroy_connection(conn), "Ending connection");
+
   return 0;
 }

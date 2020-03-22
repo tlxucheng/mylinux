@@ -1,0 +1,148 @@
+1. --------------------Server  nginx-1.16.1, Client Webbench 1.5-----------------------
+(1)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=93018 pages/min, 1310003 bytes/sec.
+Requests: 93018 susceed, 0 failed.
+
+(2)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=107539 pages/min, 1514507 bytes/sec.
+Requests: 107539 susceed, 0 failed.
+
+(3)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=107824 pages/min, 1518521 bytes/sec.
+Requests: 107824 susceed, 0 failed.
+
+(4)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=90603 pages/min, 1275992 bytes/sec.
+Requests: 90603 susceed, 0 failed.
+
+(5)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=111800 pages/min, 1574516 bytes/sec.
+Requests: 111800 susceed, 0 failed.
+
+(6)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=97630 pages/min, 1374955 bytes/sec.
+Requests: 97630 susceed, 0 failed
+
+2. ----------------------Server apache httpd-2.4.41, Client Webbench 1.5---------------------------
+(1)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=108260 pages/min, 521452 bytes/sec.
+Requests: 108260 susceed, 0 failed.
+
+(2)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=111361 pages/min, 536388 bytes/sec.
+Requests: 111361 susceed, 0 failed.
+
+(3)
+[root@oracledb webbench-1.5]# webbench -c 100 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+100 clients, running 60 sec.
+
+Speed=112191 pages/min, 540386 bytes/sec.
+Requests: 112191 susceed, 0 failed.
+
+(4)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=121610 pages/min, 585754 bytes/sec.
+Requests: 121610 susceed, 0 failed
+
+(5)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=127639 pages/min, 614794 bytes/sec.
+Requests: 127639 susceed, 0 failed.
+
+(6)
+[root@oracledb webbench-1.5]# webbench -c 1000 -t 60 http://192.168.0.105/
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://192.168.0.105/
+1000 clients, running 60 sec.
+
+Speed=121549 pages/min, 585461 bytes/sec.
+Requests: 121549 susceed, 0 failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

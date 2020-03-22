@@ -1,0 +1,6 @@
+all:
+	apxs -c -a -i mod_hello.c
+clean:
+	rm -f mod_hello.o mod_hello.lo mod_hello.slo mod_hello.la
+restart:
+	apachectl restart

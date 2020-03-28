@@ -1,30 +1,38 @@
 #!/usr/bin/perl -w
 
-my $first_line = 1;
-my $table_name;
 my @table_fields = ();
-my $field_name;
 
-open(DATA, "<create_table.txt") or die "creat_table.txt can not open";
+open(SQL_FP, "<create_table.txt") or die "creat_table.txt can not open";
 
-while(<DATA>){
+while(<SQL_FP>){
     if($_ =~ /.*`(.*)`/ and $_ !~ /KEY.*/)
     {
-        if(1 == $first_line)
-	{ 
-	    ($table_name) = $_ =~ /.*`(.*)`/;
-            print "$table_name\n";
-	    $first_line++;
-        }
-	else
-        {
-	    ($field_name) = $_ =~ /.*`(.*)`/;
-	    print "$field_name\n";
-	    push(@table_fields, $field_name);
-        }
+        push(@table_fields, $_ =~ /.*`(.*)`/);
     }
 
 }
-close(DATA);
+close(SQL_FP);
 
 print "@table_fields\n";
+
+my $data = join('', <DATA>);
+$data =~ s|%TABLE_NAME%|$table_fields[0]|sg;
+$data =~ s|%FIELD_NAME%|$table_fields[1]|sg;
+
+$enum_str = "\U    $table_fields[2],\n    $table_fields[3],\n";
+$data =~ s|%FIELD_ENUM%|$enum_str|sg;
+
+print "$data\n";
+
+##EOF##
+__DATA__
+
+enum
+{
+    DB_CM_%TABLE_NAME%_%FIELD_NAME%,
+};
+
+enum
+{
+%FIELD_ENUM%
+};

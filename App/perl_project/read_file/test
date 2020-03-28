@@ -1,0 +1,30 @@
+#!/usr/bin/perl -w
+
+my $first_line = 1;
+my $table_name;
+my @table_fields = ();
+my $field_name;
+
+open(DATA, "<create_table.txt") or die "creat_table.txt can not open";
+
+while(<DATA>){
+    if($_ =~ /.*`(.*)`/ and $_ !~ /KEY.*/)
+    {
+        if(1 == $first_line)
+	{ 
+	    ($table_name) = $_ =~ /.*`(.*)`/;
+            print "$table_name\n";
+	    $first_line++;
+        }
+	else
+        {
+	    ($field_name) = $_ =~ /.*`(.*)`/;
+	    print "$field_name\n";
+	    push(@table_fields, $field_name);
+        }
+    }
+
+}
+close(DATA);
+
+print "@table_fields\n";

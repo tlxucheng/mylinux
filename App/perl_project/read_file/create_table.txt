@@ -1,0 +1,13 @@
+CREATE TABLE `es_server` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '??sid',
+  `es_ip` varchar(31) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '?????IP',
+  `es_domain` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '???????',
+  `http_port` smallint(5) unsigned NOT NULL COMMENT '?????http??',
+  `https_port` smallint(5) unsigned NOT NULL COMMENT '?????https??',
+  `syncid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '?????????id',
+  `synctime` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '?????????',
+  `created_at` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `updated_at` bigint(20) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `es_domain` (`es_domain`,`http_port`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ES????';

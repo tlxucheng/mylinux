@@ -27,7 +27,8 @@ close(SQL_FP);
 #print "@table_type\n";
 
 my $data = join('', <DATA>);
-my ($db_src, $db_h) = ($data =~ m|^(.+)-=#=-\n(.+)|s);
+my ($db_src, $db_h, $dbaccess_c, $dbaccess_h) = ($data =~ m|^(.+)-=#=-\n(.+)-=#=-\n(.+)-=#=-\n(.+)|s);
+
 
 my $field_enum;
 my $table_name_first_up;
@@ -79,7 +80,6 @@ $db_src =~ s|%FIELD_ENUM%|$field_enum|sg;
 $db_src =~ s|%FIELD_COLUMN%|$field_column|sg;
 $db_src =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
 $db_src =~ s|%FIELD_GET%|$field_get|sg;
-
 print "$db_src\n";
 
 $db_h =~ s|%TABLE_NAME_UP%|\U$table_fields[0]|sg;
@@ -89,6 +89,12 @@ $db_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
 $db_h =~ s|%STRUCT_DEFINE%|$struct_define|sg;
 print "$db_h\n";
 
+$dbaccess_c =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
+print "$dbaccess_c\n";
+
+$dbaccess_h =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
+$dbaccess_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
+print "$dbaccess_h\n";
 
 ##EOF##
 __DATA__
@@ -173,3 +179,75 @@ typedef struct __emicallcm_db_cm_group__
 int DbGetCm%TABLE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *condition, EMICALL_DB_CM_%TABLE_NAME_ALL_UP% *list);
 
 #endif
+
+-=#=-
+/*
+ *  Server source file for DbAccess function Cm%TABLE_NAME_FIRST_UP%: DbAccessCm%TABLE_NAME_FIRST_UP%.c
+ */
+#include "CmDbAccessThread.h"
+#include "CmDbAccessEncapsulation.h"
+
+int DbServerChannelCmGroup(MYSQL *pDb, char *src_data, char **ret_data, int *ret_len)
+{
+    int                        ret      = 0;
+    int                        dataLen  = 0;
+    unsigned int               count    = 0;
+    Cm%TABLE_NAME_FIRST_UP%_REQUEST_PARAM      *request = (Cm%TABLE_NAME_FIRST_UP%_REQUEST_PARAM *)src_data;
+    Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA      *rspData = NULL;
+    
+    if(NULL == pDb || NULL == request || NULL == ret_data || NULL == ret_len)
+    {
+        emi_sys_log(LOG_LEVEL_ERROR, CM_DB_ACCESS_THREAD_NAME, "Invalid parameter");
+        return DB_ERROR_CODE_INVALID_ARGUMENT;
+    }
+
+    rspData = (Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA *)EmicMalloc(sizeof(Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA)); 
+    if(rspData == NULL)
+    {
+        emi_sys_log(LOG_LEVEL_ERROR, CM_DB_ACCESS_THREAD_NAME, "EmicMalloc failed");
+	ret = DB_ERROR_CODE_MEMORY_ALLOC_FAILED;
+        return ret;
+    }
+
+    memset(rspData, 0, sizeof(Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA));	    
+    rspData->actionType = request->actionType;
+
+    /* Add code for database access. */
+    if (request->actionType == CM_GET_GROUP_INFO_BY_SEID_AND_CCGEID)
+    {
+        ret = ;
+	if(ret)
+	{
+            emi_sys_log(LOG_LEVEL_ERROR, CM_DB_ACCESS_THREAD_NAME, "failed,ret %d", ret);
+	    FREE_IF_NOT_NULL(rspData);
+	    return ret;
+	}   
+    }
+    else
+    {
+        ret = DB_RET_NO_ERROR;
+    }
+
+    /* Add code for database access, end */
+
+    /* set ret_data and ret_len value, if no response, they call be all NULL */
+    *ret_data = (char *)rspData;
+    *ret_len = dataLen;
+
+    return ret;
+
+};
+
+-=#=-
+/*
+ *  Server header file for DbAccess function Cm%TABLE_NAME_FIRST_UP%: DbAccessCm%TABLE_NAME_FIRST_UP%.h
+ */
+#ifndef __DB_ACCESS_Cm%TABLE_NAME_FIRST_UP%_H__
+#define __DB_ACCESS_Cm%TABLE_NAME_FIRST_UP%_H__
+
+#include "db_api.h"
+ 
+#int DbServerChannelCm%TABLE_NAME_FIRST_UP%(MYSQL *pDb, char *src_data, char **ret_data, int *ret_len);
+
+#endif
+

@@ -13,24 +13,23 @@ while(<SQL_FP>){
 }
 close(SQL_FP);
 
-print "@table_fields\n";
+#print "@table_fields\n";
 
 my $data = join('', <DATA>);
-$data =~ s|%TABLE_NAME%|$table_fields[0]|sg;
-$data =~ s|%FIELD_NAME%|$table_fields[1]|sg;
+my $field_enum;
 
-$enum_str = "\U    $table_fields[2],\n    $table_fields[3],\n";
-$data =~ s|%FIELD_ENUM%|$enum_str|sg;
+foreach $enum_str2 (@table_fields[1 .. $#table_fields])
+{
+    $field_enum .= "\U    DB_CM_$table_fields[0]_$enum_str2,\n";
+}
+$data =~ s|%FIELD_ENUM%|$field_enum|sg;
+print "$data";
 
-print "$data\n";
+
+
 
 ##EOF##
 __DATA__
-
-enum
-{
-    DB_CM_%TABLE_NAME%_%FIELD_NAME%,
-};
 
 enum
 {

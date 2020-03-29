@@ -1,13 +1,19 @@
-CREATE TABLE `es_server` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '??sid',
-  `es_ip` varchar(31) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '?????IP',
-  `es_domain` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '???????',
-  `http_port` smallint(5) unsigned NOT NULL COMMENT '?????http??',
-  `https_port` smallint(5) unsigned NOT NULL COMMENT '?????https??',
-  `syncid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '?????????id',
-  `synctime` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '?????????',
+EATE TABLE `group` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '???id',
+  `gid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '???ID',
+  `seid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '????ID',
+  `ccgeid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '??ID',
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '?????',
+  `parent_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '?????ID',
+  `level` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '?????',
+  `seat_policy` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '??????:0-??????;1-????;2-????',
+  `flow_number` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '????:0-???',
+  `flow_timeout` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '??????:10-40',
+  `vip_priority` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP????:0-VIP???;1-VIP????;2-10,????',
+  `queue_duration` int(11) unsigned NOT NULL DEFAULT '30' COMMENT '???????, ??30, ???',
   `created_at` bigint(20) unsigned NOT NULL DEFAULT '0',
   `updated_at` bigint(20) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `es_domain` (`es_domain`,`http_port`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ES????';
+  PRIMARY KEY (`id`,`seid`),
+  KEY `gid` (`gid`),
+  KEY `s_c_gid` (`seid`,`ccgeid`,`gid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='????'

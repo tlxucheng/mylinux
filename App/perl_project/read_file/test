@@ -99,6 +99,7 @@ print "$dbaccess_h\n";
 $dbaccessEnc_c =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
 print "$dbaccessEnc_c\n";
 
+$dbaccessEnc_h =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
 $dbaccessEnc_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
 print "$dbaccessEnc_h\n";
 
@@ -280,4 +281,32 @@ int DbServerChannelCmGroup(MYSQL *pDb, char *src_data, char **ret_data, int *ret
    
 #include "CmEmicBaseDefinition.h"
 #include "DatabaseCm%TABLE_NAME_FIRST_UP%.h"
- 
+
+typedef struct
+{
+    /* Define request parameters in this struct */
+    int actionType;
+    union
+    {
+
+    } requestParam;
+
+}Cm%TABLE_NAME_FIRST_UP%_REQUEST_PARAM;
+
+typedef struct
+{
+    /* Define response parameters in this struct */
+    union
+    { 
+        struct {
+	    int num;   
+	    EMICALL_DB_CM_%TABLE_NAME_ALL_UP% *list;
+        }RespList;					       
+    }respData;
+
+}Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA;
+
+int DbChannelCm%TABLE_NAME_FIRST_UP%(int index, Cm%TABLE_NAME_FIRST_UP%_REQUEST_PARAM *reqParam, Cm%TABLE_NAME_FIRST_UP%_RESPONSE_DATA *rspData);
+int DbServerChannelCm%TABLE_NAME_FIRST_UP%ParseRequestJson(char *request_data, char **src_data, int *src_len);
+int DbServerChannelCm%TABLE_NAME_FIRST_UP%CreateResponseJson(char *respond_data, char **ret_data, int *ret_len);
+

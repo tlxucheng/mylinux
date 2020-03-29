@@ -22,9 +22,9 @@ while(<SQL_FP>){
 }
 close(SQL_FP);
 
-print "@table_fields\n";
-print "@table_type_length\n";
-print "@table_type\n";
+#print "@table_fields\n";
+#print "@table_type_length\n";
+#print "@table_type\n";
 
 my $data = join('', <DATA>);
 my ($db_src, $db_h) = ($data =~ m|^(.+)-=#=-\n(.+)|s);
@@ -49,10 +49,31 @@ foreach $field_str_for (@table_fields[2 .. $#table_fields])
     $field_column .= "    {DB_CM_\U$table_fields[0]_$field_str_for\E,\"$field_str_for\", 0},\n";
 }
 
+my $field_get;
+#foreach $i (@table_fields;@table_type)
+for ($i = 0; $i <= $#table_type; $i += 1)
+{
+    if($table_type[$i] eq "tinyint")
+    {
+        $field_get .= "        user->$table_fields[$i] = EmicAtoi(Row[DB_CM_\U$table_fields[0]_$table_fields[$i]])\n";
+    }
+    elsif($table_type[$i] eq "bigint")
+    {	   
+	$field_get .= "        user->$table_fields[$i] = EmicAtol(Row[DB_CM_\U$table_fields[0]_$table_fields[$i]])\n";
+    }
+    elsif($table_type[$i] eq "varchar")
+    {	  
+	$field_get .= "        Emic_strncpy(user->$table_fields[$i], Row[DB_CM_\U$table_fields[0]_$table_fields[$i]]\E, sizeof(user->$table_fields[$i])])\n";
+    }
+}
+
+#print "$field_get\n";
+
 $db_src =~ s|%TALBE_NAME_FIRST_UP%|$table_name_first_up|sg;
 $db_src =~ s|%FIELD_ENUM%|$field_enum|sg;
 $db_src =~ s|%FIELD_COLUMN%|$field_column|sg;
 $db_src =~ s|%TALBE_NAME_ALL_UP%|$table_name_all_up|sg;
+$db_src =~ s|%FIELD_GET%|$field_get|sg;
 
 print "$db_src\n";
 
@@ -62,7 +83,6 @@ print "$db_h\n";
 
 ##EOF##
 __DATA__
-
 #include "DatabaseCm%TALBE_NAME_FIRST_UP%.h"
 
 enum
@@ -89,6 +109,27 @@ int DbGetCm%TALBE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *cond
     DbSqlColumnAssembling(select_entry.columns, CmGroupColumns, DB_CM_%TALBE_NAME_ALL_UP%_COLUMN_NUM, TRUE);
     Emic_strncpy(select_entry.conditions, condition, sizeof(select_entry.conditions)); 
     
+    construct_select_sql(sql_str, &select_entry);
+    EmicDatabaseExecute(pDb, sql_str, ret);
+    if(ret)
+        return ret;
+    ret = DbMysqlGetTable(pDb, &res);
+    if(ret)
+        return ret;
+ 
+    row_num = mysql_num_rows(res);
+    if(row_num > 0)
+    {
+        Row = mysql_fetch_row(res);
+	if(!Row)
+        {
+	    DbMysqlFreeResult(res);
+	    return ret;
+	}
+
+%FIELD_GET%	
+    }
+
     DbMysqlFreeResult(res);
     
     return ret;

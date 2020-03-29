@@ -27,7 +27,7 @@ close(SQL_FP);
 #print "@table_type\n";
 
 my $data = join('', <DATA>);
-my ($db_src, $db_h, $dbaccess_c, $dbaccess_h) = ($data =~ m|^(.+)-=#=-\n(.+)-=#=-\n(.+)-=#=-\n(.+)|s);
+my ($db_src, $db_h, $dbaccess_c, $dbaccess_h, $dbaccessEnc_c, $dbaccessEnc_h) = ($data =~ m|^(.+)-=#=-\n(.+)-=#=-\n(.+)-=#=-\n(.+)-=#=-\n(.+)-=#=-\n(.+)|s);
 
 
 my $field_enum;
@@ -95,6 +95,13 @@ print "$dbaccess_c\n";
 $dbaccess_h =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
 $dbaccess_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
 print "$dbaccess_h\n";
+
+$dbaccessEnc_c =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
+print "$dbaccessEnc_c\n";
+
+$dbaccessEnc_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
+print "$dbaccessEnc_h\n";
+
 
 ##EOF##
 __DATA__
@@ -251,3 +258,26 @@ int DbServerChannelCmGroup(MYSQL *pDb, char *src_data, char **ret_data, int *ret
 
 #endif
 
+-=#=-
+/*
+ *  Source file for DbAccess function Cm%TABLE_NAME_FIRST_UP%: DbAccessCm%TABLE_NAME_FIRST_UP%Encapsulation.c
+ */
+#include <string.h>
+#include <errno.h>
+#include "json-c/json.h"
+#include "json-c/json_object_private.h"
+#include "EmicBaseCommChannel.h"
+#include "CmDbAccessEncapsulation.h"
+#include "CmDbAccessJsonParse.h"
+
+-=#=-
+/*
+ *  Header file for DbAccess function Cm%TABLE_NAME_FIRST_UP%: DbAccessCm%TABLE_NAME_FIRST_UP%Encapsulation.h
+ *  Should be included by DbAccessEncapsulation.h and DbAccessJsonParse.h.
+ */
+#ifndef __DB_ACCESS_Cm%TABLE_NAME_FIRST_UP%_ENCAPSULATION_H__
+#define __DB_ACCESS_Cm%TABLE_NAME_FIRST_UP%_ENCAPSULATION_H__
+   
+#include "CmEmicBaseDefinition.h"
+#include "DatabaseCm%TABLE_NAME_FIRST_UP%.h"
+ 

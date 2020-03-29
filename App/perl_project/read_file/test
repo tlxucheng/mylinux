@@ -1,30 +1,42 @@
 #!/usr/bin/perl -w
 
 my @table_fields = ();
+my @table_type_length = ();
+my @table_type = ();
 
 open(SQL_FP, "<create_table.txt") or die "creat_table.txt can not open";
 
 while(<SQL_FP>){
-    if($_ =~ /.*`(.*)`/ and $_ !~ /KEY.*/)
+    if($_ =~ /`(.*)`/ and $_ !~ /KEY./)
     {
-        push(@table_fields, $_ =~ /.*`(.*)`/);
+        push(@table_fields, $_ =~ /`(.*)`/);
     }
-
+    if($_ =~ /\((.*)\)/ and $_ !~ /KEY./)
+    {
+        push(@table_type_length, $_ =~ /\((.*)\)/);
+    }
+    if($_ =~ /`\s(.*)\(/ and $_ !~ /KEY./)
+    {
+        push(@table_type, $_ =~ /`\s(.*)\(/);
+    }
 }
 close(SQL_FP);
 
-#print "@table_fields\n";
+print "@table_fields\n";
+print "@table_type_length\n";
+print "@table_type\n";
 
 my $data = join('', <DATA>);
 my ($db_src, $db_h) = ($data =~ m|^(.+)-=#=-\n(.+)|s);
 
 my $field_enum;
-my $table_name_low;
+my $table_name_first_up;
+my $table_name_all_up;
 my $field_str_for;
 my $field_column;
-my $field_up;
 
-$table_name_low = ucfirst($table_fields[0]);
+$table_name_first_up = ucfirst($table_fields[0]);
+$table_name_all_up = uc($table_fields[0]);
 
 foreach $field_str_for (@table_fields[1 .. $#table_fields])
 {
@@ -36,11 +48,11 @@ foreach $field_str_for (@table_fields[2 .. $#table_fields])
 {
     $field_column .= "    {DB_CM_\U$table_fields[0]_$field_str_for\E,\"$field_str_for\", 0},\n";
 }
-#print "$field_column\n";
 
-$db_src =~ s|%TALBE_NAME_LOW%|$table_name_low|sg;
+$db_src =~ s|%TALBE_NAME_FIRST_UP%|$table_name_first_up|sg;
 $db_src =~ s|%FIELD_ENUM%|$field_enum|sg;
 $db_src =~ s|%FIELD_COLUMN%|$field_column|sg;
+$db_src =~ s|%TALBE_NAME_ALL_UP%|$table_name_all_up|sg;
 
 print "$db_src\n";
 
@@ -51,17 +63,44 @@ print "$db_h\n";
 ##EOF##
 __DATA__
 
-#include "DatabaseCm%TALBE_NAME_LOW%.h"
+#include "DatabaseCm%TALBE_NAME_FIRST_UP%.h"
 
 enum
 {
 %FIELD_ENUM%
 };
 
-static DATABASE_CLOUMN_NAME Cm%TALBE_NAME_LOW%Columns[] =
+static DATABASE_CLOUMN_NAME Cm%TALBE_NAME_FIRST_UP%Columns[] =
 {
 %FIELD_COLUMN%
 };
+
+int DbGetCm%TALBE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *condition, EMICALL_DB_CM_%TALBE_NAME_ALL_UP% *list)
+{
+    char                sql_str[MAX_SQL_LEN+1] = {0};
+    struct select_sql   select_entry           = {0};
+    int                 ret                    = 0;
+    int                 row_num                = 0;
+    MYSQL_RES           *res;
+    MYSQL_ROW           Row;
+    EMICALL_DB_CM_%TALBE_NAME_ALL_UP%  *user = list;    
+    
+    printf(select_entry.tables, "%s.%s", dbName, DATABASE_CM_%TALBE_NAME_ALL_UP%_TABLE_NAME);
+    DbSqlColumnAssembling(select_entry.columns, CmGroupColumns, DB_CM_%TALBE_NAME_ALL_UP%_COLUMN_NUM, TRUE);
+    Emic_strncpy(select_entry.conditions, condition, sizeof(select_entry.conditions)); 
+    
+    DbMysqlFreeResult(res);
+    
+    return ret;
+}
+
+static char *DbCm%TALBE_NAME_FIRST_UP%ColumnName(int seq)
+{
+    if (seq >= 0 && seq < sizeof(Cm%TALBE_NAME_FIRST_UP%Columns)/sizeof(DATABASE_CLOUMN_NAME))
+        return Cm%TALBE_NAME_FIRST_UP%Columns[seq].name;
+    return NULL;
+};
+
 
 -=#=-
 #ifndef __DATA_BASE_CM_%TALBE_NAME_UP%_H__

@@ -50,52 +50,61 @@ foreach $field_str_for (@table_fields[2 .. $#table_fields])
 }
 
 my $field_get;
+my $struct_define;
 #foreach $i (@table_fields;@table_type)
 for ($i = 0; $i <= $#table_type; $i += 1)
 {
     if($table_type[$i] eq "tinyint")
     {
         $field_get .= "        user->$table_fields[$i] = EmicAtoi(Row[DB_CM_\U$table_fields[0]_$table_fields[$i]])\n";
+        $struct_define .= "    int                $table_fields[$i];\n"; 
     }
     elsif($table_type[$i] eq "bigint")
     {	   
 	$field_get .= "        user->$table_fields[$i] = EmicAtol(Row[DB_CM_\U$table_fields[0]_$table_fields[$i]])\n";
+	$struct_define .= "    unsigned long      $table_fields[$i];\n";
     }
     elsif($table_type[$i] eq "varchar")
     {	  
 	$field_get .= "        Emic_strncpy(user->$table_fields[$i], Row[DB_CM_\U$table_fields[0]_$table_fields[$i]]\E, sizeof(user->$table_fields[$i])])\n";
+        $struct_define .= "    char               $table_fields[$i]\[$table_type_length[$i]\];\n";
     }
 }
 
 #print "$field_get\n";
+#print "$struct_define\n";
 
-$db_src =~ s|%TALBE_NAME_FIRST_UP%|$table_name_first_up|sg;
+$db_src =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
 $db_src =~ s|%FIELD_ENUM%|$field_enum|sg;
 $db_src =~ s|%FIELD_COLUMN%|$field_column|sg;
-$db_src =~ s|%TALBE_NAME_ALL_UP%|$table_name_all_up|sg;
+$db_src =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
 $db_src =~ s|%FIELD_GET%|$field_get|sg;
 
 print "$db_src\n";
 
-$db_h =~ s|%TALBE_NAME_UP%|\U$table_fields[0]|sg;
+$db_h =~ s|%TABLE_NAME_UP%|\U$table_fields[0]|sg;
+$db_h =~ s|%TABLE_NAME%|$table_fields[0]|sg;
+$db_h =~ s|%TABLE_NAME_ALL_UP%|$table_name_all_up|sg;
+$db_h =~ s|%TABLE_NAME_FIRST_UP%|$table_name_first_up|sg;
+$db_h =~ s|%STRUCT_DEFINE%|$struct_define|sg;
 print "$db_h\n";
 
 
 ##EOF##
 __DATA__
-#include "DatabaseCm%TALBE_NAME_FIRST_UP%.h"
+#include "DatabaseCm%TABLE_NAME_FIRST_UP%.h"
 
 enum
 {
 %FIELD_ENUM%
 };
 
-static DATABASE_CLOUMN_NAME Cm%TALBE_NAME_FIRST_UP%Columns[] =
+static DATABASE_CLOUMN_NAME Cm%TABLE_NAME_FIRST_UP%Columns[] =
 {
 %FIELD_COLUMN%
 };
 
-int DbGetCm%TALBE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *condition, EMICALL_DB_CM_%TALBE_NAME_ALL_UP% *list)
+int DbGetCm%TABLE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *condition, EMICALL_DB_CM_%TABLE_NAME_ALL_UP% *list)
 {
     char                sql_str[MAX_SQL_LEN+1] = {0};
     struct select_sql   select_entry           = {0};
@@ -103,10 +112,10 @@ int DbGetCm%TALBE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *cond
     int                 row_num                = 0;
     MYSQL_RES           *res;
     MYSQL_ROW           Row;
-    EMICALL_DB_CM_%TALBE_NAME_ALL_UP%  *user = list;    
+    EMICALL_DB_CM_%TABLE_NAME_ALL_UP%  *user = list;    
     
-    printf(select_entry.tables, "%s.%s", dbName, DATABASE_CM_%TALBE_NAME_ALL_UP%_TABLE_NAME);
-    DbSqlColumnAssembling(select_entry.columns, CmGroupColumns, DB_CM_%TALBE_NAME_ALL_UP%_COLUMN_NUM, TRUE);
+    printf(select_entry.tables, "%s.%s", dbName, DATABASE_CM_%TABLE_NAME_ALL_UP%_TABLE_NAME);
+    DbSqlColumnAssembling(select_entry.columns, CmGroupColumns, DB_CM_%TABLE_NAME_ALL_UP%_COLUMN_NUM, TRUE);
     Emic_strncpy(select_entry.conditions, condition, sizeof(select_entry.conditions)); 
     
     construct_select_sql(sql_str, &select_entry);
@@ -135,16 +144,32 @@ int DbGetCm%TALBE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *cond
     return ret;
 }
 
-static char *DbCm%TALBE_NAME_FIRST_UP%ColumnName(int seq)
+static char *DbCm%TABLE_NAME_FIRST_UP%ColumnName(int seq)
 {
-    if (seq >= 0 && seq < sizeof(Cm%TALBE_NAME_FIRST_UP%Columns)/sizeof(DATABASE_CLOUMN_NAME))
-        return Cm%TALBE_NAME_FIRST_UP%Columns[seq].name;
+    if (seq >= 0 && seq < sizeof(Cm%TABLE_NAME_FIRST_UP%Columns)/sizeof(DATABASE_CLOUMN_NAME))
+        return Cm%TABLE_NAME_FIRST_UP%Columns[seq].name;
     return NULL;
 };
 
 
 -=#=-
-#ifndef __DATA_BASE_CM_%TALBE_NAME_UP%_H__
-##define __DATA_BASE_CM_%TALBE_NAME_UP%_H__
+#ifndef __DATA_BASE_CM_%TABLE_NAME_UP%_H__
+##define __DATA_BASE_CM_%TABLE_NAME_UP%_H__
 ##include "CmEmic_DbApi.h"
 ##include "CmEmicBaseDefinition.h"
+
+#define DATABASE_CM_%TABLE_NAME_ALL_UP%_TABLE_NAME     "%TABLE_NAME%"
+
+typedef enum __cm_%TABLE_NAME%_action
+{
+
+}CM_%TABLE_NAME_ALL_UP%_ACTION;
+
+typedef struct __emicallcm_db_cm_group__
+{
+%STRUCT_DEFINE%
+}EMICALL_DB_CM_%TABLE_NAME_ALL_UP%;
+
+int DbGetCm%TABLE_NAME_FIRST_UP%ByCondition(MYSQL *pDb, char *dbName, char *condition, EMICALL_DB_CM_%TABLE_NAME_ALL_UP% *list);
+
+#endif

@@ -16,22 +16,55 @@ close(SQL_FP);
 #print "@table_fields\n";
 
 my $data = join('', <DATA>);
+my ($db_src, $db_h) = ($data =~ m|^(.+)-=#=-\n(.+)|s);
+
 my $field_enum;
+my $table_name_low;
+my $field_str_for;
+my $field_column;
+my $field_up;
 
-foreach $enum_str2 (@table_fields[1 .. $#table_fields])
+$table_name_low = ucfirst($table_fields[0]);
+
+foreach $field_str_for (@table_fields[1 .. $#table_fields])
 {
-    $field_enum .= "\U    DB_CM_$table_fields[0]_$enum_str2,\n";
+    $field_enum .= "\U    DB_CM_$table_fields[0]_$field_str_for,\n";
 }
-$data =~ s|%FIELD_ENUM%|$field_enum|sg;
-print "$data";
 
+$field_column = "    {DB_CM_\U$table_fields[0]_$table_fields[1]\E, \"$table_fields[1]\", AUTO_DEFAULT_COLUMN},\n";
+foreach $field_str_for (@table_fields[2 .. $#table_fields])
+{
+    $field_column .= "    {DB_CM_\U$table_fields[0]_$field_str_for\E,\"$field_str_for\", 0},\n";
+}
+#print "$field_column\n";
 
+$db_src =~ s|%TALBE_NAME_LOW%|$table_name_low|sg;
+$db_src =~ s|%FIELD_ENUM%|$field_enum|sg;
+$db_src =~ s|%FIELD_COLUMN%|$field_column|sg;
+
+print "$db_src\n";
+
+$db_h =~ s|%TALBE_NAME_UP%|\U$table_fields[0]|sg;
+print "$db_h\n";
 
 
 ##EOF##
 __DATA__
 
+#include "DatabaseCm%TALBE_NAME_LOW%.h"
+
 enum
 {
 %FIELD_ENUM%
 };
+
+static DATABASE_CLOUMN_NAME Cm%TALBE_NAME_LOW%Columns[] =
+{
+%FIELD_COLUMN%
+};
+
+-=#=-
+#ifndef __DATA_BASE_CM_%TALBE_NAME_UP%_H__
+##define __DATA_BASE_CM_%TALBE_NAME_UP%_H__
+##include "CmEmic_DbApi.h"
+##include "CmEmicBaseDefinition.h"

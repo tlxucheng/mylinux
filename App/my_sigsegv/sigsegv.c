@@ -172,6 +172,10 @@ static void print_call_link(const ucontext_t *uc)
 		sigsegv_outp("%02d: %p <%s + %lu> (%s)", ++i, return_address, sname, 
 			(unsigned long)return_address - (unsigned long)dl_info.dli_saddr, 
 													dl_info.dli_fname);
+                char cmd[128] = {0};
+                memset(cmd, 0x0, sizeof(cmd));
+                snprintf(cmd, sizeof(cmd), "addr2line -e sigsegv %p", return_address);
+                system(cmd);
 #if (!defined NO_CPP_DEMANGLE)
 		if (tmp)	free(tmp);
 #endif

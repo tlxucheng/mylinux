@@ -13,3 +13,8 @@ Stack trace end.
 
 2. 加入Emic工程不显示完整堆栈，函数名没有，函数源文件行号没有
 [2020-04-06 15:22:37][ERROR][sigsegv.c:179][1 : 0x977e5700] [ccm][1][ccm]01: 0x44fedb <(null) + 4521691> (/usr/local/EmicallCR/bin/EmicallCallControlManager)
+
+3. 学习信号的相关知识(E:\xucheng\books\OS\Z00670+Linux高性能服务器编程\Z00670 Linux高性能服务器编程\Z00670 Linux高性能服务器编程\Z00670 Linux高性能服务器编程.pdf)
+                      E:\xucheng\books\C&Cpp\UNIX环境高级编程（中文第三版）_扫描版_22.2M.pdf
+
+4. uc_mcontext.gregs 定义在内核文件中未找到，使用gcc编译预处理找？

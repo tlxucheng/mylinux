@@ -62,7 +62,7 @@ struct user_regs_struct {
 #endif
 
 #if (defined (__x86_64__))
-# define REGFORMAT   "%016lx"	
+# define REGFORMAT   "%016llx"	
 #elif (defined (__i386__))
 # define REGFORMAT   "%08x"
 #elif (defined (__arm__))
@@ -252,7 +252,7 @@ void func1(void)
 
 int main(int argc, const char *argv[])
 {
-    printf("%d\n", ELF_NGREG);    
+    printf("%ld\n", ELF_NGREG);    
 
     func1();	
     exit(EXIT_SUCCESS);

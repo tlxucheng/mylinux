@@ -1,0 +1,15 @@
+0406
+1. 乌班图下没法显示函数在源文件中的行号
+Stack trace:
+01: 0x55f38631931d <func3 + 16> (./sigsegv)
+??:0
+02: 0x55f38631932c <func2 + 9> (./sigsegv)
+??:0
+03: 0x55f386319338 <func1 + 9> (./sigsegv)
+??:0
+04: 0x55f386319365 <main + 42> (./sigsegv)
+??:0
+Stack trace end.
+
+2. 加入Emic工程不显示完整堆栈，函数名没有，函数源文件行号没有
+[2020-04-06 15:22:37][ERROR][sigsegv.c:179][1 : 0x977e5700] [ccm][1][ccm]01: 0x44fedb <(null) + 4521691> (/usr/local/EmicallCR/bin/EmicallCallControlManager)

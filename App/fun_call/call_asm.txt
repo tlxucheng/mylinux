@@ -1,0 +1,186 @@
+test_two_function.c 执行流程分析
+
+指令后面的都是执行完后的结果
+(gdb) i r rsp rbp
+rsp            0x7fffffffe470   0x7fffffffe470
+rbp            0x7fffffffe470   0x7fffffffe470
+(gdb) x /16xg 0x7fffffffe460
+0x7fffffffe460: 0x00007fffffffe550      0x0000000000000000
+0x7fffffffe470: 0x0000000000000000      0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000      0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000      0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000      0x4da01685d1e191f5
+0x7fffffffe4b0: 0x0000000000400400      0x00007fffffffe550
+0x7fffffffe4c0: 0x0000000000000000      0x0000000000000000
+0x7fffffffe4d0: 0xb25fe97a18e191f5      0xb25ff9c0389b91f5
+
+=> 0x0000000000400534 <+14>:    callq  0x400507 <foo>
+(gdb) i r rsp rbp
+rsp            0x7fffffffe468   0x7fffffffe468
+rbp            0x7fffffffe470   0x7fffffffe470
+(gdb) x /16xg 0x7fffffffe460
+0x7fffffffe460: 0x00007fffffffe550      0x0000000000400539(0x0000000000400539 <+19>:    mov    $0x0,%eax)
+0x7fffffffe470: 0x0000000000000000      0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000      0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000      0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000      0x4da01685d1e191f5
+0x7fffffffe4b0: 0x0000000000400400      0x00007fffffffe550
+0x7fffffffe4c0: 0x0000000000000000      0x0000000000000000
+0x7fffffffe4d0: 0xb25fe97a18e191f5      0xb25ff9c0389b91f5
+
+0x0000000000400507 <+0>:     push   %rbp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe460   0x7fffffffe460
+rbp            0x7fffffffe470   0x7fffffffe470
+(gdb) x /16xg 0x7fffffffe460
+0x7fffffffe460: 0x00007fffffffe470(main rbp)      0x0000000000400539(main函数的下条指令)
+0x7fffffffe470: 0x0000000000000000      0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000      0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000      0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000      0x4da01685d1e191f5
+0x7fffffffe4b0: 0x0000000000400400      0x00007fffffffe550
+0x7fffffffe4c0: 0x0000000000000000      0x0000000000000000
+0x7fffffffe4d0: 0xb25fe97a18e191f5      0xb25ff9c0389b91f5
+
+=> 0x0000000000400508 <+1>:     mov    %rsp,%rbp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe460   0x7fffffffe460
+rbp            0x7fffffffe460   0x7fffffffe460
+
+0x000000000040050b <+4>:     sub    $0x8,%rsp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe458   0x7fffffffe458
+rbp            0x7fffffffe460   0x7fffffffe460
+
+foo函数局部变量赋值
+(gdb) x /16xg 0x7fffffffe450
+0x7fffffffe450: 0x0000000000400540      0x0000000200000005
+0x7fffffffe460: 0x00007fffffffe470      0x0000000000400539
+0x7fffffffe470: 0x0000000000000000      0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000      0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000      0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000      0xfc13b99db1f55b18
+0x7fffffffe4b0: 0x0000000000400400      0x00007fffffffe550
+0x7fffffffe4c0: 0x0000000000000000      0x0000000000000000
+
+
+0x000000000040051f <+24>:    callq  0x4004ed <bar>
+rsp            0x7fffffffe450   0x7fffffffe450
+rbp            0x7fffffffe460   0x7fffffffe460
+(gdb) x /16xg 0x7fffffffe450
+0x7fffffffe450: 0x0000000000400524(foo 函数0x0000000000400524 <+29>:    leaveq)      0x0000000200000005
+0x7fffffffe460: 0x00007fffffffe470(main rbp)                                 0x0000000000400539(main 函数 0x0000000000400539 <+19>:    mov    $0x0,%eax)
+0x7fffffffe470: 0x0000000000000000                                           0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000                                           0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000                                           0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000                                           0x4da01685d1e191f5
+0x7fffffffe4b0: 0x0000000000400400                                           0x00007fffffffe550
+0x7fffffffe4c0: 0x0000000000000000                                           0x0000000000000000
+
+0x00000000004004ed <+0>:     push   %rbp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe448   0x7fffffffe448
+rbp            0x7fffffffe460   0x7fffffffe460
+(gdb) x /16xg 0x7fffffffe440
+0x7fffffffe440: 0x0000000000000000                 0x00007fffffffe460(foo rbp)
+0x7fffffffe450: 0x0000000000400524(foo next)       0x0000000200000005(foo local)
+0x7fffffffe460: 0x00007fffffffe470(main rbp)       0x0000000000400539(main next)
+0x7fffffffe470: 0x0000000000000000                 0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000                 0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000                 0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000                 0xfc13b99db1f55b18
+0x7fffffffe4b0: 0x0000000000400400                 0x00007fffffffe550
+
+
+0x00000000004004ee <+1>:     mov    %rsp,%rbp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe448   0x7fffffffe448
+rbp            0x7fffffffe448   0x7fffffffe448
+
+bar函数局部赋值赋值
+(gdb) x /16xg 0x7fffffffe430
+0x7fffffffe430: 0x0000000200000005                 0x000000000040058d
+0x7fffffffe440: 0x0000000700000000(bar local)      0x00007fffffffe460(foo rbp)
+0x7fffffffe450: 0x0000000000400524(foo next)       0x0000000200000005(foo local)
+0x7fffffffe460: 0x00007fffffffe470(main rbp)       0x0000000000400539(main next)
+0x7fffffffe470: 0x0000000000000000                 0x00007ffff7a2f505
+0x7fffffffe480: 0x0000000000000000                 0x00007fffffffe558
+0x7fffffffe490: 0x0000000100000000                 0x0000000000400526
+0x7fffffffe4a0: 0x0000000000000000                 0xfc13b99db1f55b18
+
+=> 0x0000000000400505 <+24>:    pop    %rbp
+(gdb) i r rsp rbp
+rsp            0x7fffffffe450   0x7fffffffe450
+rbp            0x7fffffffe460   0x7fffffffe460
+
+
+0x0000000000400506 <+25>:    retq
+(gdb) i r rsp rbp
+rsp            0x7fffffffe458   0x7fffffffe458
+rbp            0x7fffffffe460   0x7fffffffe460
+
+=> 0x0000000000400524 <+29>:    leaveq 
+(gdb) i r rsp rbp
+rsp            0x7fffffffe468   0x7fffffffe468
+rbp            0x7fffffffe470   0x7fffffffe470
+
+(gdb) i r rsp rbp
+rsp            0x7fffffffe470   0x7fffffffe470
+rbp            0x7fffffffe470   0x7fffffffe470
+
+(gdb) disas main
+Dump of assembler code for function main:
+   0x0000000000400526 <+0>:     push   %rbp
+   0x0000000000400527 <+1>:     mov    %rsp,%rbp
+   0x000000000040052a <+4>:     mov    $0x5,%esi
+   0x000000000040052f <+9>:     mov    $0x2,%edi
+   0x0000000000400534 <+14>:    callq  0x400507 <foo>
+=> 0x0000000000400539 <+19>:    mov    $0x0,%eax
+   0x000000000040053e <+24>:    pop    %rbp
+   0x000000000040053f <+25>:    retq   
+End of assembler dump.
+
+(gdb) disas foo
+Dump of assembler code for function foo:
+   0x0000000000400507 <+0>:     push   %rbp
+   0x0000000000400508 <+1>:     mov    %rsp,%rbp
+   0x000000000040050b <+4>:     sub    $0x8,%rsp
+   0x000000000040050f <+8>:     mov    %edi,-0x4(%rbp)
+   0x0000000000400512 <+11>:    mov    %esi,-0x8(%rbp)
+   0x0000000000400515 <+14>:    mov    -0x8(%rbp),%edx
+   0x0000000000400518 <+17>:    mov    -0x4(%rbp),%eax
+   0x000000000040051b <+20>:    mov    %edx,%esi
+   0x000000000040051d <+22>:    mov    %eax,%edi
+   0x000000000040051f <+24>:    callq  0x4004ed <bar>
+   0x0000000000400524 <+29>:    leaveq 
+   0x0000000000400525 <+30>:    retq   
+End of assembler dump.
+
+(gdb) disas bar
+Dump of assembler code for function bar:
+   0x00000000004004ed <+0>:     push   %rbp
+   0x00000000004004ee <+1>:     mov    %rsp,%rbp
+   0x00000000004004f1 <+4>:     mov    %edi,-0x14(%rbp)
+   0x00000000004004f4 <+7>:     mov    %esi,-0x18(%rbp)
+   0x00000000004004f7 <+10>:    mov    -0x18(%rbp),%eax
+   0x00000000004004fa <+13>:    mov    -0x14(%rbp),%edx
+   0x00000000004004fd <+16>:    add    %edx,%eax
+   0x00000000004004ff <+18>:    mov    %eax,-0x4(%rbp)
+   0x0000000000400502 <+21>:    mov    -0x4(%rbp),%eax
+   0x0000000000400505 <+24>:    pop    %rbp
+   0x0000000000400506 <+25>:    retq   
+End of assembler dump.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

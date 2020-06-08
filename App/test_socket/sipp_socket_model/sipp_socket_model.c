@@ -168,6 +168,7 @@ int recv_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pSrc_addr, so
     int ret = 0;
     
     ret = recvfrom(sock_fd, pBuf, len, 0, pSrc_addr, &addrlen);
+    printf("recv data: %s\n" pBuf);
 
     return ret;
 }

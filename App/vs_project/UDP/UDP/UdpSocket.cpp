@@ -66,3 +66,16 @@ void CUdpSocket::OnReceive(int nErrorCode)
 
 	CSocket::OnReceive(nErrorCode);
 }
+
+// CTdpSocket
+CTcpSocket::CTcpSocket()
+{
+}
+
+CTcpSocket::~CTcpSocket()
+{
+	if (INVALID_SOCKET != this->m_hSocket)
+	{
+		Close();
+	}
+}

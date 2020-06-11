@@ -44,6 +44,16 @@ protected:
 
 };
 
+class CTcpSocket : public CSocket
+{
+public:
+
+public:
+	CTcpSocket();
+	virtual ~CTcpSocket();
+
+};
+
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}

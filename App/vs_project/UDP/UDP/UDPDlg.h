@@ -41,6 +41,7 @@ protected:
 	HICON m_hIcon;
 	
 	CUdpSocket *m_pSocket;
+	CTcpSocket *m_pTcpSocket;
 	CString m_strPeerIPaddr;
 	BOOL m_bIsConnected;
 	// Generated message map functions

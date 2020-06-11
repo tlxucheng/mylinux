@@ -69,6 +69,7 @@ CUDPDlg::CUDPDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pSocket = NULL;
+	m_pTcpSocket = NULL;
 	m_bIsConnected = FALSE;
 }
 
@@ -220,13 +221,26 @@ void CUDPDlg::OnBtnCtrlConn()
 	// 获取组合框控件的列表框中选中项的索引   
 	nSel = m_comboTrantype.GetCurSel();
     m_comboTrantype.GetLBText(nSel, strbox);
-	AfxMessageBox(TEXT(strbox));
+	//AfxMessageBox(TEXT(strbox));
+   
 
-	if (NULL != m_pSocket)
+    if("UDP" == strbox)
 	{
-		m_pSocket->Close();
-		delete m_pSocket;
-		m_pSocket = NULL;
+		if (NULL != m_pSocket)
+		{
+			m_pSocket->Close();
+			delete m_pSocket;
+			m_pSocket = NULL;
+		}
+	}
+	else if("TCP" == strbox)
+	{
+	    if (NULL != m_pTcpSocket)
+		{
+			m_pTcpSocket->Close();
+			delete m_pTcpSocket;
+			m_pTcpSocket = NULL;
+		}
 	}
 
 	if (!m_bIsConnected)
@@ -242,9 +256,19 @@ void CUDPDlg::OnBtnCtrlConn()
 		m_strPeerIPaddr.Format(TEXT("%d.%d.%d.%d"),
 			field[0], field[1], field[2], field[3]);
 		
-		m_pSocket = new CUdpSocket();
-		m_pSocket->Create(m_localPortNum, SOCK_DGRAM);
-		m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+		if("UDP" == strbox)
+		{
+			m_pSocket = new CUdpSocket();
+			m_pSocket->Create(m_localPortNum, SOCK_DGRAM);
+			m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+		}
+		else if("TCP" == strbox)
+	    {
+			m_pTcpSocket = new CTcpSocket();
+            m_pTcpSocket->Create(m_localPortNum);
+			m_pTcpSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+			m_pTcpSocket->Connect(m_strPeerIPaddr, m_peerPortNum);
+		}
 
 		GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("断开连接"));
 	}

@@ -66,3 +66,65 @@ void CMySocket::OnReceive(int nErrorCode)
 
 	CSocket::OnReceive(nErrorCode);
 }
+
+void CMySocket::OnConnect(int nErrorCode)                                          
+{
+   if (0 != nErrorCode)
+   {
+      switch (nErrorCode)
+      {
+      case WSAEADDRINUSE:
+         AfxMessageBox(_T("所指定的地址已被使用"));
+         break;
+      case WSAEADDRNOTAVAIL:
+         AfxMessageBox(_T("所指定的地址从本地计算机不可用");
+         break;
+      case WSAEAFNOSUPPORT:
+         AfxMessageBox(_T("所指定地址不能对该套接字");
+         break;
+      case WSAECONNREFUSED:
+         AfxMessageBox(_T("在尝试连接被拒绝"));
+         break;
+      case WSAEDESTADDRREQ:
+         AfxMessageBox(_T("需要目标地址"));
+         break;
+      case WSAEFAULT:
+         AfxMessageBox(_T("参数不正确"));
+         break;
+      case WSAEINVAL:
+         AfxMessageBox(_T("The socket is already bound to an address.\n"));
+         break;
+      case WSAEISCONN:
+         AfxMessageBox(_T("The socket is already connected.\n"));
+         break;
+      case WSAEMFILE:
+         AfxMessageBox(_T("No more file descriptors are available.\n"));
+         break;
+      case WSAENETUNREACH:
+         AfxMessageBox(_T("The network cannot be reached from this host ")
+                       _T("at this time.\n"));
+         break;
+      case WSAENOBUFS:
+         AfxMessageBox(_T("No buffer space is available. The socket ")
+                       _T("cannot be connected.\n"));
+         break;
+      case WSAENOTCONN:
+         AfxMessageBox(_T("The socket is not connected.\n"));
+         break;
+      case WSAENOTSOCK:
+         AfxMessageBox(_T("The descriptor is a file, not a socket.\n"));
+         break;
+      case WSAETIMEDOUT:
+         AfxMessageBox(_T("The attempt to connect timed out without ")
+                       _T("establishing a connection. \n"));
+         break;
+      default:
+         TCHAR szError[256];
+         _stprintf_s(szError, _T("OnConnect error: %d"), nErrorCode);
+         AfxMessageBox(szError);
+         break;
+      }
+      //AfxMessageBox(_T("Please close the application"));
+   }
+   CAsyncSocket::OnConnect(nErrorCode);
+}

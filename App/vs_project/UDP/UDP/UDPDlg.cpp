@@ -68,7 +68,8 @@ CUDPDlg::CUDPDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUDPDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CUDPDlg)
-	m_localPortNum = m_peerPortNum = 50500;
+	m_localPortNum = 1234;
+    m_peerPortNum = 5060;
 	m_dataToSend = _T("");
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
@@ -135,13 +136,13 @@ BOOL CUDPDlg::OnInitDialog()
 	
 	AfxSocketInit();	
 
-	m_peerIPaddr.SetAddress(127,0,0,1);
-	m_localIPaddr.SetAddress(127,0,0,1);
+	m_peerIPaddr.SetAddress(192,168,0,105);
+	m_localIPaddr.SetAddress(192,168,0,107);
 
     m_comboTrantype.AddString(_T("UDP"));
     m_comboTrantype.AddString(_T("TCP"));
     m_comboTrantype.AddString(_T("TLS"));
-    m_comboTrantype.SetCurSel(0);  
+    m_comboTrantype.SetCurSel(1);  
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -243,6 +244,8 @@ void CUDPDlg::OnBtnCtrlConn()
 	// TODO: Add your control notification handler code here
 	CString strbox;
 	int nSel;
+    int ret = 0;
+
 	// 获取组合框控件的列表框中选中项的索引   
 	nSel = m_comboTrantype.GetCurSel();
     m_comboTrantype.GetLBText(nSel, strbox);
@@ -281,7 +284,17 @@ void CUDPDlg::OnBtnCtrlConn()
 			m_pSocket = new CMySocket();
             m_pSocket->Create(m_localPortNum);
 			m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
-			m_pSocket->Connect(m_strPeerIPaddr, m_peerPortNum);
+			ret = m_pSocket->Connect(m_strPeerIPaddr, m_peerPortNum);
+			if(0 == ret)
+			{
+				//AfxMessageBox(TEXT("连接失败"));
+				m_pSocket->OnConnect(GetLastError());
+				//DWORD nErrno = GetLastError();
+			}
+			else
+			{
+				AfxMessageBox(TEXT("连接成功"));
+			}
 		}
 
 		GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("断开连接"));

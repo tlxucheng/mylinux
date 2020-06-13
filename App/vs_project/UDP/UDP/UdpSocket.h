@@ -28,6 +28,7 @@ public:
 	//{{AFX_VIRTUAL(CMySocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
+	virtual void OnConnect(int nErrorCode);
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions

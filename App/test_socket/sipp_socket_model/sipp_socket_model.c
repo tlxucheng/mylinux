@@ -371,6 +371,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in    remote_addr;
     int    connfd;
     int                   ret                       = 0;
+    char                  sendbuf[MSG_MAX_SIZE]     = {0};
 
     mode = prase_cmd(argv[1]);
     sock_type = prase_cmd_protocol(argv[2]);
@@ -420,6 +421,7 @@ int main(int argc, char *argv[])
             connfd = connect_accept(fd, &remote_addr);
         }
 
+        strncpy(sendbuf, "hello, I am is tcp server!", sizeof(sendbuf));
         while(1)
         {
             if(T_UDP == sock_type)
@@ -435,6 +437,9 @@ int main(int argc, char *argv[])
             {
                 printf("ret: %d, recv message from client: %s\n", ret, buf);
                 memset(buf, 0x0, sizeof(buf));
+                
+                send_socket(connfd, sendbuf, strlen(sendbuf), (struct sockaddr *)&addr, sizeof(addr));
+                printf("send message: %s\n", sendbuf);
             }
             else
             {

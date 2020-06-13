@@ -40,8 +40,8 @@ public:
 protected:
 	HICON m_hIcon;
 	
-	CUdpSocket *m_pSocket;
-	CTcpSocket *m_pTcpSocket;
+	CMySocket *m_pSocket;
+	int m_pTranport;
 	CString m_strPeerIPaddr;
 	BOOL m_bIsConnected;
 	// Generated message map functions
@@ -52,6 +52,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBtnSendData();
 	afx_msg void OnBtnCtrlConn();
+	void SetTransport(CString strbox);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

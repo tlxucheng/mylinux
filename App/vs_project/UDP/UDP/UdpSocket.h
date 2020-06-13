@@ -7,33 +7,31 @@
 // UdpSocket.h : header file
 //
 
-
-
 /////////////////////////////////////////////////////////////////////////////
-// CUdpSocket command target
+// CMySocket command target
 
-class CUdpSocket : public CSocket
+class CMySocket : public CSocket
 {
 // Attributes
 public:
 
 // Operations
 public:
-	CUdpSocket();
-	virtual ~CUdpSocket();
+	CMySocket();
+	virtual ~CMySocket();
 
 	
 
 // Overrides
 public:
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CUdpSocket)
+	//{{AFX_VIRTUAL(CMySocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
 	//}}AFX_VIRTUAL
 
 	// Generated message map functions
-	//{{AFX_MSG(CUdpSocket)
+	//{{AFX_MSG(CMySocket)
 		// NOTE - the ClassWizard will add and remove member functions here.
 	//}}AFX_MSG
 
@@ -41,16 +39,6 @@ public:
 protected:
 	
 	SOCKADDR_IN m_clientAddr;
-
-};
-
-class CTcpSocket : public CSocket
-{
-public:
-
-public:
-	CTcpSocket();
-	virtual ~CTcpSocket();
 
 };
 

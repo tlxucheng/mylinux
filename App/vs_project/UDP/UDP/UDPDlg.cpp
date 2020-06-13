@@ -11,6 +11,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define T_UDP                      0
+#define T_TCP                      1
+#define T_TLS                      2
+#define T_SCTP                     3
+
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -69,7 +74,6 @@ CUDPDlg::CUDPDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pSocket = NULL;
-	m_pTcpSocket = NULL;
 	m_bIsConnected = FALSE;
 }
 
@@ -212,6 +216,27 @@ void CUDPDlg::OnBtnSendData()
 		                     m_peerPortNum, m_strPeerIPaddr);
 }
 
+void CUDPDlg::SetTransport(CString strbox)
+{
+    if("UDP" == strbox)
+	{
+		m_pTranport = T_UDP;
+	}
+	else if("TCP" == strbox)
+	{
+		m_pTranport = T_TCP;
+	}
+	else if("TLS" == strbox)
+	{
+		m_pTranport = T_TLS;
+	}
+	else
+	{
+	}
+
+	return;
+}
+
 
 void CUDPDlg::OnBtnCtrlConn() 
 {
@@ -223,24 +248,13 @@ void CUDPDlg::OnBtnCtrlConn()
     m_comboTrantype.GetLBText(nSel, strbox);
 	//AfxMessageBox(TEXT(strbox));
    
+	SetTransport(strbox);
 
-    if("UDP" == strbox)
+	if (NULL != m_pSocket)
 	{
-		if (NULL != m_pSocket)
-		{
-			m_pSocket->Close();
-			delete m_pSocket;
-			m_pSocket = NULL;
-		}
-	}
-	else if("TCP" == strbox)
-	{
-	    if (NULL != m_pTcpSocket)
-		{
-			m_pTcpSocket->Close();
-			delete m_pTcpSocket;
-			m_pTcpSocket = NULL;
-		}
+		m_pSocket->Close();
+		delete m_pSocket;
+		m_pSocket = NULL;
 	}
 
 	if (!m_bIsConnected)
@@ -256,18 +270,18 @@ void CUDPDlg::OnBtnCtrlConn()
 		m_strPeerIPaddr.Format(TEXT("%d.%d.%d.%d"),
 			field[0], field[1], field[2], field[3]);
 		
-		if("UDP" == strbox)
+		if(T_UDP == m_pTranport)
 		{
-			m_pSocket = new CUdpSocket();
+			m_pSocket = new CMySocket();
 			m_pSocket->Create(m_localPortNum, SOCK_DGRAM);
 			m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
 		}
-		else if("TCP" == strbox)
+		else if(T_TCP == m_pTranport)
 	    {
-			m_pTcpSocket = new CTcpSocket();
-            m_pTcpSocket->Create(m_localPortNum);
-			m_pTcpSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
-			m_pTcpSocket->Connect(m_strPeerIPaddr, m_peerPortNum);
+			m_pSocket = new CMySocket();
+            m_pSocket->Create(m_localPortNum);
+			m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+			m_pSocket->Connect(m_strPeerIPaddr, m_peerPortNum);
 		}
 
 		GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("¶Ï¿ªÁ¬½Ó"));

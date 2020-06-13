@@ -168,9 +168,15 @@ int recv_socket(int sock_fd, char *pBuf, int len, struct sockaddr *pSrc_addr, so
     int ret = 0;
     
     ret = recvfrom(sock_fd, pBuf, len, 0, pSrc_addr, &addrlen);
-    printf("recv data: %s\n" pBuf);
 
     return ret;
+}
+
+int close_socket(int fd)
+{
+    close(fd);
+
+    return 0;
 }
 
 int poll_socket(struct sockaddr_in *pMutil_addr)
@@ -364,6 +370,7 @@ int main(int argc, char *argv[])
     int                   i                         = 0;
     struct sockaddr_in    remote_addr;
     int    connfd;
+    int                   ret                       = 0;
 
     mode = prase_cmd(argv[1]);
     sock_type = prase_cmd_protocol(argv[2]);
@@ -406,18 +413,36 @@ int main(int argc, char *argv[])
     else if(SERVER_MODE == mode)
     {
         bind_socket(fd, &addr);
-
-        if(T_UDP == sock_type)
-        {
-            recv_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
-        }
-        else if(T_TCP == sock_type)
+        
+        if(T_TCP == sock_type)
         {
             listen_socket(fd);    
             connfd = connect_accept(fd, &remote_addr);
-            recv_socket(connfd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
         }
-        printf("recv message from client: %s\n", buf);
+
+        while(1)
+        {
+            if(T_UDP == sock_type)
+            {
+                ret = recv_socket(fd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+            }
+            else if(T_TCP == sock_type)
+            {
+                close_socket(fd);
+                ret = recv_socket(connfd, buf, sizeof(buf), (struct sockaddr *)&addr, sizeof(addr));
+            }
+            if(ret > 0)
+            {
+                printf("ret: %d, recv message from client: %s\n", ret, buf);
+                memset(buf, 0x0, sizeof(buf));
+            }
+            else
+            {
+                printf("ret: %d\n", ret);
+                break;
+            }
+        }
+        close_socket(connfd);
     }
     else if(MUTIL_SERVER_MODE == mode)
     {

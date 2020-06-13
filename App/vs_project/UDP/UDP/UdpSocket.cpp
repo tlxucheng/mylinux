@@ -77,10 +77,10 @@ void CMySocket::OnConnect(int nErrorCode)
          AfxMessageBox(_T("所指定的地址已被使用"));
          break;
       case WSAEADDRNOTAVAIL:
-         AfxMessageBox(_T("所指定的地址从本地计算机不可用");
+         AfxMessageBox(_T("所指定的地址从本地计算机不可用"));
          break;
       case WSAEAFNOSUPPORT:
-         AfxMessageBox(_T("所指定地址不能对该套接字");
+         AfxMessageBox(_T("所指定地址不能对该套接字"));
          break;
       case WSAECONNREFUSED:
          AfxMessageBox(_T("在尝试连接被拒绝"));

@@ -276,8 +276,18 @@ void CUDPDlg::OnBtnCtrlConn()
 		if(T_UDP == m_pTranport)
 		{
 			m_pSocket = new CMySocket();
-			m_pSocket->Create(m_localPortNum, SOCK_DGRAM);
-			m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+			ret = m_pSocket->Create(m_localPortNum, SOCK_DGRAM);
+			//ret = m_pSocket->Bind(m_peerPortNum, m_strPeerIPaddr);
+			if(0 == ret)
+			{
+				AfxMessageBox(TEXT("创建udp socket失败"));
+			}
+			else
+			{
+				AfxMessageBox(TEXT("创建udp socket成功"));
+				m_bIsConnected = TRUE;
+			    GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("断开连接"));
+			}
 		}
 		else if(T_TCP == m_pTranport)
 	    {
@@ -311,6 +321,8 @@ void CUDPDlg::OnBtnCtrlConn()
 	GetDlgItem(IDC_PEERIPADDR)->EnableWindow(!m_bIsConnected);	
 	GetDlgItem(IDC_BTNSENDDATA)->EnableWindow(m_bIsConnected);
 	GetDlgItem(IDC_DATATOSEND)->EnableWindow(m_bIsConnected);
+
+	GetDlgItem(IDC_COMBO1)->EnableWindow(!m_bIsConnected);
 }
 
 void CUDPDlg::OnCbnSelchangeCombo1()

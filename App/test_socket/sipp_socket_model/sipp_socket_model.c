@@ -452,8 +452,16 @@ int main(int argc, char *argv[])
                 memset(output_time, 0x0, sizeof(output_time));
                 format_output_time(time(NULL), "%Y-%m-%d %H:%M:%S", output_time, sizeof(output_time));
                 memset(sendbuf, 0x0, sizeof(sendbuf));                
-                snprintf(sendbuf, sizeof(sendbuf),"[%s]%s", output_time, "hello, I am is tcp server!");
-                send_socket(connfd, sendbuf, strlen(sendbuf), (struct sockaddr *)&addr, sizeof(addr));
+                if(T_UDP == sock_type)
+                {                    
+                    snprintf(sendbuf, sizeof(sendbuf),"[%s]%s", output_time, "hello, I am is udp server!");
+                    send_socket(fd, sendbuf, strlen(sendbuf), (struct sockaddr *)&addr, sizeof(addr));
+                }
+                else if(T_TCP == sock_type)
+                {
+                    snprintf(sendbuf, sizeof(sendbuf),"[%s]%s", output_time, "hello, I am is tcp server!");
+                    send_socket(connfd, sendbuf, strlen(sendbuf), (struct sockaddr *)&addr, sizeof(addr));
+                }
                 printf("send message: %s\n", sendbuf);
             }
             else

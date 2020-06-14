@@ -262,9 +262,9 @@ void CUDPDlg::OnBtnCtrlConn()
 
 	if (!m_bIsConnected)
 	{
-		m_bIsConnected = TRUE;
+		//m_bIsConnected = TRUE;
 
-		UpdateData(TRUE);
+		UpdateData(TRUE); /* 将控件中输入的值更新到变量中 */
 		
 		BYTE field[4];
 		
@@ -294,10 +294,10 @@ void CUDPDlg::OnBtnCtrlConn()
 			else
 			{
 				AfxMessageBox(TEXT("连接成功"));
+                m_bIsConnected = TRUE;
+				GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("断开连接"));
 			}
-		}
-
-		GetDlgItem(IDC_BTNCTRLCONN)->SetWindowText(TEXT("断开连接"));
+		}	
 	}
 	else
 	{

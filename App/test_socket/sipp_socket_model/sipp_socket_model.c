@@ -7,6 +7,7 @@
 #include <poll.h>
 #include <sys/select.h>
 #include <sys/epoll.h>
+#include <time.h>
 
 #define T_UDP                      0
 #define T_TCP                      1
@@ -55,6 +56,16 @@ typedef enum cmd_mode
 int max(int a, int b)
 {
     return (a-b)>0? a:b;
+}
+
+void format_output_time(time_t input_time, char *pFormat, char *output_time, int output_time_len)
+{
+    struct tm tmTime;
+
+    localtime_r(&input_time, &tmTime);
+    strftime(output_time, output_time_len, pFormat, &tmTime);
+    
+    return;
 }
 
 int create_socket(int transport)
@@ -372,6 +383,7 @@ int main(int argc, char *argv[])
     int    connfd;
     int                   ret                       = 0;
     char                  sendbuf[MSG_MAX_SIZE]     = {0};
+    char                  output_time[128]          = {0};
 
     mode = prase_cmd(argv[1]);
     sock_type = prase_cmd_protocol(argv[2]);
@@ -421,7 +433,6 @@ int main(int argc, char *argv[])
             connfd = connect_accept(fd, &remote_addr);
         }
 
-        strncpy(sendbuf, "hello, I am is tcp server!", sizeof(sendbuf));
         while(1)
         {
             if(T_UDP == sock_type)
@@ -437,7 +448,11 @@ int main(int argc, char *argv[])
             {
                 printf("ret: %d, recv message from client: %s\n", ret, buf);
                 memset(buf, 0x0, sizeof(buf));
-                
+
+                memset(output_time, 0x0, sizeof(output_time));
+                format_output_time(time(NULL), "%Y-%m-%d %H:%M:%S", output_time, sizeof(output_time));
+                memset(sendbuf, 0x0, sizeof(sendbuf));                
+                snprintf(sendbuf, sizeof(sendbuf),"[%s]%s", output_time, "hello, I am is tcp server!");
                 send_socket(connfd, sendbuf, strlen(sendbuf), (struct sockaddr *)&addr, sizeof(addr));
                 printf("send message: %s\n", sendbuf);
             }

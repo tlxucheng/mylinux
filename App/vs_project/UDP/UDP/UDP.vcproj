@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="UDP"
 	ProjectGUID="{8C09371B-05E1-4E26-8C81-6F88D4A36D7A}"
+	RootNamespace="UDP"
 	Keyword="MFCProj"
 	TargetFrameworkVersion="0"
 	>
@@ -49,6 +50,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalUsingDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,6 +81,7 @@
 				OutputFile=".\Debug/UDP.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/UDP.pdb"
 				SubSystem="2"
@@ -320,11 +323,39 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\amqp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\amqp_framing.h"
+				>
+			</File>
+			<File
+				RelativePath=".\amqp_private.h"
+				>
+			</File>
+			<File
+				RelativePath=".\amqp_table.h"
+				>
+			</File>
+			<File
+				RelativePath=".\amqp_tcp_socket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\amqp_time.h"
+				>
+			</File>
+			<File
 				RelativePath="Resource.h"
 				>
 			</File>
 			<File
 				RelativePath="StdAfx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdint.h"
 				>
 			</File>
 			<File

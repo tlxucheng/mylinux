@@ -55,6 +55,9 @@ protected:
 	void SetTransport(CString strbox);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+	/* rabbitmq function */
+	void test_rabbitmq();
 public:
 	CComboBox m_comboTrantype;
 	afx_msg void OnCbnSelchangeCombo1();

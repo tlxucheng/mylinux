@@ -13,6 +13,8 @@
 #define IDC_BTNCTRLCONN                 1003
 #define IDC_DATATOSEND                  1004
 #define IDC_COMBO1                      1005
+#define IDC_DATATOSEND2                 1006
+#define IDC_DATATORECV                  1006
 #define IDC_LOCALIPADDR                 1009
 #define IDC_PEERPORTNUM                 1014
 

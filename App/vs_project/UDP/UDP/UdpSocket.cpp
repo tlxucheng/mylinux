@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "UDP.h"
 #include "UdpSocket.h"
+#include "UDPDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,6 +45,7 @@ void CMySocket::OnReceive(int nErrorCode)
 	
 	TCHAR recBuf[1024];
 	int len = sizeof(SOCKADDR_IN);
+	CString recv_msg;
 
 	ZeroMemory(recBuf, sizeof(recBuf));
 
@@ -59,10 +61,14 @@ void CMySocket::OnReceive(int nErrorCode)
 	}
 	else
 	{
-		CString strBuf;
-		strBuf.Format(TEXT("收到数据: %s"),  recBuf);
-		AfxMessageBox(strBuf, MB_OK);		
+		//CString strBuf;
+		//strBuf.Format(TEXT("收到数据: %s"),  recBuf);
+		//AfxMessageBox(strBuf, MB_OK);
+
+        //((CUDPDlg*)theApp.GetMainWnd())->SetDlgItemTextW(IDC_DATATORECV, recBuf);
+		((CUDPDlg*)(AfxGetApp()->m_pMainWnd))->GetDlgItem(IDC_DATATORECV)->SetWindowText(recBuf);
 	}
+
 
 	CSocket::OnReceive(nErrorCode);
 }
@@ -92,31 +98,28 @@ void CMySocket::OnConnect(int nErrorCode)
          AfxMessageBox(_T("参数不正确"));
          break;
       case WSAEINVAL:
-         AfxMessageBox(_T("The socket is already bound to an address.\n"));
+         AfxMessageBox(_T("无效主机地址"));
          break;
       case WSAEISCONN:
-         AfxMessageBox(_T("The socket is already connected.\n"));
+         AfxMessageBox(_T("套接字已连接"));
          break;
       case WSAEMFILE:
-         AfxMessageBox(_T("No more file descriptors are available.\n"));
+         AfxMessageBox(_T("没有其他文件描述符不可用"));
          break;
       case WSAENETUNREACH:
-         AfxMessageBox(_T("The network cannot be reached from this host ")
-                       _T("at this time.\n"));
+         AfxMessageBox(_T("网络无法从目前的宿为止"));
          break;
       case WSAENOBUFS:
-         AfxMessageBox(_T("No buffer space is available. The socket ")
-                       _T("cannot be connected.\n"));
+         AfxMessageBox(_T("没有缓冲区空间可用"));
          break;
       case WSAENOTCONN:
-         AfxMessageBox(_T("The socket is not connected.\n"));
+         AfxMessageBox(_T("套接字已连接"));
          break;
       case WSAENOTSOCK:
-         AfxMessageBox(_T("The descriptor is a file, not a socket.\n"));
+         AfxMessageBox(_T("描述符不是套接字"));
          break;
       case WSAETIMEDOUT:
-         AfxMessageBox(_T("The attempt to connect timed out without ")
-                       _T("establishing a connection. \n"));
+         AfxMessageBox(_T("尝试连接超时"));
          break;
       default:
          TCHAR szError[256];

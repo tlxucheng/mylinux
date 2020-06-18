@@ -28,6 +28,8 @@ public:
 	UINT	m_localPortNum;
 	UINT	m_peerPortNum;
 	CString	m_dataToSend;
+	//CString m_exchange;
+	//CString m_routingkey;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -61,6 +63,8 @@ protected:
 public:
 	CComboBox m_comboTrantype;
 	afx_msg void OnCbnSelchangeCombo1();
+	CEdit m_exchange;
+	CEdit m_routingkey;
 };
 
 //{{AFX_INSERT_LOCATION}}

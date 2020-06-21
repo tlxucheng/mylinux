@@ -21,6 +21,7 @@ sudo systemctl status  firewalld 查看防火墙状态。
 （1）启动消费者
 cd /home/xucheeng/Downloads/os/rabbitmq-c-master/rabbitmq-c-master/build/examples
 ./amqp_listen 192.168.0.108 5672 amq.direct test
+./amqp_listen 192.168.0.108 5672 ccm_extgbal_xc_test ccm_extspec_xc_test_0
 （2）启动生成者
 ./amqp_sendstring 192.168.0.108 5672 amq.direct test "hello world"
 

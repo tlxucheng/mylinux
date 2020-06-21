@@ -90,7 +90,7 @@ int main(int argc, char const *const *argv) {
 
   {
     amqp_queue_declare_ok_t *r = amqp_queue_declare(
-        conn, 1, amqp_empty_bytes, 0, 0, 0, 1, amqp_empty_table);
+        conn, 1, amqp_cstring_bytes(bindingkey), 0, 0, 0, 1, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring queue");
     queuename = amqp_bytes_malloc_dup(r->queue);
     if (queuename.bytes == NULL) {
@@ -99,11 +99,16 @@ int main(int argc, char const *const *argv) {
     }
   }
 
+  amqp_exchange_declare(conn, 1, amqp_cstring_bytes(exchange),
+                        amqp_cstring_bytes("direct"), 0, 0, 1, 0,
+                        amqp_empty_table);
+  die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring exchange");
+  
   amqp_queue_bind(conn, 1, queuename, amqp_cstring_bytes(exchange),
-                  amqp_cstring_bytes(bindingkey), amqp_empty_table);
+                  amqp_cstring_bytes(bindingkey), amqp_empty_table);  
   die_on_amqp_error(amqp_get_rpc_reply(conn), "Binding queue");
 
-  amqp_basic_consume(conn, 1, queuename, amqp_empty_bytes, 0, 1, 0,
+  amqp_basic_consume(conn, 1, amqp_cstring_bytes(bindingkey), amqp_empty_bytes, 0, 1, 0,
                      amqp_empty_table);
   die_on_amqp_error(amqp_get_rpc_reply(conn), "Consuming");
 

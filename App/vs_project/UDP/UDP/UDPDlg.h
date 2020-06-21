@@ -65,6 +65,8 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	CEdit m_exchange;
 	CEdit m_routingkey;
+	CEdit m_RmqUser;
+	CEdit m_RmqPwd;
 };
 
 //{{AFX_INSERT_LOCATION}}

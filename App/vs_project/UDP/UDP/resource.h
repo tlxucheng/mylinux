@@ -17,8 +17,9 @@
 #define IDC_LOCALIPADDR                 1009
 #define IDC_PEERPORTNUM                 1014
 #define IDC_EXCHANGE                    1015
-#define IDC_EXCHANGE2                   1016
 #define IDC_ROUTINGKEY                  1016
+#define IDC_RMQUSER                     1017
+#define IDC_RMQPWD                      1018
 
 // Next default values for new objects
 // 

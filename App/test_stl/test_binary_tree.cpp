@@ -16,8 +16,10 @@ typedef struct BiTNode
  * ABDG##E##H##C#F##
  * ABCD#E###G##C#F##
  * ABCD#E###G##CF##M##
- * ABCD#E###G##CF##M#N
- * ABCD#E###G##CF##MN#
+ * ABCD#E###G##CF##M#N##
+ * ABCD#E###G##CF##MN###
+ * ABCD#####
+ * ABCD#E#####
  */
 
 void CreatBiTree_NoRecursion(BiTNode* &T)
@@ -41,11 +43,6 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
     do
     {
         cin >> ch;
-
-        if('!' == ch)
-        {
-            break;
-        }
 
         if('#' != ch)
         {
@@ -76,11 +73,19 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
                 temp_node->rchild = NULL;
                 tree_elem.pop();
 
-                top_node = tree_elem.top();
-                if(top_node->rchild == temp_node)
+                while(!tree_elem.empty())
                 {
-                    tree_elem.pop();
-                }
+                    top_node = tree_elem.top();
+                    if(top_node->rchild == temp_node)
+                    {
+                        tree_elem.pop();
+                        temp_node = top_node;
+                    }
+                    else 
+                    {
+                        break;
+                    }
+               };
             }
         }
    

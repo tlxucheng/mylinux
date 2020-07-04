@@ -94,8 +94,15 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
     return;
 }
 
+
 void CreatBiTree_NoRecursion_ByCinString(BiTNode* &T)
 {
+    string str;
+
+    cin >> str;
+    cout << str << endl;
+
+    return;
 }
 
 void CreatBiTree(BiTNode* &T)
@@ -146,6 +153,8 @@ int main()
     cout << "pre order: "; 
     preorder(root);
     cout << endl;
+
+    CreatBiTree_NoRecursion_ByCinString(root);
 
     return 0;
 }

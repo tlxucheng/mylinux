@@ -10,7 +10,15 @@ typedef struct BiTNode
     struct BiTNode *rchild;    
 }BiTNode;
 
-/* input: ABDG###E##C#F## */
+/* input: 
+ * ABDG###E##C#F## 
+ * ABD#G###C#F##
+ * ABDG##E##H##C#F##
+ * ABCD#E###G##C#F##
+ * ABCD#E###G##CF##M##
+ * ABCD#E###G##CF##M#N
+ * ABCD#E###G##CF##MN#
+ */
 
 void CreatBiTree_NoRecursion(BiTNode* &T)
 {
@@ -19,6 +27,7 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
     char              top_elem;
     BiTNode*          new_node    = NULL;           
     BiTNode*          temp_node   = NULL;  
+    BiTNode*          top_node    = NULL;      
     bool              IsDirection = true; // true:×ó false:ÓÒ
     bool              Isroot      = true;
 
@@ -71,15 +80,11 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
                 {
                     temp_node->rchild = NULL;
                     tree_elem.pop();
-                    
-                    temp_node = tree_elem.top();
-                    while(NULL != temp_node->lchild && NULL != temp_node->rchild)
+
+                    top_node = tree_elem.top();
+                    if(top_node->rchild == temp_node)
                     {
-                        if(!tree_elem.empty())
-                        {
-                            tree_elem.pop();
-                            temp_node = tree_elem.top();
-                        }
+                        tree_elem.pop();
                     }
                 }
             }

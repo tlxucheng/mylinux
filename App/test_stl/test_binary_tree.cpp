@@ -29,7 +29,14 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
     BiTNode*          temp_node   = NULL;  
     BiTNode*          top_node    = NULL;      
     bool              IsDirection = true; // true:左 false:右
-    bool              Isroot      = true;
+
+    /* 创建根节点 */
+    cin >> ch;
+    T = new BiTNode;
+    T->data = ch;
+    T->lchild = NULL;
+    T->rchild = NULL;
+    tree_elem.push(T);
 
     do
     {
@@ -40,52 +47,39 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
             break;
         }
 
-        if(Isroot)
+        if('#' != ch)
         {
-            /* 创建根节点 */
-            T = new BiTNode;
-            T->data = ch;
-            T->lchild = NULL;
-            T->rchild = NULL;
-            tree_elem.push(T);
-            Isroot = false;
-        }
-        else
-        {
-            if('#' != ch)
+            new_node = new BiTNode;
+            new_node->data = ch;
+            temp_node = tree_elem.top();
+            if(true == IsDirection)
             {
-                new_node = new BiTNode;
-                new_node->data = ch;
-                temp_node = tree_elem.top();
-                if(true == IsDirection)
-                {
-                    temp_node->lchild = new_node;
-                }
-                else 
-                {
-                    temp_node->rchild = new_node;
-                    IsDirection = true;
-                }
-                tree_elem.push(new_node);
+                temp_node->lchild = new_node;
             }
-            else if('#' == ch)
+            else 
             {
-                temp_node = tree_elem.top();
-                if(true == IsDirection)
-                {
-                    temp_node->lchild = NULL;
-                    IsDirection = false;
-                }
-                else 
-                {
-                    temp_node->rchild = NULL;
-                    tree_elem.pop();
+                temp_node->rchild = new_node;
+                IsDirection = true;
+            }
+            tree_elem.push(new_node);
+        }
+        else if('#' == ch)
+        {
+            temp_node = tree_elem.top();
+            if(true == IsDirection)
+            {
+                temp_node->lchild = NULL;
+                IsDirection = false;
+            }
+            else 
+            {
+                temp_node->rchild = NULL;
+                tree_elem.pop();
 
-                    top_node = tree_elem.top();
-                    if(top_node->rchild == temp_node)
-                    {
-                        tree_elem.pop();
-                    }
+                top_node = tree_elem.top();
+                if(top_node->rchild == temp_node)
+                {
+                    tree_elem.pop();
                 }
             }
         }

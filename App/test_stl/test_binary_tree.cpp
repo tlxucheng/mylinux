@@ -20,6 +20,8 @@ typedef struct BiTNode
  * ABCD#E###G##CF##MN###
  * ABCD#####
  * ABCD#E#####
+ * ABCD###EM##N##C#F##
+ * 4123#####
  */
 
 void CreatBiTree_NoRecursion(BiTNode* &T)
@@ -141,6 +143,42 @@ void preorder(BiTNode *T)
     cout << T->data;
     preorder(T->lchild);
     preorder(T->rchild);
+
+    return;
+}
+
+/* ABDG###E##C#F## */
+void preorder_NoRecursion(BiTNode *T)
+{
+    BiTNode           *node = NULL;
+    stack<BiTNode *>  tree_elem;
+
+    node = T;
+
+    while(!tree_elem.empty() || NULL != node)
+    {
+        if(NULL != node)
+        {
+            cout << node->data;
+            if(NULL != node->rchild)
+            {
+                tree_elem.push(node->rchild);
+            }
+            node = node->lchild;
+        }
+        else
+        {
+            if(!tree_elem.empty())
+            {
+                node = tree_elem.top();
+                tree_elem.pop();
+            }
+        }
+    };
+    
+    cout << endl;    
+    
+    return;
 }
 
 int main()
@@ -154,7 +192,11 @@ int main()
     preorder(root);
     cout << endl;
 
-    CreatBiTree_NoRecursion_ByCinString(root);
+    preorder_NoRecursion(root);
+
+    //CreatBiTree_NoRecursion_ByCinString(root);
+
+    delete(root);
 
     return 0;
 }

@@ -10,6 +10,13 @@ typedef struct BiTNode
     struct BiTNode *rchild;    
 }BiTNode;
 
+typedef struct BiSortTNode
+{
+    int data;
+    struct BiSortTNode *lchild;
+    struct BiSortTNode *rchild;    
+}BiSortTNode;
+
 /* input: 
  * ABDG###E##C#F## 
  * ABD#G###C#F##
@@ -92,6 +99,37 @@ void CreatBiTree_NoRecursion(BiTNode* &T)
         }
    
     }while(!tree_elem.empty());
+
+    return;
+}
+
+void CreatBiSortTreeInsert(BiSortTNode* &T, int data)
+{
+    BiSortTNode *temp_node  = NULL;  
+    BiSortTNode *find_node  = NULL;  
+
+    /* ¸ù½Úµã */
+    if(NULL == T)
+    {
+        T = new BiSortTNode;
+        T->data = data;
+        T->lchild = NULL;
+        T->rchild = NULL;
+    }
+    else
+    {
+        find_node = T;
+        if(data < find_node->data)
+        {
+            if(NULL == find_node->lchild)
+            {
+                temp_node = new BiSortTNode;
+                temp_node->data = data;
+                find_node->lchild = temp_node;
+                
+            }
+        }
+    }
 
     return;
 }

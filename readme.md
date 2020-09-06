@@ -27,3 +27,6 @@ cd /home/xucheeng/Downloads/os/rabbitmq-c-master/rabbitmq-c-master/build/example
 
 3. MFC 生成者
 MFC test_rabbitmq 代替 105 上面的生成者
+
+4. 108 samba 登录口令
+xucheng/123456

@@ -37,4 +37,38 @@ foreach($matrix as $row)
     echo '<br>';
 }
 
+$str_lang = "c++、java、php";
+$str_lang_array = explode("、", $str_lang);
+print_r($str_lang_array);
+echo '<br>';
+
+$str_lang_array2 = array("c++","java","php","js");
+echo implode(",", $str_lang_array2).'<br>';
+
+const ACTION_FLAGS = [
+'deleted' => 0,
+'created' => 1,
+'updated' => 2,
+];
+
+print(ACTION_FLAGS['deleted']).'<br>';
+print(ACTION_FLAGS['created']).'<br>';
+print(ACTION_FLAGS['updated']).'<br>';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ?>

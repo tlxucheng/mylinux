@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="UTF-8">
+<title>教师管理</title>
+</head>
+<body>
+<table>
+<tr>
+	<th>序号</th>
+	<th>姓名</th>
+	<th>性别</th>
+	<th>邮箱</th>
+	<th>用户名</th>
+</tr>
+{volist name="teachers" id="teacher"}
+<tr>
+	<td>{$key}</td>
+	<td>{$teacher->getData('name')}</td>
+	<td>{eq name='$teacher->getData("sex")' value='0'}男{else /}女{/eq}</td>
+	<td>{$teacher->getData('email')}</td>
+	<td>{$teacher->getData('username')}</td>
+</tr>
+{/volist}
+</table>
+</body>
+</html>

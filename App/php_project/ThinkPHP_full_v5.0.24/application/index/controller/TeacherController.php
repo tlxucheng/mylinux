@@ -1,27 +1,8 @@
 <?php
 namespace app\index\controller;
 use think\Controller;
+use think\Request;
 use app\common\model\Teacher;
-
-//use think\Db;
-
-/*
-class TeacherController
-{
-    public function index()
-    {			
-		$Teacher = new Teacher;
-		$teachers = $Teacher->select();
-		
-		$teacher = $teachers[0];
-		
-		var_dump($teacher->getData('name'));
-		echo $teacher->getData('name');
-		//echo 'hello teacher';
-    }
-
-}
-*/
 
 class TeacherController extends Controller
 {
@@ -35,6 +16,28 @@ class TeacherController extends Controller
 		
 		return $htmls;
     }
+	
+	public function insert()
+	{
+		$postdata = Request::instance()->post();
+		
+		$Teacher = new Teacher();
+		
+		$Teacher->name = $postdata['name'];
+		$Teacher->username = $postdata['username'];
+		$Teacher->sex = $postdata['sex'];
+		$Teacher->email = $postdata['email'];
+		
+		$Teacher->save();
+		
+		return '新增成功。新增ID为:' . $Teacher->id;
+	}
+	
+	public function add()
+	{
+		$htmls = $this->fetch();		
+		return $htmls;
+	}
 
 }
 

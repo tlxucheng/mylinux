@@ -1,24 +1,38 @@
 ﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <html lang="zh-cn">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>新增数据</title>
 </head>
+
 <body class="container">
-	<div class="row">
+	<div style="width:100%;text-align:center">
+		<p><strong><font size="20">今日</font></strong></p>
+	<div>
+	<div id="datetime" style="width:100%;text-align:center">
+		<script type="text/javascript">
+			var date = new Date();
+			document.write(date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日" + " 星期" + "日一二三四五六".charAt(date.getDay()));
+		    document.write("<br><br>");
+		</script>
+	</div>
+	
+	<div class="row" style="width:100%;text-align:center">				
 		<div class="col-md-12">
 			<form action="insert" method="post">
 				<label>姓名:</label>
-				<input type="text" name="name" />
+				<input type="text" name="name" /><br>
 				<label>用户名:</label>
-				<input type="text" name="username" />
+				<input type="text" name="username" /><br>
 				<label>性别:</label>
 				<select name="sex">
 					<option value="0">男</option>
 					<option value="1">女</option>
-				</select>
+				</select><br>
 				<label>邮箱:</label>
-				<input type="email" name="email" />
+				<input type="email" name="email" /><br>
 				<button type="submit">保存</button>
 			</form>
 		</div>

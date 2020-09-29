@@ -51,6 +51,40 @@
 }
 </style>
 
+<style>
+	input[type=text], select {
+	  width: 100%;
+	  padding: 12px 20px;
+	  margin: 8px 0;
+	  display: inline-block;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  box-sizing: border-box;
+	}
+</style>
+
+<style>
+	input[type=email], select {
+	  width: 100%;
+	  padding: 12px 20px;
+	  margin: 8px 0;
+	  display: inline-block;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  box-sizing: border-box;
+	}
+	
+	
+	label{  
+    display:inline-block;  
+    width:100%;
+	height:30px;
+    text-align:left;
+	background-color:#FAF0E6;
+    }
+
+</style>
+
 <body class="container">
 	<div id="header">
 		<p><strong><font size="20">今日</font></strong></p>
@@ -63,7 +97,15 @@
 		</script>
 	</div>
 	
-	<div class="row" style="width:100%;text-align:center">				
+	  <div class="mui-input-row ">  
+			    <label><input name="母乳" type="radio" value="" />母乳</label> 
+				<label><input name="配方奶" type="radio" value="" />配方奶</label> 
+				<label><input name="开水" type="radio" value="" />开水</label> 
+				<label><input name="便便" type="radio" value="" />便便</label> 
+				</div>
+		
+	
+	<div class="row">				
 		<div class="col-md-12">
 			<form action="insert" method="post">
 				<label>姓名:</label><br>

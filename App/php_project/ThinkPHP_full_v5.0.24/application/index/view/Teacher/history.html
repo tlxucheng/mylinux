@@ -41,6 +41,15 @@ $(document).ready(function() {
       borderWidth: 0
    };
 
+   var plotOptions = {
+      line: {
+         dataLabels: {
+            enabled: true
+         },   
+         enableMouseTracking: false
+      }
+   };
+   
    var series =  [
       {
          name: 'Tokyo',
@@ -57,6 +66,7 @@ $(document).ready(function() {
    json.tooltip = tooltip;
    json.legend = legend;
    json.series = series;
+   json.plotOptions = plotOptions;
 
    $('#container').highcharts(json);
 });

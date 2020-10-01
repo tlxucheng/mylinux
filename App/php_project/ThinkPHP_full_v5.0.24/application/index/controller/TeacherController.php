@@ -33,6 +33,13 @@ class TeacherController extends Controller
 		return '新增成功。新增ID为:' . $Teacher->id;
 	}
 	
+	public function history()
+	{		
+	    $htmls = $this->fetch();
+		
+		return $htmls;
+	}
+	
 	public function add()
 	{
 		$htmls = $this->fetch();		

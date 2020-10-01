@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>新增数据</title>
+    <link rel="stylesheet" type="text/css" href="/ThinkPHP_full_v5.0.24/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+</head>
+
+<style>
+    .yongyin {
+     width:100px;
+     text-align:center;
+     line-height:100%;
+     padding:0.3em;
+     font:16px Arial,sans-serif bold;
+     font-style:normal;
+     text-decoration:none;
+     margin:2px;
+     vertical-align:text-bottom;
+     zoom:1;
+     outline:none;
+     font-size-adjust:none;
+     font-stretch:normal;
+     border-radius:50px;
+     box-shadow:0px 1px 2px rgba(0,0,0,0.2);
+     text-shadow:0px 1px 1px rgba(0,0,0,0.3);
+     color:#fefee9;
+     border:0.2px solid #2299ff;
+     background-repeat:repeat;
+     background-size:auto;
+     background-origin:padding-box;
+     background-clip:padding-box;
+     background-color:#228B22;
+     background: linear-gradient(to bottom, #228B22 0%, #228B22 100%);
+}
+ 
+.yongyin:hover {
+    background: #268DFF;
+}
+</style>
+
+<style>
+#header {
+    background-color:#FFC0CB;
+    color:black;
+	width:100%;
+    text-align:center;
+	height:120px;
+    padding:1px;
+}
+</style>
+
+<style>
+	input[type=text], select {
+	  width: 100%;
+	  padding: 12px 20px;
+	  margin: 8px 0;
+	  display: inline-block;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  box-sizing: border-box;
+	}
+</style>
+
+<style>
+	input[type=email], select {
+	  width: 100%;
+	  padding: 12px 20px;
+	  margin: 8px 0;
+	  display: inline-block;
+	  border: 1px solid #ccc;
+	  border-radius: 4px;
+	  box-sizing: border-box;
+	}
+	
+	
+	label{  
+    display:inline-block;  
+    width:100%;
+	height:30px;
+    text-align:left;
+	background-color:#FAF0E6;
+    }
+
+</style>
+
+<body class="container">
+	<div id="header">
+		<p><strong><font size="20">今日</font></strong></p>
+	<div>
+	<div id="datetime" style="width:100%;text-align:center">
+		<script type="text/javascript">
+			var date = new Date();
+			document.write(date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日" + " 星期" + "日一二三四五六".charAt(date.getDay()));
+		    document.write("<br><br>");
+		</script>
+	</div>
+
+	<form>
+
+</form>
+	
+	<div class="row">				
+		<div class="col-md-12">
+			<form action="insert" method="post">	
+				<input type="radio" name="食物">母乳
+				<input type="radio" name="食物">配方奶
+				<input type="radio" name="食物">开水
+				<input type="radio" name="食物">便便
+				<label>姓名:</label><br>
+				<input type="text" name="name" /><br>
+				<label>用户名:</label><br>
+				<input type="text" name="username" /><br>
+				<label>性别:</label><br>
+				<select name="sex">
+					<option value="0">男</option>
+					<option value="1">女</option>
+				</select><br>
+				<label>邮箱:</label><br>
+				<input type="email" name="email" /><br>
+				<button type="submit" class="yongyin" style="width:400px; height:50px;">保存</button>
+				
+				<ul class="nav nav-tabs">
+				    <li class="active"><a href="#">首页</a></li>
+					<li><a href="{:url('Teacher/index')}">历史</a></li>
+					<li><a href="{:url('Teacher/history')}">统计</a></li>
+					<li><a href="#">设置</a></li>
+				</ul>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

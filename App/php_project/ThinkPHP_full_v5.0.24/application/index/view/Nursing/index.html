@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>喂奶神器</title>
+	<!--link rel="stylesheet" type="text/css" href="/ThinkPHP_full_v5.0.24/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css"-->
+</head>
+<body>
+<table>
+<tr>
+    <th>序号</th>
+	<th>项目</th>
+	<th>数量</th>
+	<th>日期</th>
+	<th>时间</th>
+	<th>备注</th>
+</tr>
+{volist name="nursings" id="nursing"}
+<tr>
+	<td>{$key}</td>
+	<td>{$nursing->getData('project_type')}</td>
+    <td>{$nursing->getData('project_number')}</td>
+	<td>{$nursing->getData('project_data')}</td>
+	<td>{$nursing->getData('project_time')}</td>
+    <td>{$nursing->getData('project_comments')}</td>
+</tr>
+{/volist}
+</table>
+</body>
+</html>

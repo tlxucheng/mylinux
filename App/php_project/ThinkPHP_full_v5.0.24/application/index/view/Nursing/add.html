@@ -105,27 +105,33 @@
 	<div class="row">				
 		<div class="col-md-12">
 			<form action="insert" method="post">	
-				<input type="radio" name="食物">母乳
-				<input type="radio" name="食物">配方奶
-				<input type="radio" name="食物">开水
-				<input type="radio" name="食物">便便
-				<label>姓名:</label><br>
-				<input type="text" name="name" /><br>
-				<label>用户名:</label><br>
-				<input type="text" name="username" /><br>
-				<label>性别:</label><br>
-				<select name="sex">
-					<option value="0">男</option>
-					<option value="1">女</option>
-				</select><br>
-				<label>邮箱:</label><br>
-				<input type="email" name="email" /><br>
+			
+			    <label>项目:</label><br>
+				<input type="radio" name="project_type">母乳
+				<input type="radio" name="project_type">配方奶
+				<input type="radio" name="project_type">开水
+				<input type="radio" name="project_type">便便
+				
+				
+				<label>数量:</label><br>
+				<input type="text" name="project_number" /><br>
+				
+				<label>日期:</label><br>
+				<input type="text" name="project_date" /><br>
+
+				<label>时间:</label><br>
+				<input type="text" name="project_time" /><br>
+
+
+				<label>备注:</label><br>
+				<input type="text" name="project_comments" /><br>
+				
 				<button type="submit" class="yongyin" style="width:400px; height:50px;">保存</button>
 				
 				<ul class="nav nav-tabs">
 				    <li class="active"><a href="#">首页</a></li>
-					<li><a href="{:url('Teacher/index')}">历史</a></li>
-					<li><a href="{:url('Teacher/history')}">统计</a></li>
+					<li><a href="{:url('Nursing/index')}">历史</a></li>
+					<li><a href="{:url('Nursing/history')}">统计</a></li>
 					<li><a href="#">设置</a></li>
 				</ul>
 			</form>

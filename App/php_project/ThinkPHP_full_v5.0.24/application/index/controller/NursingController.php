@@ -23,11 +23,11 @@ class NursingController extends Controller
 		
 		$Nursing = new Nursing();
 		
-		$Nursing->project_type = $postdata['project_type'];
+		//$Nursing->project_type = $postdata['project_type'];
 		$Nursing->project_number = $postdata['project_number'];
-		$Nursing->project_data = $postdata['project_date'];
+		$Nursing->project_date = $postdata['project_date'];
 		$Nursing->project_time = $postdata['project_time'];
-		$Nursing->project_ = $postdata['project_time'];
+		$Nursing->project_comments = $postdata['project_comments'];
 		
 		$Nursing->save();
 		

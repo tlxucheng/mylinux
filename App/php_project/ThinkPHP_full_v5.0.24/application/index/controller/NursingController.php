@@ -34,7 +34,7 @@ class NursingController extends Controller
 		return '新增成功。新增ID为:' . $Nursing->id;
 	}
 	
-	public function history()
+	public function statistics()
 	{		
 	    $htmls = $this->fetch();
 		

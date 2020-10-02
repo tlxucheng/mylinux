@@ -25,7 +25,7 @@ class NursingController extends Controller
 		
 		$Nursing->project_type = $postdata['project_type'];
 		$Nursing->project_number = $postdata['project_number'];
-		$Nursing->project_data = $postdata['project_data'];
+		$Nursing->project_data = $postdata['project_date'];
 		$Nursing->project_time = $postdata['project_time'];
 		$Nursing->project_ = $postdata['project_time'];
 		

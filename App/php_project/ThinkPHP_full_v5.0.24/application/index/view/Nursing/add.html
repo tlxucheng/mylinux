@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<title>新增数据</title>
+	<title>喂奶神器</title>
     <link rel="stylesheet" type="text/css" href="/ThinkPHP_full_v5.0.24/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 </head>
 
@@ -98,9 +98,6 @@
 		</script>
 	</div>
 
-	<form>
-
-</form>
 	
 	<div class="row">				
 		<div class="col-md-12">
@@ -113,9 +110,24 @@
 				<label>数量:</label><br>
 				<input type="text" name="project_number" /><br>
 				<label>日期:</label><br>
-				<input type="text" name="project_date" /><br>
+				<input type="date" name="project_date" id='today_date' style="width:100%;text-align:left" /><br>
+				<script>
+					 var today_date = new Date();
+					 var day = ("0" + today_date.getDate()).slice(-2);
+					 var month = ("0" + (today_date.getMonth() + 1)).slice(-2);
+					 var today = today_date.getFullYear() + "-" + (month) + "-" + (day);
+					 document.getElementById("today_date").value=today;
+				</script>
 				<label>时间:</label><br>
-				<input type="text" name="project_time" /><br>
+				<input type="text" name="project_time" id='today_time' /><br>
+				<script>
+				    var today_time = new Date();
+					var hours = ("0" + today_time.getHours()).slice(-2);
+					var mins = ("0" + today_time.getMinutes()).slice(-2);
+					document.getElementById("today_time").value = hours + ":" + mins;
+				</script>
+				
+				
 				<label>备注:</label><br>
 				<input type="text" name="project_comments" /><br>
 				<button type="submit" class="yongyin" style="width:400px; height:50px;">保存</button>

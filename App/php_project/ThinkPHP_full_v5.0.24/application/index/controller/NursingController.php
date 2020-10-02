@@ -22,8 +22,8 @@ class NursingController extends Controller
 		$postdata = Request::instance()->post();
 		
 		$Nursing = new Nursing();
-		
-		//$Nursing->project_type = $postdata['project_type'];
+
+		$Nursing->project_type = $postdata['project_type'];
 		$Nursing->project_number = $postdata['project_number'];
 		$Nursing->project_date = $postdata['project_date'];
 		$Nursing->project_time = $postdata['project_time'];

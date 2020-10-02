@@ -105,29 +105,20 @@
 	<div class="row">				
 		<div class="col-md-12">
 			<form action="insert" method="post">	
-			
 			    <label>项目:</label><br>
-				<input type="radio" name="project_type">母乳
-				<input type="radio" name="project_type">配方奶
-				<input type="radio" name="project_type">开水
-				<input type="radio" name="project_type">便便
-				
-				
+				<input type="radio" name="project_type" value="0">母乳
+				<input type="radio" name="project_type" value="1">配方奶
+				<input type="radio" name="project_type" value="2">开水
+				<input type="radio" name="project_type" value="3">便便						
 				<label>数量:</label><br>
 				<input type="text" name="project_number" /><br>
-				
 				<label>日期:</label><br>
 				<input type="text" name="project_date" /><br>
-
 				<label>时间:</label><br>
 				<input type="text" name="project_time" /><br>
-
-
 				<label>备注:</label><br>
 				<input type="text" name="project_comments" /><br>
-				
 				<button type="submit" class="yongyin" style="width:400px; height:50px;">保存</button>
-				
 				<ul class="nav nav-tabs">
 				    <li class="active"><a href="#">首页</a></li>
 					<li><a href="{:url('Nursing/index')}">历史</a></li>

@@ -19,7 +19,8 @@
 </tr>
 {volist name="nursings" id="nursing"}
 <tr>
-	<td>{$key}</td>
+	<!--td>{$key}</td-->
+	<td>{$nursing->getData('id')}</td>
 	<td>{$nursing->getData('project_type')}</td>
     <td>{$nursing->getData('project_number')}</td>
 	<td>{$nursing->getData('project_date')}</td>

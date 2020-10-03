@@ -6,12 +6,22 @@ use app\common\model\Nursing;
 
 class NursingController extends Controller
 {
-	public function index()
-    {			
+	public function history()
+    {		
+        /*	
 		$Nursing = new Nursing;
 		$nursings = $Nursing->select();
 		
         $this->assign('nursings', $nursings);		
+	    $htmls = $this->fetch();
+		*/
+		
+		$Nursing = new Nursing;
+        $nursings = $Nursing->where('project_date','2020-10-02')->select();
+		
+        //$nursings = $Nursing->select();
+
+		$this->assign('nursings', $nursings);		
 	    $htmls = $this->fetch();
 		
 		return $htmls;

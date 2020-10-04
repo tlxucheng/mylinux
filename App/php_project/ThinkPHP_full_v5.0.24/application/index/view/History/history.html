@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>喂奶神器</title>
+	<link rel="stylesheet" type="text/css" href="/ThinkPHP_full_v5.0.24/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">	
+	<!--link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css"-->
+	<!--script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script-->
+	<!--script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script-->
+</head>
+<body>
+
+<style>
+.table>tbody>tr>td{
+    border:0px;
+    }
+	
+    .right-arrow {  
+                 display :inline-block;
+                 position: relative;
+                 width: 28px;
+                 height: 5px;
+                 margin-right: 20px;
+				 text-align:right
+                 }
+    .right-arrow::after {
+          display: inline-block;
+          content: " ";
+          height: 13px;
+          width: 13px;
+          border-width: 3px 3px 0 0;
+          border-color: #0177ff;
+          border-style: solid;
+          transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+          position: absolute;
+          top: 50%;
+          left: 250px;
+         }
+</style>
+
+<table class="table">
+<!--tr>
+	<th>时间</th>
+	<th>项目</th>
+	<th>数量</th>
+</tr-->
+{volist name="historys" id="history"}
+<tr>
+    <tr>
+	<th colspan="4" style="width:100%;text-align:left">{$history->getData('project_date')}<a href="{:url('Nursing/statistics')}"><span class="right-arrow"></span></a></th>
+	</tr border="1" cellpadding="0" cellspacing="0">
+	<td>母乳{$history->getData('breast_milk_number')}次</td>
+    <td>配方奶{$history->getData('formula_number')}ml</td>
+    <td>开水{$history->getData('boiling_water_number')}ml</td>
+    <td>便便{$history->getData('shit_number')}次</td>
+</tr>
+{/volist}
+</table>
+</body>
+</html>

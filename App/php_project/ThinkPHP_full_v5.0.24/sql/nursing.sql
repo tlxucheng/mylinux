@@ -14,3 +14,18 @@ UNIQUE KEY `tdt`(`project_type`, `project_date`, `project_time`)
 
 
 INSERT INTO `yunzhi_nursing` VALUES ('1', 1, '100', '2020-10-01', '21:15', '', '1601558121', '1601558121');
+
+
+DROP TABLE IF EXISTS `yunzhi_history`;
+CREATE TABLE `yunzhi_history` (
+`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增长id',
+`project_date` DATE NULL DEFAULT NULL COMMENT '项目日期',
+`breast_milk_number` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '母乳数量',
+`formula_number` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '配方奶数量',
+`boiling_water_number` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '开水数量',
+`shit_number` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '便便数量',
+`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+`update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+PRIMARY KEY (`id`),
+UNIQUE KEY `project_date`(`project_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='喂奶神器历史表';

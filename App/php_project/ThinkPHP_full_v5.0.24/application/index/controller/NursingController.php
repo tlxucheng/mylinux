@@ -7,20 +7,11 @@ use app\common\model\Nursing;
 class NursingController extends Controller
 {
 	public function history()
-    {		
-        /*	
+    {		     	
 		$Nursing = new Nursing;
-		$nursings = $Nursing->select();
-		
-        $this->assign('nursings', $nursings);		
-	    $htmls = $this->fetch();
-		*/
-		
-		$Nursing = new Nursing;
-        $nursings = $Nursing->where('project_date','2020-10-02')->select();
-		
-        //$nursings = $Nursing->select();
-
+		$nursings = $Nursing->field('project_type, project_date, sum(project_number) as project_number,project_time,project_comments')
+		            ->group('project_date, project_type')->select();
+					
 		$this->assign('nursings', $nursings);		
 	    $htmls = $this->fetch();
 		

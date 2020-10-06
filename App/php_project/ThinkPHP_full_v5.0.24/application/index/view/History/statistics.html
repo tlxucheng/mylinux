@@ -11,16 +11,22 @@
 <body>
 <div id="container" style="width: 400px; height: 400px; margin: 0 auto"></div>
 <script language="JavaScript">
+function  GetDateStr(AddDayCount) { 
+  var  dd =  new  Date();
+    dd.setDate(dd.getDate()+AddDayCount); //获取AddDayCount天后的日期
+    var  y = dd.getFullYear(); 
+    var  m = (dd.getMonth()+1)<10? "0" +(dd.getMonth()+1):(dd.getMonth()+1); //获取当前月份的日期，不足10补0
+    var  d = dd.getDate()<10? "0" +dd.getDate():dd.getDate(); //获取当前几号，不足10补0
+    return  m+ "-" +d; 
+}
+
 function getlatest7days(latest7days)
 {
-    var i = 0;
-	var latestdays_num = 7;
-	var today_date = new Date();
+    var i = -6;
 
-	for(i = latestdays_num; i > 0; i--)
+	for(i = -6; i <= 0; i++)
 	{
-	    today_date.setTime(today_date.getTime() - i*24*60*60*1000);
-	    latest7days[i] = (today_date.getMonth()+1) + "-" + today_date.getDate();
+	    latest7days[i] = GetDateStr(i); 
 	}
 }
 
@@ -34,9 +40,9 @@ $(document).ready(function() {
    
    var latest7days = new Array();
    getlatest7days(latest7days);
-
+   
    var xAxis = {
-      categories: [latest7days[7], latest7days[6], latest7days[5], latest7days[4], latest7days[3], latest7days[2], latest7days[1]]
+      categories: [latest7days[-6], latest7days[-5], latest7days[-4], latest7days[-3], latest7days[-2], latest7days[-1], latest7days[0]]
    };
 
    var yAxis = {
@@ -73,7 +79,7 @@ $(document).ready(function() {
    var series =  [
       {
          name: '母乳',
-         data: [5, 6, 8, 6, 4 ,9, 6]
+         data: [5, 6, 8, 6, 4 ,9, 20]
       }
    ];
 

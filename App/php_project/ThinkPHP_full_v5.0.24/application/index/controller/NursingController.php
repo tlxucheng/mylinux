@@ -35,21 +35,65 @@ class NursingController extends Controller
 		
 		$History = new History();
 		$historys = $History->where('project_date',$Nursing->project_date)->select();
-		
+						
 		$History->project_date = $postdata['project_date'];
 		if(!empty($historys))
 	    {
-			$History->breast_milk_number = $historys[0]->breast_milk_number + $postdata['project_number'];
+			switch($Nursing->project_type)
+			{
+				case "0":
+					$History->breast_milk_number = $historys[0]->breast_milk_number + $postdata['project_number'];
+					$update_array = [
+					'project_date' => $History->project_date,
+					'breast_milk_number' => $History->breast_milk_number
+		            ];
+					break;
+				case "1":
+					$History->formula_number = $historys[0]->formula_number + $postdata['project_number'];
+					$update_array = [
+					'project_date' => $History->project_date,
+					'formula_number' => $History->formula_number
+		            ];
+					break;
+				case "2":
+					$History->boiling_water_number = $historys[0]->boiling_water_number + $postdata['project_number'];
+				    $update_array = [
+					'project_date' => $History->project_date,
+					'boiling_water_number' => $History->boiling_water_number
+		            ];
+					break;
+				case "3":
+					$History->shit_number = $historys[0]->shit_number + $postdata['project_number'];
+					$update_array = [
+					'project_date' => $History->project_date,
+					'shit_number' => $History->shit_number
+		            ];
+					break;
+				default:
+					break;
+			}	
 			
-			$update_array = [
-				'project_date' => $History->project_date,
-				'breast_milk_number' => $History->breast_milk_number
-		    ];
 			$History->save($update_array, ['project_date' => $postdata['project_date']]);
 	    }
 		else
 	    {
-	        $History->breast_milk_number = $postdata['project_number'];
+			switch($Nursing->project_type)
+			{
+				case 0:
+					$History->breast_milk_number = $postdata['project_number'];
+					break;
+				case 1:
+					$History->formula_number = $postdata['project_number'];
+					break;
+				case 2:
+					$History->boiling_water_number = $postdata['project_number'];
+					break;
+				case 3:
+					$History->shit_number = $postdata['project_number'];
+					break;
+				default:
+					break;
+			}
 			$History->save();
 		}
 

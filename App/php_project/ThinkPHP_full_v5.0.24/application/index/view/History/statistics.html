@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8" />
+<title>近7天统计</title>
+<!--script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script-->
+<script src="/ThinkPHP_full_v5.0.24/public/static/jquery-3.5.1/jquery-3.5.1.min.js"></script>
+<script src="/ThinkPHP_full_v5.0.24/public/static/Highcharts-8.2.0/highcharts.js"></script>
+<!--script src="http://code.highcharts.com/highcharts.js"></script-->
+</head>
+<body>
+<div id="container" style="width: 400px; height: 400px; margin: 0 auto"></div>
+<script language="JavaScript">
+function getlatest7days(latest7days)
+{
+    var i = 0;
+	var latestdays_num = 7;
+	var today_date = new Date();
+
+	for(i = latestdays_num; i > 0; i--)
+	{
+	    today_date.setTime(today_date.getTime() - i*24*60*60*1000);
+	    latest7days[i] = (today_date.getMonth()+1) + "-" + today_date.getDate();
+	}
+}
+
+$(document).ready(function() {
+   var title = {
+      text: '近7天统计'   
+   };
+   var subtitle = {
+      text: '母乳'
+   };
+   
+   var latest7days = new Array();
+   getlatest7days(latest7days);
+
+   var xAxis = {
+      categories: [latest7days[7], latest7days[6], latest7days[5], latest7days[4], latest7days[3], latest7days[2], latest7days[1]]
+   };
+
+   var yAxis = {
+      title: {
+         text: '数量 (ml)'
+      },
+      plotLines: [{
+         value: 0,
+         width: 1,
+         color: '#808080'
+      }]
+   };   
+
+   var tooltip = {
+      valueSuffix: '\xB0C'
+   }
+
+   var legend = {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'middle',
+      borderWidth: 0
+   };
+
+   var plotOptions = {
+      line: {
+         dataLabels: {
+            enabled: true
+         },   
+         enableMouseTracking: false
+      }
+   };
+   
+   var series =  [
+      {
+         name: '母乳',
+         data: [5, 6, 8, 6, 4 ,9, 6]
+      }
+   ];
+
+   var json = {};
+
+   json.title = title;
+   json.subtitle = subtitle;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;
+   json.tooltip = tooltip;
+   json.legend = legend;
+   json.series = series;
+   json.plotOptions = plotOptions;
+
+   $('#container').highcharts(json);
+});
+</script>
+</body>
+</html>
+

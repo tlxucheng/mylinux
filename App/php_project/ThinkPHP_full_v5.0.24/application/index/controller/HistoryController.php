@@ -16,5 +16,12 @@ class HistoryController extends Controller
 		
 		return $htmls;
     }
+	
+	public function statistics()
+    {		     		
+	    $htmls = $this->fetch();
+		
+		return $htmls;
+    }
 }
 

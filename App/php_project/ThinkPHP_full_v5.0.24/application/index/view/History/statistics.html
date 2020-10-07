@@ -90,6 +90,10 @@
 			 enableMouseTracking: false
 		  }
 	    };
+
+	    var credits = {  //去掉highcharts.com
+          enabled:false
+        };
 	   
 	    var yAxis_data = new Array();
 	    GetProjectNumber(yAxis_data)
@@ -108,6 +112,7 @@
 	    json.xAxis = xAxis;
 	    json.yAxis = yAxis;
 	    json.tooltip = tooltip;
+	    json.credits = credits;
 	    json.legend = legend;
 	    json.series = series;
 	    json.plotOptions = plotOptions;

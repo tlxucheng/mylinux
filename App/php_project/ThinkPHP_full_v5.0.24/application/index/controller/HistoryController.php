@@ -17,11 +17,26 @@ class HistoryController extends Controller
 		return $htmls;
     }
 	
+	/*
 	public function statistics()
     {		     		
 	    $htmls = $this->fetch();
 		
 		return $htmls;
     }
+	*/
+	
+	public function statistics()
+    {		     	
+		$History = new History;
+		$historys = $History->select();
+					
+		$this->assign('historys', $historys);		
+	    $htmls = $this->fetch();
+		
+		return $htmls;
+    }
+	
+	
 }
 

@@ -11,91 +11,105 @@
 <body>
 <div id="container" style="width: 400px; height: 400px; margin: 0 auto"></div>
 <script language="JavaScript">
-function  GetDateStr(AddDayCount) { 
-  var  dd =  new  Date();
-    dd.setDate(dd.getDate()+AddDayCount); //获取AddDayCount天后的日期
-    var  y = dd.getFullYear(); 
-    var  m = (dd.getMonth()+1)<10? "0" +(dd.getMonth()+1):(dd.getMonth()+1); //获取当前月份的日期，不足10补0
-    var  d = dd.getDate()<10? "0" +dd.getDate():dd.getDate(); //获取当前几号，不足10补0
-    return  m+ "-" +d; 
-}
-
-function getlatest7days(latest7days)
-{
-    var i = -6;
-
-	for(i = -6; i <= 0; i++)
+    function GetProjectNumber(latest7days_number)
 	{
-	    latest7days[i] = GetDateStr(i); 
+		var yAxis_data_index = 0;
+			
+		{volist name="historys" id="history"}
+			latest7days_number[yAxis_data_index] = {$history->getData('breast_milk_number')};
+			console.log(latest7days_number[yAxis_data_index]);
+			yAxis_data_index++;
+		{/volist}
 	}
-}
+	
+	function  GetDateStr(AddDayCount) { 
+	  var  dd =  new  Date();
+		dd.setDate(dd.getDate()+AddDayCount); //获取AddDayCount天后的日期
+		var  y = dd.getFullYear(); 
+		var  m = (dd.getMonth()+1)<10? "0" +(dd.getMonth()+1):(dd.getMonth()+1); //获取当前月份的日期，不足10补0
+		var  d = dd.getDate()<10? "0" +dd.getDate():dd.getDate(); //获取当前几号，不足10补0
+		return  m+ "-" +d; 
+	}
 
-$(document).ready(function() {
-   var title = {
-      text: '近7天统计'   
-   };
-   var subtitle = {
-      text: '母乳'
-   };
-   
-   var latest7days = new Array();
-   getlatest7days(latest7days);
-   
-   var xAxis = {
-      categories: [latest7days[-6], latest7days[-5], latest7days[-4], latest7days[-3], latest7days[-2], latest7days[-1], latest7days[0]]
-   };
+	function getlatest7days(latest7days)
+	{
+		var i = -6;
 
-   var yAxis = {
-      title: {
-         text: '数量 (ml)'
-      },
-      plotLines: [{
-         value: 0,
-         width: 1,
-         color: '#808080'
-      }]
-   };   
+		for(i = -6; i <= 0; i++)
+		{
+			latest7days[i] = GetDateStr(i); 
+		}
+	}
 
-   var tooltip = {
-      valueSuffix: '\xB0C'
-   }
+	$(document).ready(function() {
+	   var title = {
+		  text: '近7天统计'   
+	   };
+	   var subtitle = {
+		  text: '母乳'
+	   };
+	   
+	   var latest7days = new Array();
+	   getlatest7days(latest7days);
+	   
+	   var xAxis = {
+		  categories: [latest7days[-6], latest7days[-5], latest7days[-4], latest7days[-3], latest7days[-2], latest7days[-1], latest7days[0]]
+	   };
 
-   var legend = {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-   };
+	   var yAxis = {
+		  title: {
+			 text: '数量 (ml)'
+		  },
+		  plotLines: [{
+			 value: 0,
+			 width: 1,
+			 color: '#808080'
+		  }]
+	   };   
 
-   var plotOptions = {
-      line: {
-         dataLabels: {
-            enabled: true
-         },   
-         enableMouseTracking: false
-      }
-   };
-   
-   var series =  [
-      {
-         name: '母乳',
-         data: [5, 6, 8, 6, 4 ,9, 20]
-      }
-   ];
+	   var tooltip = {
+		  valueSuffix: '\xB0C'
+	   }
 
-   var json = {};
+	   var legend = {
+		  layout: 'vertical',
+		  align: 'right',
+		  verticalAlign: 'middle',
+		  borderWidth: 0
+	   };
 
-   json.title = title;
-   json.subtitle = subtitle;
-   json.xAxis = xAxis;
-   json.yAxis = yAxis;
-   json.tooltip = tooltip;
-   json.legend = legend;
-   json.series = series;
-   json.plotOptions = plotOptions;
+	   var plotOptions = {
+		  line: {
+			 dataLabels: {
+				enabled: true
+			 },   
+			 enableMouseTracking: false
+		  }
+	   };
+	   
+	   var yAxis_data = new Array();
+	   GetProjectNumber(yAxis_data)
+	   var series =  [
+		  {
+			 name: '母乳',
+			 //data: [10, 6, 8, 6, 4 ,9, 20]
+			 data: yAxis_data
+		  }
+	   ];
 
-   $('#container').highcharts(json);
-});
+	   var json = {};
+
+	   json.title = title;
+	   json.subtitle = subtitle;
+	   json.xAxis = xAxis;
+	   json.yAxis = yAxis;
+	   json.tooltip = tooltip;
+	   json.legend = legend;
+	   json.series = series;
+	   json.plotOptions = plotOptions;
+
+	   $('#container').highcharts(json);
+	});
 </script>
 </body>
 </html>

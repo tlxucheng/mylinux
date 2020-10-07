@@ -41,75 +41,80 @@
 		}
 	}
 
-	$(document).ready(function() {
-	   var title = {
-		  text: '近7天统计'   
-	   };
-	   var subtitle = {
-		  text: '母乳'
-	   };
+	function draw_latest7days_number(project_type)
+	{
+	    var title = {
+		   text: '近7天统计'   
+	    };
+	    var subtitle = {
+		   text: project_type
+	    };
 	   
-	   var latest7days = new Array();
-	   getlatest7days(latest7days);
+	    var latest7days = new Array();
+	    getlatest7days(latest7days);
 	   
-	   var xAxis = {
+	    var xAxis = {
 		  categories: [latest7days[-6], latest7days[-5], latest7days[-4], latest7days[-3], latest7days[-2], latest7days[-1], latest7days[0]]
-	   };
+	    };
 
-	   var yAxis = {
-		  title: {
-			 text: '数量 (ml)'
-		  },
-		  plotLines: [{
+	    var yAxis = {
+		    title: {
+			     text: '数量 (ml)'
+		    },
+		    plotLines: [{
 			 value: 0,
 			 width: 1,
 			 color: '#808080'
-		  }]
-	   };   
+		   }]
+	    };   
 
-	   var tooltip = {
-		  valueSuffix: '\xB0C'
-	   }
+	    var tooltip = {
+		   valueSuffix: '\xB0C'
+	    }
 
-	   var legend = {
+	    var legend = {
 		  layout: 'vertical',
 		  align: 'right',
 		  verticalAlign: 'middle',
 		  borderWidth: 0
-	   };
+	    };
 
-	   var plotOptions = {
+	    var plotOptions = {
 		  line: {
 			 dataLabels: {
 				enabled: true
 			 },   
 			 enableMouseTracking: false
 		  }
-	   };
+	    };
 	   
-	   var yAxis_data = new Array();
-	   GetProjectNumber(yAxis_data)
-	   var series =  [
+	    var yAxis_data = new Array();
+	    GetProjectNumber(yAxis_data)
+	    var series =  [
 		  {
-			 name: '母乳',
+			 name: project_type,
 			 //data: [10, 6, 8, 6, 4 ,9, 20]
 			 data: yAxis_data
 		  }
-	   ];
+	    ];
 
-	   var json = {};
+	    var json = {};
 
-	   json.title = title;
-	   json.subtitle = subtitle;
-	   json.xAxis = xAxis;
-	   json.yAxis = yAxis;
-	   json.tooltip = tooltip;
-	   json.legend = legend;
-	   json.series = series;
-	   json.plotOptions = plotOptions;
+	    json.title = title;
+	    json.subtitle = subtitle;
+	    json.xAxis = xAxis;
+	    json.yAxis = yAxis;
+	    json.tooltip = tooltip;
+	    json.legend = legend;
+	    json.series = series;
+	    json.plotOptions = plotOptions;
 
-	   $('#container').highcharts(json);
-	});
+	    $('#container').highcharts(json);
+	}
+	
+	$(document).ready(function() {
+		draw_latest7days_number('母乳');
+	});	
 </script>
 </body>
 </html>

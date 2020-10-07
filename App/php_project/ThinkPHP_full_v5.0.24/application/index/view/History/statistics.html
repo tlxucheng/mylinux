@@ -9,7 +9,10 @@
 <!--script src="http://code.highcharts.com/highcharts.js"></script-->
 </head>
 <body>
-<div id="container" style="width: 400px; height: 400px; margin: 0 auto"></div>
+<div id="container1" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
+<div id="container2" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
+<div id="container3" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
+<div id="container4" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
 <script language="JavaScript">
     function GetProjectNumber(latest7days_number)
 	{
@@ -44,10 +47,10 @@
 	function draw_latest7days_number(project_type)
 	{
 	    var title = {
-		   text: '近7天统计'   
+		   text: ''   
 	    };
 	    var subtitle = {
-		   text: project_type
+		   text: ''
 	    };
 	   
 	    var latest7days = new Array();
@@ -73,10 +76,10 @@
 	    }
 
 	    var legend = {
-		  layout: 'vertical',
-		  align: 'right',
-		  verticalAlign: 'middle',
-		  borderWidth: 0
+		   layout: 'vertical',
+		   align: 'center',
+		   verticalAlign: 'bottom',
+		   borderWidth: 0
 	    };
 
 	    var plotOptions = {
@@ -108,12 +111,30 @@
 	    json.legend = legend;
 	    json.series = series;
 	    json.plotOptions = plotOptions;
-
-	    $('#container').highcharts(json);
+         
+		if('母乳' == project_type)
+	    {
+			$('#container1').highcharts(json);
+		}
+		else if('配方奶' == project_type)
+		{
+			$('#container2').highcharts(json);
+		}
+		else if('开水' == project_type)
+		{
+			$('#container3').highcharts(json);
+		}		
+		else if('便便' == project_type)
+		{
+			$('#container4').highcharts(json);
+		}
 	}
 	
 	$(document).ready(function() {
 		draw_latest7days_number('母乳');
+		draw_latest7days_number('配方奶');
+	    draw_latest7days_number('开水');
+		draw_latest7days_number('便便');
 	});	
 </script>
 </body>

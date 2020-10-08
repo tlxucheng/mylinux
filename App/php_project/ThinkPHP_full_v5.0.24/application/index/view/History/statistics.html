@@ -14,13 +14,28 @@
 <div id="container3" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
 <div id="container4" style="width: 400px; height: 400px; margin: 0 auto"></div></br></br>
 <script language="JavaScript">
-    function GetProjectNumber(latest7days_number)
+    function GetProjectNumber(latest7days_number, project_type)
 	{
 		var yAxis_data_index = 0;
 			
 		{volist name="historys" id="history"}
-			latest7days_number[yAxis_data_index] = {$history->getData('breast_milk_number')};
-			console.log(latest7days_number[yAxis_data_index]);
+		    if('母乳' == project_type)
+			{
+			    latest7days_number[yAxis_data_index] = {$history->getData('breast_milk_number')};
+			}
+			else if('配方奶' == project_type)
+			{
+			    latest7days_number[yAxis_data_index] = {$history->getData('formula_number')};
+			}
+			else if('开水' == project_type)
+            {
+			    latest7days_number[yAxis_data_index] = {$history->getData('boiling_water_number')};
+			}
+			else if('便便' == project_type)
+			{
+			    latest7days_number[yAxis_data_index] = {$history->getData('shit_number')};
+			}
+			//console.log(latest7days_number[yAxis_data_index]);
 			yAxis_data_index++;
 		{/volist}
 	}
@@ -96,7 +111,7 @@
         };
 	   
 	    var yAxis_data = new Array();
-	    GetProjectNumber(yAxis_data)
+	    GetProjectNumber(yAxis_data, project_type)
 	    var series =  [
 		  {
 			 name: project_type,

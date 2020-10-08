@@ -105,8 +105,27 @@ class NursingController extends Controller
 		$Nursing = new Nursing;
 		
 		$getdate = Request::instance()->param('project_date');
-		$nursings = $Nursing->where('project_date',$getdate)->select();
-	
+		$nursings = $Nursing->where('project_date',$getdate)->select();		
+		for($i = 0; $i < count($nursings); $i++)
+		{
+			switch($nursings[$i]->project_type)
+			{
+				case 0:
+					$nursings[$i]->project_type = '母乳';
+					break;
+				case 1:
+					$nursings[$i]->project_type = '配方奶';
+					break;
+				case 2:
+					$nursings[$i]->project_type = '开水';
+					break;
+				case 3:
+					$nursings[$i]->project_type = '便便';
+					break;
+				default:
+					break;
+			}
+		}
 		$this->assign('nursings', $nursings);			
 	    $htmls = $this->fetch();
 		

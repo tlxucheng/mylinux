@@ -102,6 +102,10 @@ class NursingController extends Controller
 	
 	public function statistics()
 	{		
+		$Nursing = new Nursing;
+		$nursings = $Nursing->select();
+		
+		$this->assign('nursings', $nursings);			
 	    $htmls = $this->fetch();
 		
 		return $htmls;

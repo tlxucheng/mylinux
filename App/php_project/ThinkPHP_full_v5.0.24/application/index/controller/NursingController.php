@@ -105,6 +105,9 @@ class NursingController extends Controller
 		$Nursing = new Nursing;
 		$nursings = $Nursing->select();
 		
+		$getdate = Request::instance()->param('project_date');
+		var_dump($getdate);
+		
 		$this->assign('nursings', $nursings);			
 	    $htmls = $this->fetch();
 		

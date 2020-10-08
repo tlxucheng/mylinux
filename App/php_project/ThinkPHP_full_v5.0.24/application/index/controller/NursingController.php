@@ -103,11 +103,10 @@ class NursingController extends Controller
 	public function statistics()
 	{		
 		$Nursing = new Nursing;
-		$nursings = $Nursing->select();
 		
 		$getdate = Request::instance()->param('project_date');
-		var_dump($getdate);
-		
+		$nursings = $Nursing->where('project_date',$getdate)->select();
+	
 		$this->assign('nursings', $nursings);			
 	    $htmls = $this->fetch();
 		

@@ -59,6 +59,18 @@
 		}
 	}
 
+	function GetyAxisTitle(project_type)
+	{
+	    if('母乳' == project_type || '便便' == project_type)
+		{
+		    return '数量 (次数)';
+		}
+		else if('配方奶' == project_type || '开水' == project_type)
+		{
+		    return '数量 (ml)'
+		}
+	}
+	
 	function draw_latest7days_number(project_type)
 	{
 	    var title = {
@@ -75,9 +87,10 @@
 		  categories: [latest7days[-6], latest7days[-5], latest7days[-4], latest7days[-3], latest7days[-2], latest7days[-1], latest7days[0]]
 	    };
 
+		if(project_type)
 	    var yAxis = {
 		    title: {
-			     text: '数量 (ml)'
+			     text: GetyAxisTitle(project_type)
 		    },
 		    plotLines: [{
 			 value: 0,

@@ -29,7 +29,10 @@ class HistoryController extends Controller
 	public function statistics()
     {		     	
 		$History = new History;
-		$historys = $History->select();
+		$today_date = date('Y-m-d', time());
+        $latest7date = date('Y-m-d', time()-6*24*60*60);	
+		$map['project_date'] = array(array('egt',$latest7date),array('elt',$today_date));
+		$historys = $History->where($map)->select();
 					
 		$this->assign('historys', $historys);		
 	    $htmls = $this->fetch();

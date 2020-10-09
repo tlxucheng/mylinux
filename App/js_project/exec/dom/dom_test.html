@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="uft-8">
+<title>DOM测试</title>
+
+<script>
+function change_text_by_click(id)
+{
+    id.innerHTML='Ooops!';
+}
+
+function charge_text_color(id)
+{
+    document.getElementById(id).style.color='blue';
+}
+
+function change_char_to_upper_case(id)
+{
+    var x = document.getElementById(id);
+	x.value = x.value.toUpperCase();
+}
+
+function mOver(obj)
+{
+    obj.innerHTML='Thank You';
+}
+
+function mOut(obj)
+{
+    obj.innerHTML="Mouse over me";
+}
+
+function displayDate(id)
+{
+    document.getElementById(id).innerHTML = Date();
+}
+</script>
+
+</head>
+<body onload="charge_text_color('p2')">
+
+<p id="p1">Hello World!</p>
+<p id="p2">Hello World!</p>
+
+<h1 onclick="change_text_by_click(this)">点击文本!</h1>
+
+输入名字：<input type="text" id = "fname" onchange="change_char_to_upper_case(id)">
+<p>当你离开输入框后，函数将被触发，将小写字母转为大写字母。</p>
+
+<div onmouseover="mOver(this)" onmouseout="mOut(this)" style="background-color:#D94A38;width:120px;height:20px;padding:40px;">Mouse Over Me</div><br>
+
+<button id = "myBtn" onclick="displayDate(id)">点我</button>
+
+</body>
+</html>

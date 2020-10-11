@@ -138,5 +138,32 @@ class NursingController extends Controller
 		return $htmls;
 	}
 
+	public function delete()
+	{
+	    $id = (Request::instance()->param('id/d'));
+		
+		if(is_null($id) || 0 == $id)
+		{
+			return $this->error('未获取到ID信息');
+		}
+		
+		$Nursing = Nursing::get($id);
+		
+		if(is_null($Nursing))
+		{
+			return $this->error('不存在id为' . $id . '的记录，删除失败');
+		}
+		
+		if(!$Nursing->delete())
+		{
+			return $this->error('删除失败:' . $Nursing->getError());
+		}
+		
+		/* 还需要删除历史表 */
+		
+		//return $this->success('删除成功', url('index'));
+	    //return $this->success('删除成功');
+		return '删除成功';
+	}
+	
 }
-

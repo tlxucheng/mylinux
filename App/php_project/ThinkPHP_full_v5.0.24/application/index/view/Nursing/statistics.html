@@ -54,6 +54,7 @@
 	<td>{$nursing->getData('project_time')}</td>
 	<td>{$nursing->getData('project_type')}</td>
 	<td>{$nursing->getData('project_number')}</td>
+	<td><a href="{:url('Nursing/delete',['id'=>$nursing['id']])}">删除</a></td>
 </tr>
 {/volist}
 </table>

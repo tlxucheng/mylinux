@@ -9,8 +9,8 @@ class HistoryController extends Controller
 	public function history()
     {		     	
 		$History = new History;
-		$historys = $History->select();
-					
+		$historys = $History->order('project_date')->select();
+										
 		$this->assign('historys', $historys);		
 	    $htmls = $this->fetch();
 		

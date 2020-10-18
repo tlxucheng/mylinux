@@ -5,6 +5,7 @@
 
 //#include <winsock.h>
 #include "MySqlDriver.h"
+#include "MySqlResult.h"
 
 class DbEasyApi
 {
@@ -16,6 +17,7 @@ public:
 	void setPort(int port);
 
 	int open();
+	int select();
 private:
 	string m_host;
 	string m_user;
@@ -24,6 +26,7 @@ private:
 	int    m_port;
 
 	MysqlDriver m_mysqldriver;
+	MySqlResult m_mysqlresult;
 };
 
 #endif

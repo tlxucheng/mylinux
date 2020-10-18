@@ -11,11 +11,11 @@ public:
 	MysqlDriver();
 	~MysqlDriver();
 
-	bool init();
-	bool open(string& host, string& user, string& password, string& db, unsigned int port);
-
+	bool    init();
+	bool    open(string& host, string& user, string& password, string& db, unsigned int port);
+	MYSQL*  getMysqlHandle();
 private:
-	MYSQL *m_mysql;
+	MYSQL   *m_mysql;
 };
 
 #endif

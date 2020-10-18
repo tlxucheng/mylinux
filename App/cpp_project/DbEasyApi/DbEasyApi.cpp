@@ -48,6 +48,15 @@ int DbEasyApi::open()
 	return false;
 }
 
+int DbEasyApi::select()
+{
+	string statement = "select *from yunzhi_nursing";
+
+	m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
+
+	return 0;
+}
+
 int main()
 {
 	DbEasyApi test;
@@ -63,6 +72,7 @@ int main()
 	test.setPort(3306);
 
 	test.open();
+	test.select();
 
 	//system("pause");
 

@@ -1,0 +1,93 @@
+https://blog.csdn.net/qq_34139994/article/details/97641171  //书籍
+
+https://blog.csdn.net/Thinkerlife/article/details/78828986
+https://blog.csdn.net/xuewu0zhijing/article/details/105255606
+https://www.bbsmax.com/A/x9J263kjJ6/
+https://www.yuanmas.com/info/EkyQWBkzvq.html
+https://blog.csdn.net/GoForwardToStep/article/details/54583152?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param
+https://www.cnblogs.com/Braveliu/p/7423629.html
+
+mysql
+//代码
+https://blog.csdn.net/c05170519/article/details/6704501   
+https://blog.csdn.net/kilotwo/article/details/79248657     
+https://www.cnblogs.com/weizhixiang/p/6076680.html
+
+//库加载
+https://www.cnblogs.com/xtu-wlf1212/p/8764015.html   
+https://blog.csdn.net/seven_dj/article/details/25395423 
+https://blog.csdn.net/weixin_30497527/article/details/98088805?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param
+https://blog.csdn.net/yan_susu/article/details/82927810
+
+
+    inline QVariant value() const   调用了vector
+    { return val; }
+	
+	
+	struct QMyField
+    {
+        QMyField()
+            : outField(0), nullIndicator(false), bufLength(0ul),
+              myField(0), type(QVariant::Invalid)
+        {}
+        char *outField;
+        my_bool nullIndicator;
+        ulong bufLength;
+        MYSQL_FIELD *myField;
+        QVariant::Type type;
+    };
+
+    QVector<QMyField> fields;
+	
+	bool QMYSQLResult::reset (const QString& query)  // qsql_mysql.cpp
+	
+	QVariant QMYSQLResult::data(int field)
+	
+	class Q_SQL_EXPORT QSqlQuery
+    {
+	        const QSqlResult* result() const;
+	    private:
+        QSqlQueryPrivate* d;
+	}
+	
+	class Q_SQL_EXPORT QSqlResult
+    {
+	
+
+	}
+	
+	class QMYSQLResult : public QSqlResult
+    {
+	    private:
+        QMYSQLResultPrivate* d;
+	}
+	
+	class QMYSQLResultPrivate
+	{
+	        MYSQL_RES *result;
+	}
+	
+srv*http://msdl.microsoft.com/download/symbols
+cache*C:\Users\xucheng\AppData\Local\Temp\QtCreator-oIoHPI\symbolcache
+
+    QPushButton *button = new QPushButton("Quit");
+    QObject::connect(button, SIGNAL(clicked()), &a, SLOT(quit()));
+	
+	
+0x0000009aef4ff190
+0x0000009aef4ff190
+
+严重性	代码	说明	项目	文件	行	禁止显示状态
+警告	C4267	“参数”: 从“size_t”转换到“unsigned long”，可能丢失数据	DbEasyApi	d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp	11	
+
+1>------ 已启动生成: 项目: DbEasyApi, 配置: Debug x64 ------
+1>  MySqlResult.cpp
+1>d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp(12): warning C4267: “参数”: 从“size_t”转换到“unsigned long”，可能丢失数据
+1>d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp(37): warning C4244: “初始化”: 从“my_ulonglong”转换到“int”，可能丢失数据
+1>  DbEasyApi.vcxproj -> D:\project\my_cpp\DbEasyApi\x64\Debug\DbEasyApi.exe
+1>  DbEasyApi.vcxproj -> D:\project\my_cpp\DbEasyApi\x64\Debug\DbEasyApi.pdb (Full PDB)
+	
+	
+	
+	
+	

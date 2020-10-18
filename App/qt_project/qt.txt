@@ -88,6 +88,130 @@ cache*C:\Users\xucheng\AppData\Local\Temp\QtCreator-oIoHPI\symbolcache
 1>  DbEasyApi.vcxproj -> D:\project\my_cpp\DbEasyApi\x64\Debug\DbEasyApi.pdb (Full PDB)
 	
 	
+
+/**************Qt MySQL 类设计****************/
+1. driver类
+class QSqlDriver
+{
+protected:
+    QSqlDriver(QSqlDriverPrivate &dd, QObject *parent = 0);  /* 什么含义？ */
+};
+
+class QMYSQLDriver : public QSqlDriver
+{
+
+};
+
+class QSqlDatabase
+{
+public:
+    QSqlDriver* driver() const;
+
+private:
+    QSqlDriver* driver;
+    QString dbname;
+    QString uname;
+    QString pword;
+    QString hname;
+    QString drvName;
+}
+
+class QMYSQLDriverPrivate : public QSqlDriverPrivate
+{
+    MYSQL *mysql;
+}
+
+(1)open在QSqlDriver为纯虚函数
+(2)QMYSQLDriver::open中申请 mysql 句柄指针
+(3)QSqlDatabase通过driver找到对应的类型，然后调用open申请对应的driver句柄
+(4)QSqlDatabase::close()关闭句柄
+(5)析构函数中delete driver
+QSqlDatabasePrivate::~QSqlDatabasePrivate()
+{
+    if (driver != shared_null()->driver)
+        delete driver;
+}
+(6)连接成功后设置为一个全局变量，加入到一个 dbDict 中
+(7)如果tableModel连接是可以从 dbDict 中查询连接是否存在，存在则使用
+QSqlDatabase QSqlDatabasePrivate::database(const QString& name, bool open)
+{
+    const QConnectionDict *dict = dbDict();
+    Q_ASSERT(dict);
+
+    dict->lock.lockForRead();
+    QSqlDatabase db = dict->value(name);
+    dict->lock.unlock();
+    if (db.isValid() && !db.isOpen() && open) {
+        if (!db.open())
+            qWarning() << "QSqlDatabasePrivate::database: unable to open database:" << db.lastError().text();
+
+    }
+    return db;
+}
+
+2. result类
+class QSqlResult
+{
+public:
+    QSqlDriver *sqldriver;
+}
+
+class QMYSQLResult : public QSqlResult
+{
+private:
+    const QMYSQLDriver* driver;
+    MYSQL_RES *result;
+    MYSQL_ROW row
+  
+    QVector<QMyField> fields;
+}
+
+3. QSqlQuery 查询类 
+class QSqlQuery
+{
+    QSqlResult* sqlResult;
+};
+
+3. tableModel 类
+class QSqlTableModel: public QSqlQueryModel
+{
+public:
+    explicit QSqlTableModel(QObject *parent = 0, QSqlDatabase db = QSqlDatabase());
+
+protected:
+    QSqlTableModel(QSqlTableModelPrivate &dd, QObject *parent = 0, QSqlDatabase db = QSqlDatabase());
+
+public Q_SLOTS:
+    virtual bool select();
+
+};
+
+(1)select 函数先构造查询语句，然后获取一个db
+(2)db 保存查询结果
+(3)查询赋值方法
+QSqlQuery::QSqlQuery(const QString& query, QSqlDatabase db)
+{
+    d = QSqlQueryPrivate::shared_null();
+    qInit(this, query, db);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	
 	

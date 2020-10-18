@@ -1,0 +1,71 @@
+https://www.runoob.com/design-pattern/design-pattern-tutorial.html  //java实现多于23种设计模式
+
+AbstractionImplement
+
+AbstractionImplementA:AbstractionImplement
+AbstractionImplementB:AbstractionImplement
+
+
+Abstraction
+class RefinedAbstractionA:public Abstraction
+{
+private:
+    AbstractionImplement* _imp
+}
+
+class RefinedAbstractionA:public Abstraction
+{
+private:
+    AbstractionImplement* _imp
+}
+
+1. Factory
+2. AbstactFactory
+3. Singleton
+4. Builder
+5. Prototype
+6. Bridge
+7. Adapter
+8. Decorator
+9. Composite
+10. Flyweight
+11. Facade
+12. Proxy
+13. Template
+14. Strategy
+15. State
+16. Observer
+17. Memento
+18. Mediator
+19. Command
+20. Visitor
+21. Chain of Responsibility
+22. Iterator
+23. Interpreter
+
+
+	Factory Method
+    Adapter_Class
+	Interpreter
+    Template Method
+
+1. Abstract Factory
+2. Builder
+3. Prototype
+4. Singleton	
+5. Adapter_Object
+6. Bridge
+7. Composite
+8. Decorator
+9. Facade
+10.Flyweight 
+11. Proxy	
+12. Chain of Responsibility
+13. Command
+14. Iterator
+15. Mediator
+16. Memento
+17. Observer
+18. State
+19. Strategy
+20. Visitor

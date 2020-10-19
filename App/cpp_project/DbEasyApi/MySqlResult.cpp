@@ -9,7 +9,7 @@ using namespace std;
 
 int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 {
-	if (mysql_real_query(mysql, statement.c_str(), statement.length()))
+	if (mysql_real_query(mysql, statement.c_str(), static_cast<unsigned long>(statement.length())))
 	{
 		cout << "myslq query failed!" << endl;
 	}
@@ -34,7 +34,7 @@ int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 	cout << endl;
 
 	MYSQL_ROW   rows;
-	int num_row = mysql_num_rows(m_result);
+	int num_row = static_cast<int>(mysql_num_rows(m_result));
 	for(i = 0; i < num_row; i++)
 	{
 		rows = mysql_fetch_row(m_result);

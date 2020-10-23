@@ -11,6 +11,7 @@
 #include <QTableView>
 #include <QAbstractItemView>
 #include <QHeaderView>
+#include <QSqlRecord>
 
 bool connect_mysql(const QString &dbName)
 {
@@ -51,7 +52,7 @@ void show_data_by_qdebug()
         }
         else
         {
-            qDebug() << "select failed";
+            qDebug() << "select failed!";
         }
     }
 }
@@ -69,7 +70,7 @@ void show_data_by_view()
         //model->setHeaderData(2, Qt::Horizontal, "api_push_data");
         if(model->select())
         {
-            qDebug() << "select success";
+            qDebug() << "select success!";
 
             QTableView *view = new QTableView;
 
@@ -91,6 +92,51 @@ void show_data_by_view()
     }
 }
 
+void insert_data()
+{
+    if(connect_mysql("test_db"))
+    {
+        QSqlTableModel model;
+        model.setTable("yunzhi_nursing");
+        int row = 0;
+        model.insertRows(row, 1);
+        model.setData(model.index(row, 1), 3);
+        model.setData(model.index(row, 2), 300);
+        model.setData(model.index(row, 3), "2020-10-23");
+        model.setData(model.index(row, 4), "16:30:00");
+        model.setData(model.index(row, 5), "");
+        model.setData(model.index(row, 6), 1602163888);
+        model.setData(model.index(row, 7), 1602163888);
+
+        model.submitAll();
+    }
+    else
+    {
+        qDebug() << "insert failed";
+    }
+}
+
+void insert_data2()
+{
+    if(connect_mysql("test_db"))
+    {
+        QSqlTableModel model;
+        model.setTable("yunzhi_nursing");
+        QSqlRecord record = model.record();
+        record.setValue("project_type", 3);
+        record.setValue("project_number", 120);
+        record.setValue("project_date", "2020-10-24");
+        record.setValue("project_time", "01:29:00");
+
+        model.insertRecord(4, record);
+        model.submitAll();
+    }
+    else
+    {
+        qDebug() << "insert failed";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -98,7 +144,10 @@ int main(int argc, char *argv[])
     //w.show();
 
     //show_data_by_qdebug();
+    qDebug() << "before insert";
+    //insert_data2();
     show_data_by_view();
+    qDebug() << "after insert";
 
     return a.exec();
     //return 0;

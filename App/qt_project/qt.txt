@@ -77,17 +77,6 @@ cache*C:\Users\xucheng\AppData\Local\Temp\QtCreator-oIoHPI\symbolcache
 0x0000009aef4ff190
 0x0000009aef4ff190
 
-严重性	代码	说明	项目	文件	行	禁止显示状态
-警告	C4267	“参数”: 从“size_t”转换到“unsigned long”，可能丢失数据	DbEasyApi	d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp	11	
-
-1>------ 已启动生成: 项目: DbEasyApi, 配置: Debug x64 ------
-1>  MySqlResult.cpp
-1>d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp(12): warning C4267: “参数”: 从“size_t”转换到“unsigned long”，可能丢失数据
-1>d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp(37): warning C4244: “初始化”: 从“my_ulonglong”转换到“int”，可能丢失数据
-1>  DbEasyApi.vcxproj -> D:\project\my_cpp\DbEasyApi\x64\Debug\DbEasyApi.exe
-1>  DbEasyApi.vcxproj -> D:\project\my_cpp\DbEasyApi\x64\Debug\DbEasyApi.pdb (Full PDB)
-	
-	
 
 /**************Qt MySQL 类设计****************/
 1. driver类

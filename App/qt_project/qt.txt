@@ -184,13 +184,18 @@ QSqlQuery::QSqlQuery(const QString& query, QSqlDatabase db)
     qInit(this, query, db);
 }
 
+使用泛型设计STRING类转INT型 
+toIntegral_helper QString.h:764
 
+布局
+https://blog.csdn.net/xunye_dream/article/details/82918336 
+https://blog.csdn.net/li162001/article/details/88126928?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+https://blog.csdn.net/weixin_34419321/article/details/90524883?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+https://blog.csdn.net/zhao2018/article/details/82724420?utm_medium=distribute.pc_relevant.none-task-blog-title-4&spm=1001.2101.3001.4242
+https://blog.csdn.net/qq_14945437/article/details/99673819?utm_medium=distribute.pc_relevant.none-task-blog-title-10&spm=1001.2101.3001.4242
 
-
-
-
-
-
+开源项目
+https://blog.csdn.net/libaineu2004/article/details/77369837
 
 
 

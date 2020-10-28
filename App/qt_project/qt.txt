@@ -19,6 +19,10 @@ https://blog.csdn.net/seven_dj/article/details/25395423
 https://blog.csdn.net/weixin_30497527/article/details/98088805?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param
 https://blog.csdn.net/yan_susu/article/details/82927810
 
+QTableView
+https://blog.csdn.net/qq769651718/article/details/79357938
+
+setEditorData
 
     inline QVariant value() const   调用了vector
     { return val; }

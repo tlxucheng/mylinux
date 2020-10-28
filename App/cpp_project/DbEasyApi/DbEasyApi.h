@@ -15,6 +15,9 @@ public:
 	void setPassword(string& password);
 	void setDbname(string& dbname);
 	void setPort(int port);
+	void setTable(string& tablename);
+
+	string& getTable();
 
 	int open();
 	int select();
@@ -24,6 +27,7 @@ private:
 	string m_password;
 	string m_dbname;
 	int    m_port;
+	string m_tablename;
 
 	MysqlDriver m_mysqldriver;
 	MySqlResult m_mysqlresult;

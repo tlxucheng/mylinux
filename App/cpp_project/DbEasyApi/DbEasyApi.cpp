@@ -32,6 +32,16 @@ void DbEasyApi::setPort(int port)
 	m_port = port;
 }
 
+void DbEasyApi::setTable(string& tablename)
+{
+	m_tablename = tablename;
+}
+
+string& DbEasyApi::getTable()
+{
+	return m_tablename;
+}
+
 int DbEasyApi::open()
 {
 	if (m_mysqldriver.init())
@@ -50,7 +60,12 @@ int DbEasyApi::open()
 
 int DbEasyApi::select()
 {
-	string statement = "select *from yunzhi_nursing";
+	string action = "select";
+	string blank_space = " ";
+	string condition = "*from";
+	//string statement = "select *from yunzhi_nursing";
+
+	string statement = action + blank_space + condition + blank_space + getTable();
 
 	m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
 
@@ -64,12 +79,14 @@ int main()
 	string user = "root";
 	string password = "";
 	string dbname = "test_db";
+	string tablename = "yunzhi_teacher";
 
 	test.setHost(host);  //不用使用 test.setHost("localhost")
 	test.setUser(user);
 	test.setPassword(password);
 	test.setDbname(dbname);
 	test.setPort(3306);
+	test.setTable(tablename);
 
 	test.open();
 	test.select();

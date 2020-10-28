@@ -58,14 +58,22 @@ int DbEasyApi::open()
 	return false;
 }
 
+string& DbEasyApi::setFilter(string& filter)
+{
+	filter.insert(0, " where ");
+
+	return filter;
+}
+
 int DbEasyApi::select()
 {
-	string action = "select";
-	string blank_space = " ";
-	string condition = "*from";
-	//string statement = "select *from yunzhi_nursing";
+	string action = "select ";
+	string condition = "*from ";
+	string filter = "project_date = '2020-10-07'";
+	
+	string statement;
+	statement.append(action).append(condition).append(getTable()).append(setFilter(filter));
 
-	string statement = action + blank_space + condition + blank_space + getTable();
 
 	m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
 
@@ -79,7 +87,7 @@ int main()
 	string user = "root";
 	string password = "";
 	string dbname = "test_db";
-	string tablename = "yunzhi_teacher";
+	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
 
 	test.setHost(host);  //不用使用 test.setHost("localhost")
 	test.setUser(user);

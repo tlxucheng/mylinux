@@ -17,6 +17,8 @@ public:
 	void setPort(int port);
 	void setTable(string& tablename);
 
+	string& setFilter(string& filter);
+
 	string& getTable();
 
 	int open();

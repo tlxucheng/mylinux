@@ -11,8 +11,7 @@ mysql
 //代码
 https://blog.csdn.net/c05170519/article/details/6704501   
 https://blog.csdn.net/kilotwo/article/details/79248657     
-https://www.cnblogs.com/weizhixiang/p/6076680.html
-
+4
 //库加载
 https://www.cnblogs.com/xtu-wlf1212/p/8764015.html   
 https://blog.csdn.net/seven_dj/article/details/25395423 
@@ -22,7 +21,32 @@ https://blog.csdn.net/yan_susu/article/details/82927810
 QTableView
 https://blog.csdn.net/qq769651718/article/details/79357938
 
-setEditorData
+https://www.cnblogs.com/Manual-Linux/p/9679342.html
+
+MVC
+https://blog.csdn.net/qq_33232152/article/details/93777460
+
+Qt布局
+网格布局
+https://blog.csdn.net/hyongilfmmm/article/details/83029184
+
+水平布局
+https://blog.csdn.net/weixin_42837024/article/details/82114258 
+
+垂直布局
+https://blog.csdn.net/weixin_42837024/article/details/82114716
+
+综合布局
+https://blog.csdn.net/li162001/article/details/88126928?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+
+
+Qt登录界面实现（UI, 不带最大按钮）
+https://blog.csdn.net/guorong520/article/details/89213769
+
+C++
+new QGridLayout() 和 new QGridLayout的区别
+
+
 
     inline QVariant value() const   调用了vector
     { return val; }
@@ -188,18 +212,13 @@ QSqlQuery::QSqlQuery(const QString& query, QSqlDatabase db)
     qInit(this, query, db);
 }
 
-使用泛型设计STRING类转INT型 
-toIntegral_helper QString.h:764
 
-布局
-https://blog.csdn.net/xunye_dream/article/details/82918336 
-https://blog.csdn.net/li162001/article/details/88126928?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
-https://blog.csdn.net/weixin_34419321/article/details/90524883?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
-https://blog.csdn.net/zhao2018/article/details/82724420?utm_medium=distribute.pc_relevant.none-task-blog-title-4&spm=1001.2101.3001.4242
-https://blog.csdn.net/qq_14945437/article/details/99673819?utm_medium=distribute.pc_relevant.none-task-blog-title-10&spm=1001.2101.3001.4242
 
-开源项目
-https://blog.csdn.net/libaineu2004/article/details/77369837
+
+
+
+
+
 
 
 

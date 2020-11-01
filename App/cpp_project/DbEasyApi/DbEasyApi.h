@@ -15,7 +15,7 @@ public:
 	void setPassword(string& password);
 	void setDbname(string& dbname);
 	void setPort(int port);
-	void setTable(string& tablename);
+	void setTable(string& tablename);  /* 将对应的表字段获取出来 */
 
 	string& setFilter(string& filter);
 
@@ -23,6 +23,8 @@ public:
 
 	int open();
 	int select();
+
+	void showFields();
 private:
 	string m_host;
 	string m_user;

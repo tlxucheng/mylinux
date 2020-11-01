@@ -6,7 +6,35 @@
 using namespace std;
 
 //mysql_free_result(res); 
+int MySqlResult::GetFields(MYSQL *mysql, string& tablename)
+{
+	MYSQL_FIELD *field = NULL;
 
+	MYSQL_RES *r = mysql_list_fields(mysql, tablename.c_str(), 0);
+	if (!r)
+	{
+		cout << "mysql_list_fields failed!" << endl;
+		return -1;
+	}
+	else
+	{
+		cout << "mysql_list_fields success!" << endl;
+	}
+
+	while (field = mysql_fetch_field(r))
+	{
+		MyFields field_info;
+		field_info.name = field->name;
+		field_info.type = field->type;
+		m_fields.push_back(field_info);
+	}
+	
+	mysql_free_result(r);
+
+	return 0;
+}
+
+#if 0
 int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 {
 	if (mysql_real_query(mysql, statement.c_str(), static_cast<unsigned long>(statement.length())))
@@ -52,4 +80,5 @@ int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 
 	return 0;
 }
+#endif
 

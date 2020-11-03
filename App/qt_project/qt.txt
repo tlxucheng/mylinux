@@ -29,6 +29,7 @@ https://blog.csdn.net/qq_33232152/article/details/93777460
 Qt布局
 网格布局
 https://blog.csdn.net/hyongilfmmm/article/details/83029184
+https://www.mycode.net.cn/language/cpp/539.html
 
 水平布局
 https://blog.csdn.net/weixin_42837024/article/details/82114258 
@@ -46,6 +47,11 @@ https://blog.csdn.net/guorong520/article/details/89213769
 C++
 new QGridLayout() 和 new QGridLayout的区别
 
+参数传递方式
+https://blog.csdn.net/liang841451955/article/details/80241074
+
+Mysql在线手册
+https://dev.mysql.com/doc/c-api/5.7/en/c-api-prepared-statement-type-codes.html
 
 
     inline QVariant value() const   调用了vector
@@ -201,6 +207,16 @@ protected:
 public Q_SLOTS:
     virtual bool select();
 
+};
+
+构造SQL语句
+const QString query = selectStatement();
+
+QSqlRecord类
+class Q_SQL_EXPORT QSqlRecord
+{
+private:
+    QSqlRecordPrivate* d;
 };
 
 (1)select 函数先构造查询语句，然后获取一个db

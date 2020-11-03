@@ -23,6 +23,7 @@ public:
 
 	int open();
 	int select();
+	int removeColumn(int column);
 
 	void showFields();
 private:

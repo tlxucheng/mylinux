@@ -73,6 +73,20 @@ void DbEasyApi::setTable(string& tablename)
 	return;
 }
 
+int DbEasyApi::removeColumn(int column)
+{
+	vector<MyFields>fields;
+	vector<MyFields>::iterator it;
+
+	fields = m_mysqlresult.getField();
+	it = fields.begin() + column;
+	fields.erase(it);
+
+	m_mysqlresult.setField(fields);
+
+	return 0;
+}
+
 void DbEasyApi::showFields()
 {
 	vector<MyFields>::iterator it;
@@ -85,6 +99,8 @@ void DbEasyApi::showFields()
 	{
 		cout << setw(20) << (*it).name << "    " << setw(20) << (*it).type << endl;
 	}
+
+	cout << endl;
 
 	return;
 }
@@ -151,6 +167,10 @@ int main()
 	test.setTable(tablename);
 
 	test.showFields();    /* 调用设置表名函数后就会查询出字段信息 */
+	test.removeColumn(0); /* 跳跃删除 */
+	test.removeColumn(1);
+	test.removeColumn(2);
+	test.showFields();
 	//test.open();
 	//test.select();
 

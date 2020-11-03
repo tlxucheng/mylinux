@@ -5,6 +5,18 @@
 
 using namespace std;
 
+vector<MyFields>& MySqlResult::getField()
+{
+	return m_fields;
+};
+
+void MySqlResult::setField(vector<MyFields>& fields)
+{
+	m_fields = fields;
+
+	return;
+};
+
 //mysql_free_result(res); 
 int MySqlResult::GetFields(MYSQL *mysql, string& tablename)
 {

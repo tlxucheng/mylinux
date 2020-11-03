@@ -18,10 +18,8 @@ class MySqlResult
 public:
 	int GetResult(MYSQL *mysql, string& statement);
 	int GetFields(MYSQL *mysql, string& tablename);
-	vector<MyFields>& getField()
-	{
-		return m_fields;
-	};
+	vector<MyFields>& getField();
+	void setField(vector<MyFields>& fields);
 
 private:
 	vector<MyFields> m_fields;

@@ -145,22 +145,63 @@ string& DbEasyApi::setFilter(string& filter)
 	return filter;
 }
 
-#if 0
 int DbEasyApi::select()
 {
+    MYSQL_RES *result;
+
 	string action = "select ";
-	string condition = "*from ";
+	string condition;
 	string filter = "project_date = '2020-10-07'";
 	
+	vector<MyFields>fields;
+	vector<MyFields>::iterator it;
+	fields = m_mysqlresult.getField();
+	for (it = fields.begin(); it != fields.end(); it++)
+	{
+		condition.append((*it).name).append(", ");
+	}
+	condition.erase(condition.end() - 2);
+	condition.append("from ");
+
 	string statement;
 	statement.append(action).append(condition).append(getTable()).append(setFilter(filter));
 
+	cout << statement << endl;
 
-	m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
+	result = m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
+
+	/* show result */
+	MYSQL_FIELD *res_fields = mysql_fetch_fields(result);
+	int res_fields_num = mysql_num_fields(result);
+	vector<string>  res_field_name;
+
+	int i = 0;
+	for (i = 0; i < res_fields_num; i++)
+	{
+		res_field_name.push_back(res_fields[i].name);
+		cout << setw(20) << res_fields[i].name;
+	}
+	cout << endl;
+
+	MYSQL_ROW   rows;
+	int num_row = static_cast<int>(mysql_num_rows(result));
+	for (i = 0; i < num_row; i++)
+	{
+		rows = mysql_fetch_row(result);
+		if (NULL != rows)
+		{
+			int j = 0;
+			for (j = 0; j < res_fields_num; j++)
+			{
+				cout << setw(20) << rows[j];
+			}
+			cout << endl;
+		}
+	}
+	cout << endl;
 
 	return 0;
 }
-#endif
 
 int main()
 {
@@ -185,7 +226,7 @@ int main()
 	test.removeColumns(0,4);
 	test.showFields();
 	//test.open();
-	//test.select();
+	test.select();
 
 	//system("pause");
 

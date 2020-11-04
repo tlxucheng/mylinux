@@ -46,8 +46,7 @@ int MySqlResult::GetFields(MYSQL *mysql, string& tablename)
 	return 0;
 }
 
-#if 0
-int MySqlResult::GetResult(MYSQL *mysql, string& statement)
+MYSQL_RES* MySqlResult::GetResult(MYSQL *mysql, string& statement)
 {
 	if (mysql_real_query(mysql, statement.c_str(), static_cast<unsigned long>(statement.length())))
 	{
@@ -62,6 +61,9 @@ int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 	cout << setiosflags(ios::fixed) << setprecision(6) << setiosflags(ios::left);
 
 	m_result = mysql_store_result(mysql);
+
+	return m_result;
+#if 0
 	m_fields = mysql_fetch_fields(m_result);
 	m_fields_num = mysql_num_fields(m_result);
 
@@ -91,6 +93,6 @@ int MySqlResult::GetResult(MYSQL *mysql, string& statement)
 	cout << endl;
 
 	return 0;
-}
 #endif
+}
 

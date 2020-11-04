@@ -16,7 +16,7 @@ struct MyFields
 class MySqlResult
 {
 public:
-	int GetResult(MYSQL *mysql, string& statement);
+	MYSQL_RES* GetResult(MYSQL *mysql, string& statement);
 	int GetFields(MYSQL *mysql, string& tablename);
 	vector<MyFields>& getField();
 	void setField(vector<MyFields>& fields);

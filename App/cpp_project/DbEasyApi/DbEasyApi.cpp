@@ -87,6 +87,18 @@ int DbEasyApi::removeColumn(int column)
 	return 0;
 }
 
+int DbEasyApi::removeColumns(int column, int count)
+{
+	int i = 0;
+
+	for (i = 0; i < count; i++)
+	{
+		removeColumn(column);
+	}
+
+	return 0;
+}
+
 void DbEasyApi::showFields()
 {
 	vector<MyFields>::iterator it;
@@ -167,9 +179,10 @@ int main()
 	test.setTable(tablename);
 
 	test.showFields();    /* 调用设置表名函数后就会查询出字段信息 */
-	test.removeColumn(0); /* 跳跃删除 */
-	test.removeColumn(1);
-	test.removeColumn(2);
+	//test.removeColumn(0); /* 跳跃删除 */
+	//test.removeColumn(1);
+	//test.removeColumn(2);
+	test.removeColumns(0,4);
 	test.showFields();
 	//test.open();
 	//test.select();

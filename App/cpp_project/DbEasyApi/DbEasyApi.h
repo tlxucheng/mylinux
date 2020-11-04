@@ -24,6 +24,7 @@ public:
 	int open();
 	int select();
 	int removeColumn(int column);
+	int removeColumns(int column, int count);
 
 	void showFields();
 private:

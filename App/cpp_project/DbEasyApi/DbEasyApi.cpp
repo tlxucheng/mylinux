@@ -148,6 +148,7 @@ string& DbEasyApi::setFilter(string& filter)
 int DbEasyApi::select()
 {
     MYSQL_RES *result;
+	MYSQL_RES result_row;
 
 	string action = "select ";
 	string condition;
@@ -170,7 +171,15 @@ int DbEasyApi::select()
 
 	result = m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
 
-	/* show result */
+	memcpy(&result_row, result, sizeof(result_row));
+	showResultColumn(result);
+	showResultRow(&result_row);
+
+	return 0;
+}
+
+void DbEasyApi::showResultColumn(MYSQL_RES *result)
+{
 	MYSQL_FIELD *res_fields = mysql_fetch_fields(result);
 	int res_fields_num = mysql_num_fields(result);
 	vector<string>  res_field_name;
@@ -200,7 +209,42 @@ int DbEasyApi::select()
 	}
 	cout << endl;
 
-	return 0;
+	return;
+}
+
+void DbEasyApi::showResultRow(MYSQL_RES *result)
+{
+	MYSQL_FIELD *res_fields = mysql_fetch_fields(result);
+	int res_fields_num = mysql_num_fields(result);
+	vector<string>  res_field_name;
+
+	int i = 0;
+	for (i = 0; i < res_fields_num; i++)
+	{
+		res_field_name.push_back(res_fields[i].name);
+	}
+
+	MYSQL_ROW   rows;
+	int num_row = static_cast<int>(mysql_num_rows(result));
+	for (i = 0; i < num_row; i++)
+	{
+		rows = mysql_fetch_row(result);
+		if (NULL != rows)
+		{
+			cout << "***************************" << " " << i + 1 << ". row ***************************" << endl;
+			int j = 0;
+			for (j = 0; j < res_fields_num; j++)
+			{
+				cout << setw(20) << res_fields[j].name;
+				cout << ": ";
+				cout << setw(20) << rows[j];
+				cout << endl;
+			}
+		}
+	}
+	cout << endl;
+
+	return;
 }
 
 int main()

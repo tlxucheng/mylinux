@@ -27,6 +27,8 @@ public:
 	int removeColumns(int column, int count);
 
 	void showFields();
+	void showResultColumn(MYSQL_RES *result); /* 将result转化成一个通用的Slqrecord类 */
+	void showResultRow(MYSQL_RES *result);
 private:
 	string m_host;
 	string m_user;

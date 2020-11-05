@@ -26,8 +26,8 @@ private:
 
 	MYSQL_RES        *m_result;
 	//MYSQL_FIELD      *m_fields;
-	int              m_fields_num;
-	vector<string>   m_field_name;
+	//int              m_fields_num;
+	//vector<string>   m_field_name;
 };
 
 #endif

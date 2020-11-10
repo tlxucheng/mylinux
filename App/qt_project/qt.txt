@@ -53,6 +53,107 @@ https://blog.csdn.net/liang841451955/article/details/80241074
 Mysql在线手册
 https://dev.mysql.com/doc/c-api/5.7/en/c-api-prepared-statement-type-codes.html
 
+0	QStyledItemDelegate::displayText	qstyleditemdelegate.cpp	295	0x67f1678c	
+1	QStyledItemDelegate::initStyleOption	qstyleditemdelegate.cpp	409	0x67f1746a	
+2	QStyledItemDelegate::paint	qstyleditemdelegate.cpp	446	0x67f1758d	
+3	QTableViewPrivate::drawCell	qtableview.cpp	930	0x67ed51b2	
+4	QTableView::paintEvent	qtableview.cpp	1486	0x67ed73d3	
+5	QWidget::event	qwidget.cpp	8117	0x67cbf282	
+6	QFrame::event	qframe.cpp	534	0x67dc3788	
+7	QAbstractScrollArea::viewportEvent	qabstractscrollarea.cpp	1194	0x67e3dc66	
+8	QAbstractItemView::viewportEvent	qabstractitemview.cpp	1689	0x67eb0246	
+9	QAbstractScrollAreaPrivate::viewportEvent	qabstractscrollarea_p.h	110	0x67ff2d10	
+10	QAbstractScrollAreaFilter::eventFilter	qabstractscrollarea_p.h	126	0x67ff1f89	
+11	QCoreApplicationPrivate::sendThroughObjectEventFilters	qcoreapplication.cpp	1031	0x15ea207	
+12	QApplicationPrivate::notify_helper	qapplication.cpp	3495	0x67c8df3e	
+13	QApplication::notify	qapplication.cpp	3464	0x67c8dde5	
+14	QCoreApplication::notifyInternal	qcoreapplication.cpp	935	0x15e9eee	
+15	QCoreApplication::sendSpontaneousEvent	qcoreapplication.h	240	0x67fd6af1	
+16	QWidgetPrivate::drawWidget	qwidget.cpp	5157	0x67cb7cfa	
+17	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5340	0x67cb892e	
+18	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0x67cb87ff	
+19	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0x67cb87ff	
+20	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0x67cb87ff	
+...	<更多>				
+
+获取data
+0	QSqlQuery::value	qsqlquery.cpp	422	0x67942038	
+1	QSqlQueryModel::data	qsqlquerymodel.cpp	364	0x6794c374	
+2	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+3	QModelIndex::data	qabstractitemmodel.h	497	0x1313c93	
+4	QStyledItemDelegate::initStyleOption	qstyleditemdelegate.cpp	406	0x11b73c6	
+5	QStyledItemDelegate::paint	qstyleditemdelegate.cpp	446	0x11b758d	
+6	QTableViewPrivate::drawCell	qtableview.cpp	930	0x11751b2	
+7	QTableView::paintEvent	qtableview.cpp	1486	0x11773d3	
+8	QWidget::event	qwidget.cpp	8117	0xf5f282	
+9	QFrame::event	qframe.cpp	534	0x1063788	
+10	QAbstractScrollArea::viewportEvent	qabstractscrollarea.cpp	1194	0x10ddc66	
+11	QAbstractItemView::viewportEvent	qabstractitemview.cpp	1689	0x1150246	
+12	QAbstractScrollAreaPrivate::viewportEvent	qabstractscrollarea_p.h	110	0x1292d10	
+13	QAbstractScrollAreaFilter::eventFilter	qabstractscrollarea_p.h	126	0x1291f89	
+14	QCoreApplicationPrivate::sendThroughObjectEventFilters	qcoreapplication.cpp	1031	0x6b92a207	
+15	QApplicationPrivate::notify_helper	qapplication.cpp	3495	0xf2df3e	
+16	QApplication::notify	qapplication.cpp	3464	0xf2dde5	
+17	QCoreApplication::notifyInternal	qcoreapplication.cpp	935	0x6b929eee	
+18	QCoreApplication::sendSpontaneousEvent	qcoreapplication.h	240	0x1276af1	
+19	QWidgetPrivate::drawWidget	qwidget.cpp	5157	0xf57cfa	
+20	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5340	0xf5892e	
+...	<更多>				
+
+
+MVC原理与类的关系
+QSqlTableModel *model = new QSqlTableModel;
+QTableView *view = new QTableView;
+view->setModel(model);
+
+class Q_CORE_EXPORT QAbstractItemModel : public QObject
+{
+};
+
+class Q_WIDGETS_EXPORT QAbstractItemView : public QAbstractScrollArea
+{
+        QAbstractItemModel *model() const;
+};
+
+class Q_WIDGETS_EXPORT QTableView : public QAbstractItemView
+{
+};
+
+class Q_WIDGETS_EXPORT QAbstractItemDelegate : public QObject
+{
+};
+
+class Q_SQL_EXPORT QSqlQueryModel: public QAbstractTableModel
+{
+};
+
+class QSqlTableModel : public QSqlQueryModel
+{
+private:
+    class QSqlTableModelPrivate;
+};
+
+class QSqlTableModelPrivate
+{
+public:
+    QSqlDatabase db;
+
+};
+
+QSqlDatabasePrivate *QSqlDatabasePrivate::shared_null()
+{
+    static QSqlNullDriver dr;
+    static QSqlDatabasePrivate n(NULL, &dr);
+    return &n;
+}
+
+如何实现QSqlDatabase类
+https://blog.csdn.net/npy_lp/article/details/108768030
+https://www.cnblogs.com/findumars/p/10392770.html
+https://hewei.blog.csdn.net/article/details/78712397   // Qt--Q_GLOBAL_STATIC
+
+C++ 单例模式
+https://blog.csdn.net/AA__AA1122/article/details/52124309?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.compare&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.compare
 
     inline QVariant value() const   调用了vector
     { return val; }

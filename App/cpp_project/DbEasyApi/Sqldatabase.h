@@ -9,10 +9,12 @@ using namespace std;
 class Sqldatabase
 {
 public:
-	Sqldatabase();
+	Sqldatabase::Sqldatabase();
+	Sqldatabase(string& dbtype);
 	~Sqldatabase();
 
-	Sqldatabase addDatabase(string& type);
+	void addDatabase(string& dbtype);
+	Sqldatabase getDatabase(string& dbtype);
 
 	void setHost(string& host);
 	void setUser(string& user);
@@ -28,6 +30,4 @@ private:
 	int    m_port;
 
 	SqlDriver *m_sqldriver;
-	static Sqldatabase *m_pInstance;
-	map<string, Sqldatabase*> m_conn;
 };

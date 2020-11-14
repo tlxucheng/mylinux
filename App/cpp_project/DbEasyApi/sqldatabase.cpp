@@ -1,30 +1,48 @@
 #include "stdafx.h"
 #include "sqldatabase.h"
-
-Sqldatabase* Sqldatabase::m_pInstance = NULL;
+#include "connectiondict.h"
+#include "MysqlDriver.h"
 
 Sqldatabase::Sqldatabase()
 {
-	m_pInstance = new Sqldatabase();
+	m_sqldriver = NULL;
+}
+
+Sqldatabase::Sqldatabase(string& dbtype)
+{
+	if ("MYSQL" == dbtype)
+	{
+		m_sqldriver = new MysqlDriver();
+	}
+	else
+	{
+		m_sqldriver = NULL;
+	}
 }
 
 Sqldatabase::~Sqldatabase()
 {
 	if (NULL != m_sqldriver)
 	{
-		delete m_sqldriver;
-	}
-		
-    if(NULL != m_pInstance)
-	{
-		delete m_pInstance;
+		//delete m_sqldriver; /* crash */
 	}
 }
 
-Sqldatabase Sqldatabase::addDatabase(string& dbtype)
+void Sqldatabase::addDatabase(string& dbtype)
 {
-	Sqldatabase db;
-	m_conn.insert(pair<string, Sqldatabase*>(dbtype, m_pInstance));
+	ConnectionDict dbDict;
+	Sqldatabase db(dbtype);
+
+	dbDict.insert(dbtype, db);
+
+	return;
+}
+
+Sqldatabase Sqldatabase::getDatabase(string& dbtype)
+{
+	ConnectionDict dbDict;
+
+	Sqldatabase db = dbDict.get(dbtype);
 
 	return db;
 }

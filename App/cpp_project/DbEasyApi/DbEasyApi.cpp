@@ -32,6 +32,7 @@ typedef enum enum_field_types {
 #include "stdafx.h"
 #include <iostream>
 #include <iomanip>
+#include "Sqldatabase.h"
 #include "DbEasyApi.h"
 
 using namespace std;
@@ -271,6 +272,15 @@ int main()
 	test.showFields();
 	//test.open();
 	test.select();
+
+	/* test Sqldatabase */
+	string dbtype = "MYSQL";
+	Sqldatabase db;
+    db.addDatabase(dbtype);
+	//db.getDatabase(dbtype); /* crash */
+
+	//dbtype = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
+	//db.getDatabase(dbtype);
 
 	//system("pause");
 

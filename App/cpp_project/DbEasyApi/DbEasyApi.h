@@ -7,6 +7,15 @@
 #include "MySqlDriver.h"
 #include "MySqlResult.h"
 
+/*
+ DbEasyApi 分离出5个类
+ 1. SqlDatabase 类，负责连接数据库
+ 2. SqlQueryModel 类，负责查询类
+ 3. SqlTableModel 类，负责table数据模型
+ 4. TableView类，负责表格模式显示数据
+ 5. ColumnView类，负责列模式显示数据
+ */
+
 class DbEasyApi
 {
 public:

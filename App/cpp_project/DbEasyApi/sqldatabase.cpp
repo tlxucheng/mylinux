@@ -10,12 +10,12 @@ Sqldatabase::Sqldatabase()
 
 Sqldatabase::~Sqldatabase()
 {
-	if (NULL == m_sqldriver)
+	if (NULL != m_sqldriver)
 	{
 		delete m_sqldriver;
 	}
 		
-    if(NULL == m_pInstance)
+    if(NULL != m_pInstance)
 	{
 		delete m_pInstance;
 	}

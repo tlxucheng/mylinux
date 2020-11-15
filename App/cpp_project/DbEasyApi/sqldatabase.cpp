@@ -36,10 +36,10 @@ Sqldatabase::~Sqldatabase()
 	//cout << "des m_sqldriver: " << m_sqldriver << endl;
 }
 
-void Sqldatabase::addDatabase(string& dbtype)
+void Sqldatabase::addDatabase(string& dbtype, Sqldatabase& db)
 {
 	ConnectionDict dbDict;
-	Sqldatabase db(dbtype);
+	//Sqldatabase db(dbtype);
 
 	dbDict.insert(dbtype, db);
 
@@ -78,4 +78,19 @@ void Sqldatabase::setDbname(string& dbname)
 void Sqldatabase::setPort(int port)
 {
 	m_port = port;
+}
+
+bool Sqldatabase::open()
+{
+	m_sqldriver->init();
+
+	if(m_sqldriver->open(m_host, m_user, m_password, m_dbname, m_port))
+	{
+		cout << "db open success!" << endl;
+		return true;
+	}
+
+	cout << "db open failed!" << endl;
+
+	return false;
 }

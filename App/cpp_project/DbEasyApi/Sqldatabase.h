@@ -15,7 +15,7 @@ public:
 	Sqldatabase(string& dbtype);
 	~Sqldatabase();
 
-	void addDatabase(string& dbtype);
+	void addDatabase(string& dbtype, Sqldatabase& db);
 	Sqldatabase getDatabase(string& dbtype);
 
 	void setHost(string& host);
@@ -24,6 +24,11 @@ public:
 	void setDbname(string& dbname);
 	void setPort(int port);
 
+	bool open();
+
+public:
+	shared_ptr<SqlDriver> m_sqldriver;
+
 private:
 	string m_host;
 	string m_user;
@@ -31,6 +36,5 @@ private:
 	string m_dbname;
 	int    m_port;
 
-	shared_ptr<SqlDriver> m_sqldriver;
 	//MysqlDriver *m_sqldriver;
 };

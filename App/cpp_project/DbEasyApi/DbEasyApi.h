@@ -6,6 +6,7 @@
 //#include <winsock.h>
 #include "MySqlDriver.h"
 #include "MySqlResult.h"
+#include "Sqldatabase.h"
 
 /*
  DbEasyApi 分离出5个类
@@ -19,18 +20,20 @@
 class DbEasyApi
 {
 public:
+#if 0
 	void setHost(string& host);
 	void setUser(string& user);
 	void setPassword(string& password);
 	void setDbname(string& dbname);
 	void setPort(int port);
+#endif
+
 	void setTable(string& tablename);  /* 将对应的表字段获取出来 */
 
 	string& setFilter(string& filter);
 
 	string& getTable();
 
-	int open();
 	int select();
 	int removeColumn(int column);
 	int removeColumns(int column, int count);
@@ -38,6 +41,10 @@ public:
 	void showFields();
 	void showResultColumn(MYSQL_RES *result); /* 将result转化成一个通用的Slqrecord类 */
 	void showResultRow(MYSQL_RES *result);
+
+public:
+	Sqldatabase m_db;
+
 private:
 	string m_host;
 	string m_user;
@@ -46,7 +53,7 @@ private:
 	int    m_port;
 	string m_tablename;
 
-	MysqlDriver m_mysqldriver;
+	//MysqlDriver m_mysqldriver;
 	MySqlResult m_mysqlresult;
 };
 

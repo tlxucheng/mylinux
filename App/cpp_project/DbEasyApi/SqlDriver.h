@@ -16,6 +16,8 @@ public:
 	//SqlDriver();
 	virtual ~SqlDriver();
 
+	virtual MYSQL*  getMysqlHandle() = 0;
+	virtual bool init() = 0;
 	virtual bool open(string& host, string& user, string& password, string& db, unsigned int port) = 0;
 
 private:

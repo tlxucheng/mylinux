@@ -37,6 +37,7 @@ typedef enum enum_field_types {
 
 using namespace std;
 
+#if 0
 void DbEasyApi::setHost(string& host)
 {
 	m_host = host;
@@ -61,15 +62,17 @@ void DbEasyApi::setPort(int port)
 {
 	m_port = port;
 }
+#endif
 
 void DbEasyApi::setTable(string& tablename)
 {
+	//m_db = Sqldatabase::getDatabase("MYSQL"); /* 语法错误 */
+	string dbtype = "MYSQL";
+	m_db = m_db.getDatabase(dbtype);  /* 应该写入构造函数 */
+
 	m_tablename = tablename;
 
-	/* 获取对应表的表字段 */
-	DbEasyApi::open();
-
-	m_mysqlresult.GetFields(m_mysqldriver.getMysqlHandle(), tablename);
+	m_mysqlresult.GetFields(m_db.m_sqldriver->getMysqlHandle(), tablename);
 
 	return;
 }
@@ -123,22 +126,6 @@ string& DbEasyApi::getTable()
 	return m_tablename;
 }
 
-int DbEasyApi::open()
-{
-	if (m_mysqldriver.init())
-	{
-		if (m_mysqldriver.open(m_host, m_user, m_password, m_dbname, m_port))
-		{
-			cout << "db open success!" << endl;
-			return true;
-		}
-	}
-
-	cout << "db open failed!" << endl;
-
-	return false;
-}
-
 string& DbEasyApi::setFilter(string& filter)
 {
 	filter.insert(0, " where ");
@@ -170,7 +157,7 @@ int DbEasyApi::select()
 
 	cout << statement << endl;
 
-	result = m_mysqlresult.GetResult(m_mysqldriver.getMysqlHandle(),statement);
+	result = m_mysqlresult.GetResult(m_db.m_sqldriver->getMysqlHandle(),statement);
 
 	memcpy(&result_row, result, sizeof(result_row));
 	showResultColumn(result);
@@ -248,21 +235,43 @@ void DbEasyApi::showResultRow(MYSQL_RES *result)
 	return;
 }
 
-int main()
+void connect_mysql(string& dbname)
 {
-	DbEasyApi test;
+	string dbtype = "MYSQL";
+	Sqldatabase db(dbtype);
+	//db.addDatabase(dbtype);
+
 	string host = "localhost";
 	string user = "root";
 	string password = "";
+	
+	db.setHost(host);
+	db.setUser(user);
+	db.setPassword(password);
+	db.setDbname(dbname);
+
+	db.open();
+
+	db.addDatabase(dbtype, db);
+
+	return;
+}
+
+int main()
+{
+	DbEasyApi test;
 	string dbname = "test_db";
 	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
 
-	test.setHost(host);  //不用使用 test.setHost("localhost")
-	test.setUser(user);
-	test.setPassword(password);
-	test.setDbname(dbname);
-	test.setPort(3306);
-	test.setTable(tablename);
+	//test.setHost(host);  //不用使用 test.setHost("localhost")
+	//test.setUser(user);
+	//test.setPassword(password);
+	//test.setDbname(dbname);
+	//test.setPort(3306);
+
+	connect_mysql(dbname);
+
+	test.setTable(tablename); /* m_mysql为空值 */
 
 	test.showFields();    /* 调用设置表名函数后就会查询出字段信息 */
 	//test.removeColumn(0); /* 跳跃删除 */
@@ -274,14 +283,16 @@ int main()
 	test.select();
 
 	/* test Sqldatabase */
+#if 0
 	string dbtype = "MYSQL";
 	Sqldatabase db;
     db.addDatabase(dbtype);
 	db.getDatabase(dbtype);
 
-    dbtype = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
+    dbtype = "SQlite";  
 	db.getDatabase(dbtype);
 	db.getDatabase(dbtype);
+#endif
 
 	//system("pause");
 

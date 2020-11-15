@@ -13,11 +13,16 @@ Sqldatabase::Sqldatabase(string& dbtype)
 	if ("MYSQL" == dbtype)
 	{
 		m_sqldriver = make_shared<MysqlDriver>();
+		//m_sqldriver = new MysqlDriver();
+		//cout << "con m_sqldriver: " << m_sqldriver << endl;
 	}
+
+	/*
 	else
 	{
 		m_sqldriver = NULL;
 	}
+	*/
 }
 
 Sqldatabase::~Sqldatabase()
@@ -25,7 +30,10 @@ Sqldatabase::~Sqldatabase()
 	if (NULL != m_sqldriver)
 	{
 		//delete m_sqldriver; /* crash，基类虚函数改成虚函数后运行不crash，但是调试会crash, 先改成智能指针实现 */
+		                      /* 智能指针是如何释放的？ */
 	}
+
+	//cout << "des m_sqldriver: " << m_sqldriver << endl;
 }
 
 void Sqldatabase::addDatabase(string& dbtype)

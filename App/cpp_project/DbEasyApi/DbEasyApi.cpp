@@ -277,10 +277,11 @@ int main()
 	string dbtype = "MYSQL";
 	Sqldatabase db;
     db.addDatabase(dbtype);
-	//db.getDatabase(dbtype); /* crash */
+	db.getDatabase(dbtype);
 
-	//string dbtype2 = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
-	//db.getDatabase(dbtype2);
+    dbtype = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
+	db.getDatabase(dbtype);
+	db.getDatabase(dbtype);
 
 	//system("pause");
 

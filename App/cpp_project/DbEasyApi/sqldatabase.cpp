@@ -36,14 +36,14 @@ Sqldatabase::~Sqldatabase()
 	//cout << "des m_sqldriver: " << m_sqldriver << endl;
 }
 
-void Sqldatabase::addDatabase(string& dbtype, Sqldatabase& db)
+Sqldatabase Sqldatabase::addDatabase(string& dbtype)
 {
 	ConnectionDict dbDict;
-	//Sqldatabase db(dbtype);
+	Sqldatabase db(dbtype);
 
 	dbDict.insert(dbtype, db);
 
-	return;
+	return db;
 }
 
 Sqldatabase Sqldatabase::getDatabase(string& dbtype)

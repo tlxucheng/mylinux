@@ -10,24 +10,19 @@
 
 /*
  DbEasyApi 分离出5个类
- 1. SqlDatabase 类，负责连接数据库
+ 1. SqlDatabase 类，负责连接数据库        --- 已完成 11月15号
  2. SqlQueryModel 类，负责查询类
  3. SqlTableModel 类，负责table数据模型
  4. TableView类，负责表格模式显示数据
  5. ColumnView类，负责列模式显示数据
+
+ question:
+ 1. 确认 shared_ptr<SqlDriver> m_sqldriver 是否能释放;
  */
 
 class DbEasyApi
 {
 public:
-#if 0
-	void setHost(string& host);
-	void setUser(string& user);
-	void setPassword(string& password);
-	void setDbname(string& dbname);
-	void setPort(int port);
-#endif
-
 	void setTable(string& tablename);  /* 将对应的表字段获取出来 */
 
 	string& setFilter(string& filter);
@@ -53,7 +48,6 @@ private:
 	int    m_port;
 	string m_tablename;
 
-	//MysqlDriver m_mysqldriver;
 	MySqlResult m_mysqlresult;
 };
 

@@ -37,33 +37,6 @@ typedef enum enum_field_types {
 
 using namespace std;
 
-#if 0
-void DbEasyApi::setHost(string& host)
-{
-	m_host = host;
-}
-
-void DbEasyApi::setUser(string& user)
-{
-	m_user = user;
-}
-
-void DbEasyApi::setPassword(string& password)
-{
-	m_password = password;
-}
-
-void DbEasyApi::setDbname(string& dbname)
-{
-	m_dbname = dbname;
-}
-
-void DbEasyApi::setPort(int port)
-{
-	m_port = port;
-}
-#endif
-
 void DbEasyApi::setTable(string& tablename)
 {
 	//m_db = Sqldatabase::getDatabase("MYSQL"); /* ”Ô∑®¥ÌŒÛ */
@@ -238,8 +211,7 @@ void DbEasyApi::showResultRow(MYSQL_RES *result)
 void connect_mysql(string& dbname)
 {
 	string dbtype = "MYSQL";
-	Sqldatabase db(dbtype);
-	//db.addDatabase(dbtype);
+	Sqldatabase db = Sqldatabase::addDatabase(dbtype);
 
 	string host = "localhost";
 	string user = "root";
@@ -251,8 +223,6 @@ void connect_mysql(string& dbname)
 	db.setDbname(dbname);
 
 	db.open();
-
-	db.addDatabase(dbtype, db);
 
 	return;
 }

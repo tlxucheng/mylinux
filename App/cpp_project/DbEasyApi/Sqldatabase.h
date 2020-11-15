@@ -15,7 +15,7 @@ public:
 	Sqldatabase(string& dbtype);
 	~Sqldatabase();
 
-	void addDatabase(string& dbtype, Sqldatabase& db);
+	static Sqldatabase addDatabase(string& dbtype);
 	Sqldatabase getDatabase(string& dbtype);
 
 	void setHost(string& host);

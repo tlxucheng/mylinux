@@ -15,6 +15,7 @@
  3. SqlTableModel 类，负责table数据模型
  4. TableView类，负责表格模式显示数据
  5. ColumnView类，负责列模式显示数据
+ 6. Connectiondict类使用类模板实现
 
  question:
  1. 确认 shared_ptr<SqlDriver> m_sqldriver 是否能释放;

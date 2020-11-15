@@ -38,7 +38,7 @@ Sqldatabase::~Sqldatabase()
 
 Sqldatabase Sqldatabase::addDatabase(string& dbtype)
 {
-	ConnectionDict dbDict;
+	ConnectionDict<Sqldatabase> dbDict;
 	Sqldatabase db(dbtype);
 
 	dbDict.insert(dbtype, db);
@@ -48,7 +48,7 @@ Sqldatabase Sqldatabase::addDatabase(string& dbtype)
 
 Sqldatabase Sqldatabase::getDatabase(string& dbtype)
 {
-	ConnectionDict dbDict;
+	ConnectionDict<Sqldatabase> dbDict;
 
 	Sqldatabase db = dbDict.get(dbtype);
 

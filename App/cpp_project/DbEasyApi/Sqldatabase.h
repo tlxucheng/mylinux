@@ -2,7 +2,9 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <memory>
 #include "sqlDriver.h"
+#include "MysqlDriver.h"
 
 using namespace std;
 
@@ -29,5 +31,6 @@ private:
 	string m_dbname;
 	int    m_port;
 
-	SqlDriver *m_sqldriver;
+	shared_ptr<SqlDriver> m_sqldriver;
+	//MysqlDriver *m_sqldriver;
 };

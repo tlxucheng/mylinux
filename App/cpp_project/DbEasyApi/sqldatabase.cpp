@@ -12,7 +12,7 @@ Sqldatabase::Sqldatabase(string& dbtype)
 {
 	if ("MYSQL" == dbtype)
 	{
-		m_sqldriver = new MysqlDriver();
+		m_sqldriver = make_shared<MysqlDriver>();
 	}
 	else
 	{
@@ -24,7 +24,7 @@ Sqldatabase::~Sqldatabase()
 {
 	if (NULL != m_sqldriver)
 	{
-		//delete m_sqldriver; /* crash */
+		//delete m_sqldriver; /* crash，基类虚函数改成虚函数后运行不crash，但是调试会crash, 先改成智能指针实现 */
 	}
 }
 

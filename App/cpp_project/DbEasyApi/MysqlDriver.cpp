@@ -11,15 +11,16 @@ MysqlDriver::MysqlDriver()
 
 MysqlDriver::~MysqlDriver()
 {
-	mysql_close(m_mysql);
+	if (NULL != m_mysql)
+	{
+		mysql_close(m_mysql);
+	}
 
 	cout << "close mysql connect" << endl;
 }
 
 bool MysqlDriver::init()
 {
-	MYSQL mysql;
-
     m_mysql = mysql_init(NULL);
 	//m_mysql = mysql_init(m_mysql);  /* crash原因是什么 */
 	if (NULL == m_mysql)

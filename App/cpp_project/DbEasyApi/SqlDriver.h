@@ -14,7 +14,7 @@ class SqlDriver
 {
 public:
 	//SqlDriver();
-	//~SqlDriver();
+	virtual ~SqlDriver();
 
 	virtual bool open(string& host, string& user, string& password, string& db, unsigned int port) = 0;
 

@@ -279,8 +279,8 @@ int main()
     db.addDatabase(dbtype);
 	//db.getDatabase(dbtype); /* crash */
 
-	//dbtype = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
-	//db.getDatabase(dbtype);
+	//string dbtype2 = "SQlite";  /* 赋值能直接覆盖掉先前的赋值吗？ */
+	//db.getDatabase(dbtype2);
 
 	//system("pause");
 

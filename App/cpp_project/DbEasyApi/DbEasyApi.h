@@ -12,10 +12,11 @@
  DbEasyApi 分离出5个类
  1. SqlDatabase 类，负责连接数据库        --- 已完成 11月15号
  2. SqlQueryModel 类，负责查询类
- 3. SqlTableModel 类，负责table数据模型
- 4. TableView类，负责表格模式显示数据
- 5. ColumnView类，负责列模式显示数据
- 6. Connectiondict类使用类模板实现
+ 3. SqlTableModel 类，父类是SqlQueryModel，负责table数据模型
+ 4. AbstractItemView 类，作为所有显示类的父类
+ 4. TableView类，父类是AbstractItemView，负责表格模式显示数据
+ 5. ColumnView类，父类是AbstractItemView，负责列模式显示数据
+ 6. Connectiondict类使用类模板实现       --- 已完成 11月15号
 
  question:
  1. 确认 shared_ptr<SqlDriver> m_sqldriver 是否能释放;

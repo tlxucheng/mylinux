@@ -25,6 +25,8 @@
 class DbEasyApi
 {
 public:
+	explicit DbEasyApi(string& dbtype);
+
 	void setTable(string& tablename);  /* 将对应的表字段获取出来 */
 
 	string& setFilter(string& filter);

@@ -37,11 +37,16 @@ typedef enum enum_field_types {
 
 using namespace std;
 
+DbEasyApi::DbEasyApi(string& dbtype)
+{
+	m_db = m_db.getDatabase(dbtype); 
+}
+
 void DbEasyApi::setTable(string& tablename)
 {
 	//m_db = Sqldatabase::getDatabase("MYSQL"); /* 语法错误 */
-	string dbtype = "MYSQL";
-	m_db = m_db.getDatabase(dbtype);  /* 应该写入构造函数 */
+	//string dbtype = "MYSQL";
+	//m_db = m_db.getDatabase(dbtype);  /* 应该写入构造函数 */
 
 	m_tablename = tablename;
 
@@ -229,7 +234,6 @@ void connect_mysql(string& dbname)
 
 int main()
 {
-	DbEasyApi test;
 	string dbname = "test_db";
 	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
 
@@ -240,6 +244,9 @@ int main()
 	//test.setPort(3306);
 
 	connect_mysql(dbname);
+
+	string dbtype = "MYSQL";
+	DbEasyApi test(dbtype);
 
 	test.setTable(tablename); /* m_mysql为空值 */
 

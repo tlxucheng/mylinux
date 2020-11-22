@@ -155,6 +155,33 @@ https://hewei.blog.csdn.net/article/details/78712397   // Qt--Q_GLOBAL_STATIC
 C++ 单例模式
 https://blog.csdn.net/AA__AA1122/article/details/52124309?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.compare&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.compare
 
+Qt 单例模式实现
+https://blog.csdn.net/npy_lp/article/details/108768030
+
+返回局部变量
+https://www.cnblogs.com/vivian187/p/12698438.html
+
+C++ new a与new a()有什么区别
+https://blog.csdn.net/zy47675676/article/details/88909388?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.compare&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.compare
+
+C++ 智能指针
+https://www.cyhone.com/articles/right-way-to-use-cpp-smart-pointer/
+
+C++
+严重性	代码	说明	项目	文件	行	禁止显示状态
+错误	C2352	“Sqldatabase::addDatabase”: 非静态成员函数的非法调用	DbEasyApi	d:\project\my_cpp\dbeasyapi\dbeasyapi\dbeasyapi.cpp	241	
+
+QT
+new QLCDNumber(this) 与 new QLCDNumber的区别
+
+C++ 
+lamda表达式
+
+QT
+emit
+
+C语言如何实现万能数据类型
+
     inline QVariant value() const   调用了vector
     { return val; }
 	
@@ -211,6 +238,7 @@ cache*C:\Users\xucheng\AppData\Local\Temp\QtCreator-oIoHPI\symbolcache
 	
 0x0000009aef4ff190
 0x0000009aef4ff190
+
 
 
 /**************Qt MySQL 类设计****************/
@@ -320,6 +348,8 @@ private:
     QSqlRecordPrivate* d;
 };
 
+
+/*****************important*************************/
 (1)select 函数先构造查询语句，然后获取一个db
 (2)db 保存查询结果
 (3)查询赋值方法
@@ -329,13 +359,117 @@ QSqlQuery::QSqlQuery(const QString& query, QSqlDatabase db)
     qInit(this, query, db);
 }
 
+class QSqlQuery
+{
+    const QSqlResult* result() const;
+    QVariant value(int i) const;
 
+};
 
+class QSqlResult
+{
 
+};
 
+查询完了先设置字段
+0	QSqlQuery::record	qsqlquery.cpp	909	0x67942a54	
+1	QSqlQueryModel::setQuery	qsqlquerymodel.cpp	416	0x6794c5da	
+2	QSqlTableModel::setQuery	qsqltablemodel.cpp	608	0x6794f205	
+3	QSqlTableModel::select	qsqltablemodel.cpp	377	0x6794e23c	
+4	show_data_by_view	main.cpp	74	0x401d49	
+5	qMain	main.cpp	152	0x402a9c	
+6	WinMain*16	qtmain_win.cpp	131	0x403f3b	
+7	main			0x40597d	
 
+展示模型时再取数据
+先调用QMYSQLResult::fetch 将mysql数据赋值到 d->row
+再调用QMYSQLResult::data 将d->row转化为QVariant
 
-
+0	QMYSQLResult::data	qsql_mysql.cpp	593	0x6ad82bb5	
+1	QSqlQuery::value	qsqlquery.cpp	422	0x67942060	
+2	QSqlQueryModel::data	qsqlquerymodel.cpp	364	0x6794c374	
+3	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+4	<function called from gdb>			0x6db1ff	
+5	QMYSQLResult::fetch	qsql_mysql.cpp	482	0x6ad826a5	
+6	QSqlQuery::seek	qsqlquery.cpp	604	0x67942518	
+7	QSqlQueryModel::data	qsqlquerymodel.cpp	359	0x6794c2fe	
+8	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+9	<function called from gdb>			0x6db38f	
+10	QSqlQueryModel::data	qsqlquerymodel.cpp	364	0x6794c353	
+11	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+12	<function called from gdb>			0x6db47f	
+13	QMYSQLResult::fetch	qsql_mysql.cpp	482	0x6ad826a5	
+14	QSqlQuery::seek	qsqlquery.cpp	604	0x67942518	
+15	QSqlQueryModel::data	qsqlquerymodel.cpp	359	0x6794c2fe	
+16	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+17	<function called from gdb>			0x6db60f	
+18	QSqlQueryModel::data	qsqlquerymodel.cpp	364	0x6794c353	
+19	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+20	<function called from gdb>			0x6db6ff	
+21	QMYSQLResult::fetch	qsql_mysql.cpp	482	0x6ad826a5	
+22	QSqlQuery::seek	qsqlquery.cpp	604	0x67942518	
+23	QSqlQueryModel::data	qsqlquerymodel.cpp	359	0x6794c2fe	
+24	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+25	<function called from gdb>			0x6db88f	
+26	QSqlQueryModel::data	qsqlquerymodel.cpp	364	0x6794c353	
+27	QSqlTableModel::data	qsqltablemodel.cpp	481	0x6794eab5	
+28	QModelIndex::data	qabstractitemmodel.h	497	0x1283c93	
+29	QStyledItemDelegate::initStyleOption	qstyleditemdelegate.cpp	406	0x11273c6	
+30	QStyledItemDelegate::paint	qstyleditemdelegate.cpp	446	0x112758d	
+31	QTableViewPrivate::drawCell	qtableview.cpp	930	0x10e51b2	
+32	QTableView::paintEvent	qtableview.cpp	1486	0x10e73d3	
+33	QWidget::event	qwidget.cpp	8117	0xecf282	
+34	QFrame::event	qframe.cpp	534	0xfd3788	
+35	QAbstractScrollArea::viewportEvent	qabstractscrollarea.cpp	1194	0x104dc66	
+36	QAbstractItemView::viewportEvent	qabstractitemview.cpp	1689	0x10c0246	
+37	QAbstractScrollAreaPrivate::viewportEvent	qabstractscrollarea_p.h	110	0x1202d10	
+38	QAbstractScrollAreaFilter::eventFilter	qabstractscrollarea_p.h	126	0x1201f89	
+39	QCoreApplicationPrivate::sendThroughObjectEventFilters	qcoreapplication.cpp	1031	0x6b92a207	
+40	QApplicationPrivate::notify_helper	qapplication.cpp	3495	0xe9df3e	
+41	QApplication::notify	qapplication.cpp	3464	0xe9dde5	
+42	QCoreApplication::notifyInternal	qcoreapplication.cpp	935	0x6b929eee	
+43	QCoreApplication::sendSpontaneousEvent	qcoreapplication.h	240	0x11e6af1	
+44	QWidgetPrivate::drawWidget	qwidget.cpp	5157	0xec7cfa	
+45	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5340	0xec892e	
+46	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0xec87ff	
+47	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0xec87ff	
+48	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0xec87ff	
+49	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0xec87ff	
+50	QWidgetPrivate::paintSiblingsRecursive	qwidget.cpp	5327	0xec87ff	
+51	QWidgetPrivate::drawWidget	qwidget.cpp	5209	0xec80f7	
+52	QWidgetBackingStore::doSync	qwidgetbackingstore.cpp	1188	0xea43bf	
+53	QWidgetBackingStore::sync	qwidgetbackingstore.cpp	956	0xea31b8	
+54	QWidgetPrivate::syncBackingStore	qwidget.cpp	1700	0xebfcb7	
+55	QWidgetWindow::handleExposeEvent	qwidgetwindow.cpp	730	0xee8922	
+56	QWidgetWindow::event	qwidgetwindow.cpp	224	0xee6862	
+57	QApplicationPrivate::notify_helper	qapplication.cpp	3499	0xe9df61	
+58	QApplication::notify	qapplication.cpp	2952	0xe9ba13	
+59	QCoreApplication::notifyInternal	qcoreapplication.cpp	935	0x6b929eee	
+60	QCoreApplication::sendSpontaneousEvent	qcoreapplication.h	240	0xacd725d	
+61	QGuiApplicationPrivate::processExposeEvent	qguiapplication.cpp	2575	0xa9fa8a6	
+62	QGuiApplicationPrivate::processWindowSystemEvent	qguiapplication.cpp	1613	0xa9f683f	
+63	QWindowSystemInterface::sendWindowSystemEvents	qwindowsysteminterface.cpp	579	0xa9eaf06	
+64	QWindowSystemInterface::flushWindowSystemEvents	qwindowsysteminterface.cpp	563	0xa9eaea9	
+65	QWindowsWindow::handleWmPaint	qwindowswindow.cpp	1470	0x628461cf	
+66	QWindowsContext::windowsProc	qwindowscontext.cpp	937	0x62906aad	
+67	qWindowsWndProc*16	qwindowscontext.cpp	1165	0x6284d5c2	
+68	USER32!AddClipboardFormatListener	C:\Windows\SysWOW64\user32.dll		0x779f451b	
+69	USER32!CallWindowProcW	C:\Windows\SysWOW64\user32.dll		0x779d504c	
+70	USER32!CallWindowProcW	C:\Windows\SysWOW64\user32.dll		0x779d4bea	
+71	USER32!IsRectEmpty	C:\Windows\SysWOW64\user32.dll		0x779de23f	
+72	ntdll!KiUserCallbackDispatcher	C:\Windows\SYSTEM32\ntdll.dll		0x77cf428d	
+73	??			0x6ddda4	
+74	USER32!DispatchMessageW	C:\Windows\SysWOW64\user32.dll		0x779d3f80	
+75	QEventDispatcherWin32::processEvents	qeventdispatcher_win.cpp	794	0x6b979c99	
+76	QWindowsGuiEventDispatcher::processEvents	qwindowsguieventdispatcher.cpp	80	0x6285cdf0	
+77	QEventLoop::processEvents	qeventloop.cpp	136	0x6b927f94	
+78	QEventLoop::exec	qeventloop.cpp	212	0x6b92822f	
+79	QCoreApplication::exec	qcoreapplication.cpp	1188	0x6b92a53d	
+80	QGuiApplication::exec	qguiapplication.cpp	1483	0xa9f6520	
+81	QApplication::exec	qapplication.cpp	2744	0xe9b357	
+82	qMain	main.cpp	155	0x402afa	
+83	WinMain*16	qtmain_win.cpp	131	0x403f3b	
+84	main			0x40597d	
 
 
 

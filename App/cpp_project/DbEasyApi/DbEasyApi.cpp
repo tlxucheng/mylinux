@@ -34,6 +34,7 @@ typedef enum enum_field_types {
 #include <iomanip>
 #include "Sqldatabase.h"
 #include "DbEasyApi.h"
+#include "AnyType.h"
 
 using namespace std;
 
@@ -232,17 +233,19 @@ void connect_mysql(string& dbname)
 	return;
 }
 
+void anytype_test_function()
+{
+	AnyType test(100);
+
+	int i = test.toInt();
+	cout << "i: " << i << endl;
+}
+
 int main()
 {
+#if 0
 	string dbname = "test_db";
 	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
-
-	//test.setHost(host);  //不用使用 test.setHost("localhost")
-	//test.setUser(user);
-	//test.setPassword(password);
-	//test.setDbname(dbname);
-	//test.setPort(3306);
-
 	connect_mysql(dbname);
 
 	string dbtype = "MYSQL";
@@ -258,6 +261,7 @@ int main()
 	test.showFields();
 	//test.open();
 	test.select();
+#endif
 
 	/* test Sqldatabase */
 #if 0
@@ -270,6 +274,18 @@ int main()
 	db.getDatabase(dbtype);
 	db.getDatabase(dbtype);
 #endif
+
+	anytype_test_function();
+
+	char aa[64] = "my name is bob";
+	string str = aa;
+	cout << "str: " << str << endl;
+
+	char *p = "my name is lili";
+	string str2 = p;
+	cout << "str2: " << str2 << endl;
+	str2.append(" age is 16");
+	cout << "str2: " << str2 << endl;
 
 	//system("pause");
 

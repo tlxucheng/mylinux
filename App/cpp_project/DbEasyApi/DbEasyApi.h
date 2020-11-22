@@ -16,10 +16,18 @@
  4. AbstractItemView 类，作为所有显示类的父类
  4. TableView类，父类是AbstractItemView，负责表格模式显示数据
  5. ColumnView类，父类是AbstractItemView，负责列模式显示数据
- 6. Connectiondict类使用类模板实现       --- 已完成 11月15号
+ 6. Connectiondict 类使用类模板实现       --- 已完成 11月15号
+ 7. Connectiondict 需要增加锁控制
+
+ 8. 增加 增、删、改接口
+ 9. socket模型接口开发，支持多线程、select模型、epoll模型（Linux下）支持UDP/TCL/TLS/SCTP
+ 10. 可以查询历史聊天记录
+ 11. 支持多种协议客户端测试工具
+ 12. 兼容Windows和Linux
 
  question:
  1. 确认 shared_ptr<SqlDriver> m_sqldriver 是否能释放;
+ 2. 如果mysql server没启动会crash
  */
 
 class DbEasyApi
@@ -45,11 +53,6 @@ public:
 	Sqldatabase m_db;
 
 private:
-	string m_host;
-	string m_user;
-	string m_password;
-	string m_dbname;
-	int    m_port;
 	string m_tablename;
 
 	MySqlResult m_mysqlresult;

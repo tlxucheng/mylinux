@@ -6,6 +6,7 @@
 #include <vector>
 #include "mysql.h"
 #include "MysqlDriver.h"
+#include "Sqlresult.h"
 
 struct MyFields
 {
@@ -13,7 +14,7 @@ struct MyFields
 	int type;
 };
 
-class MySqlResult
+class MySqlResult : public SqlResult
 {
 public:
 	MYSQL_RES* GetResult(MYSQL *mysql, string& statement);

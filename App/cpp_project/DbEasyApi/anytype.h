@@ -11,7 +11,7 @@ class AnyType
 {
 public:
 	AnyType(int i);
-	AnyType(const char* str);
+	AnyType(char* str);
 	~AnyType();
 
 	int toInt();

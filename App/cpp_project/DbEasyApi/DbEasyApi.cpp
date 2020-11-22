@@ -239,11 +239,19 @@ void anytype_test_function()
 
 	int i = test.toInt();
 	cout << "i: " << i << endl;
+
+	AnyType test_str("my name is bob");
+	string str = test_str.toString();
+	cout << "str: " << str << endl;
+
+	str.append("and age is 16.");
+	cout << "str: " << str << endl;
+
+	return;
 }
 
 int main()
 {
-#if 0
 	string dbname = "test_db";
 	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
 	connect_mysql(dbname);
@@ -261,7 +269,6 @@ int main()
 	test.showFields();
 	//test.open();
 	test.select();
-#endif
 
 	/* test Sqldatabase */
 #if 0
@@ -275,17 +282,7 @@ int main()
 	db.getDatabase(dbtype);
 #endif
 
-	anytype_test_function();
-
-	char aa[64] = "my name is bob";
-	string str = aa;
-	cout << "str: " << str << endl;
-
-	char *p = "my name is lili";
-	string str2 = p;
-	cout << "str2: " << str2 << endl;
-	str2.append(" age is 16");
-	cout << "str2: " << str2 << endl;
+	//anytype_test_function();
 
 	//system("pause");
 

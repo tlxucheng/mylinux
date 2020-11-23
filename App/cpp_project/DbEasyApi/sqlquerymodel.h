@@ -7,7 +7,7 @@
 
 class SqlQueryModel
 {
-private:
+public:
 	SqlQuery query;
 };
 

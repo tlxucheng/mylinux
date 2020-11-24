@@ -96,3 +96,10 @@ MYSQL_RES* MySqlResult::GetResult(MYSQL *mysql, string& statement)
 #endif
 }
 
+bool MySqlResult::reset(const string& query)
+{
+
+
+	return true;
+}
+

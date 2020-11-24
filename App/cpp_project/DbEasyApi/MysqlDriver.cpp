@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include "MysqlDriver.h"
+#include "MysqlResult.h"
 
 using namespace std;
 
@@ -44,4 +45,9 @@ bool MysqlDriver::open(string& host, string& user, string& password, string& db,
 MYSQL* MysqlDriver::getMysqlHandle()
 {
 	return m_mysql;
+}
+
+SqlResult* MysqlDriver::createResult() const
+{
+	return new MySqlResult;  /* 与return new MySqlResult(this)的区别，何时删除 */
 }

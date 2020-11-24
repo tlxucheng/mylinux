@@ -7,6 +7,7 @@
 
 #include <string>
 #include "mysql.h"
+#include "SqlResult.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ public:
 	virtual bool init() = 0;
 	virtual bool open(string& host, string& user, string& password, string& db, unsigned int port) = 0;
 
+	virtual SqlResult *createResult() const = 0;
 private:
 
 };

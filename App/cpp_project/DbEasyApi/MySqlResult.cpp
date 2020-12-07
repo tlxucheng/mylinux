@@ -96,9 +96,30 @@ MYSQL_RES* MySqlResult::GetResult(MYSQL *mysql, string& statement)
 #endif
 }
 
+static int DecodeMYSQLType(int mysqltype, int flags)
+{
+	int type = 0;
+
+	return type;
+}
+
 bool MySqlResult::reset(const string& query)
 {
-
+	if (mysql_real_query(m_driver->getMysqlHandle(), query.c_str(), query.length()))
+	{
+		return false;
+	}
+	m_result = mysql_store_result(m_driver->getMysqlHandle());
+	if (NULL == m_result)
+	{
+		return false;
+	}
+	int num_fileds = mysql_field_count(m_driver->getMysqlHandle());
+	for (int i = 0; i < num_fileds; i++)
+	{
+		MYSQL_FIELD *field = mysql_fetch_field_direct(m_result, i);  //mysql_fetch_field_direct与mysql_fetch_field的区别？
+		m_fields[i].type = DecodeMYSQLType(field->type, field->flags);
+	}
 
 	return true;
 }

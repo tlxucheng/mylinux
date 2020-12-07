@@ -27,6 +27,7 @@ private:
 	vector<MyFields> m_fields;
 
 	MYSQL_RES        *m_result;
+	MysqlDriver      *m_driver;
 	//MYSQL_FIELD      *m_fields;
 	//int              m_fields_num;
 	//vector<string>   m_field_name;

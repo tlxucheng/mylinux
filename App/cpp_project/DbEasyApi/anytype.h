@@ -20,7 +20,20 @@ public:
 private:
 	union data
 	{
+		char c;
+		unsigned char uc;
+		short s;
+		signed char sc;
+		unsigned short us;
 		int i;
+		unsigned u;
+		long l;
+		unsigned long ul;
+		bool b;
+		double d;
+		float f;
+
+
 		void* ptr;
 	}data;
 

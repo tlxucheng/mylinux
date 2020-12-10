@@ -12,7 +12,17 @@ class AnyType
 public:
 	AnyType(int i);
 	AnyType(char* str);
+	AnyType();
 	~AnyType();
+
+	enum Type {
+		Char,
+		Int,
+		Long,
+		Bool,
+		Double,
+		String,
+	};
 
 	int toInt();
 	string toString();

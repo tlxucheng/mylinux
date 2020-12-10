@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MySqlResult.h"
+#include "AnyType.h"
 #include <iostream>
 #include <iomanip>
 
@@ -100,6 +101,25 @@ static int DecodeMYSQLType(int mysqltype, int flags)
 {
 	int type = 0;
 
+	switch (mysqltype)
+	{
+		case FIELD_TYPE_TINY:
+		case FIELD_TYPE_SHORT:
+		case FIELD_TYPE_LONG:
+		case FIELD_TYPE_INT24:
+			type = AnyType::Int;
+			break;
+		case FIELD_TYPE_LONGLONG:
+			type = AnyType::Long;
+			break;
+		case FIELD_TYPE_ENUM:
+		case FIELD_TYPE_SET:
+			type = AnyType::String;
+			break;
+		default:
+			break;
+	}
+
 	return type;
 }
 
@@ -124,3 +144,7 @@ bool MySqlResult::reset(const string& query)
 	return true;
 }
 
+AnyType MySqlResult::data(int filed)
+{
+	return AnyType();  /* 创建一个什么样的对象比较好 */
+}

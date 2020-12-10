@@ -34,7 +34,11 @@ void SqlTableModel::setQuery(const SqlQuery &query)
 
 void SqlTableModel::select()
 {
-	/* 实现 QSqlQuery qu(query, d->db); */
+	const string query = selectStatement();
+
+	SqlQuery qu(query, db);
+
+	/* 将字段相关的的存储起来，便于展示的时候使用  */
 
 	return;
 }
@@ -46,4 +50,9 @@ string& SqlTableModel::selectStatement() /* 用const修饰，怎么编译通过 */
 	statement.append("select *from ").append(getTable()).append(getFilter());
 
 	return statement;
+}
+
+/* 先直接在SqlTableModel类中show，实际需要实现MVC，在view类中show */
+void SqlTableModel::show()
+{
 }

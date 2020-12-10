@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "anytype.h"
 
+AnyType::AnyType()
+{
+	
+}
+
 AnyType::AnyType(int i)
 {
 	this->data.i = i;

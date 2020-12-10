@@ -23,7 +23,7 @@ SqlQuery::SqlQuery(SqlResult *r)
 
 SqlQuery::SqlQuery(const string& query, Sqldatabase &db)
 {
-	/* 申请 sqlResult 指针空间 */
+	/* 申请 sqlResult 指针空间, db参数先不用 */
 
 	this->sqlResult->reset(query);
 }

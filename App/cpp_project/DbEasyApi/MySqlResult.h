@@ -23,6 +23,7 @@ public:
 	void setField(vector<MyFields>& fields);
 
 	bool reset(const string& query); /* 查询字段和具体数据，字段赋值到fields里面 */
+	AnyType data(int filed);
 private:
 	vector<MyFields> m_fields;
 

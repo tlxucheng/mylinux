@@ -17,6 +17,8 @@ public:
 	SqlQuery();
 	SqlQuery(const string& query, Sqldatabase &db);
 	//Init(const string& query, Sqldatabase &db);
+
+	SqlResult *getSqlResult();
 private:
 
 	SqlResult *sqlResult;

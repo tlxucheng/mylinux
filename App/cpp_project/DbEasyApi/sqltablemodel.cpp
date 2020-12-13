@@ -61,4 +61,5 @@ string& SqlTableModel::selectStatement() /* 用const修饰，怎么编译通过 */
 /* 先直接在SqlTableModel类中show，实际需要实现MVC，在view类中show */
 void SqlTableModel::show()
 {
+	query.getSqlResult()->show_fileds_type();
 }

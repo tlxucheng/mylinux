@@ -267,6 +267,7 @@ void show_data_by_view()
 
 int main()
 {
+#if 0
 	string dbname = "test_db";
 	string tablename = "yunzhi_nursing"; // yunzhi_teacher 表中有中文，会出现乱码
 	connect_mysql(dbname);
@@ -284,6 +285,7 @@ int main()
 	test.showFields();
 	//test.open();
 	test.select();
+#endif
 
 	/* test Sqldatabase */
 #if 0
@@ -300,6 +302,9 @@ int main()
 	//anytype_test_function();
 
 	//system("pause");
+
+	/* show_data_by_view function */
+	show_data_by_view();
 
     return 0;
 }

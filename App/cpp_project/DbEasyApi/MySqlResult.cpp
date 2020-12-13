@@ -148,3 +148,13 @@ AnyType MySqlResult::data(int filed)
 {
 	return AnyType();  /* 创建一个什么样的对象比较好 */
 }
+
+void MySqlResult::show_fileds_type()
+{
+	size_t filed_vector_size = m_fields.size();
+
+	for (int i = 0; i < filed_vector_size; i++)
+	{
+		cout << "i type: " << m_fields[i].type;
+	}
+}

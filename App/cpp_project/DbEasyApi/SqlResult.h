@@ -15,6 +15,9 @@ class SqlResult
 public:
 	virtual bool reset(const string& sqlquery) = 0;
 	virtual AnyType data(int field) = 0;
+	
+	/* test function */
+	virtual void show_fileds_type() = 0;
 private:
 
 };

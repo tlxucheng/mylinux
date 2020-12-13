@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "sqlquery.h"
 
+SqlQuery::SqlQuery()
+{
+
+}
+
 /*
 void Init(const string& query, Sqldatabase &db)
 {

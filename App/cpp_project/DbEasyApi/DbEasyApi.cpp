@@ -35,6 +35,7 @@ typedef enum enum_field_types {
 #include "Sqldatabase.h"
 #include "DbEasyApi.h"
 #include "AnyType.h"
+#include "sqltablemodel.h"
 
 using namespace std;
 
@@ -248,6 +249,20 @@ void anytype_test_function()
 	cout << "str: " << str << endl;
 
 	return;
+}
+
+void show_data_by_view()
+{
+	string  db_name = "test_db";
+
+	connect_mysql(db_name);
+
+	SqlTableModel *model = new SqlTableModel;
+	model->setTable("yunzhi_nursing");   /* 为什么能编译通过 */
+	model->select();
+	model->show();
+
+	/* 析构掉model */
 }
 
 int main()

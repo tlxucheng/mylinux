@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "sqltablemodel.h"
 
+SqlTableModel::SqlTableModel()
+{
+
+}
+
 void SqlTableModel::setTable(const string& tablename)
 {
 	m_tablename = tablename;
@@ -39,6 +44,7 @@ void SqlTableModel::select()
 	SqlQuery qu(query, db);
 
 	/* 将字段相关的的存储起来，便于展示的时候使用  */
+	setQuery(qu);
 
 	return;
 }

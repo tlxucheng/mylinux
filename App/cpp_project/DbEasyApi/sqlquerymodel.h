@@ -8,6 +8,8 @@
 class SqlQueryModel
 {
 public:
+	SqlQueryModel();
+
 	SqlQuery query;
 };
 

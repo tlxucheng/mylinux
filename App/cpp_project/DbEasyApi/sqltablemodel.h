@@ -14,6 +14,8 @@ using namespace std;
 class SqlTableModel : public SqlQueryModel
 {
 public:
+	SqlTableModel();
+
 	void setTable(const string& tablename);
 	string& getTable();
 	void setFilter(const string& filter);

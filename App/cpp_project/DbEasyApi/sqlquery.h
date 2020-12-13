@@ -14,6 +14,7 @@ class SqlQuery
 public:
 	//explicit SqlQuery(SqlResult *r);
 	//explicit SqlQuery();
+	SqlQuery();
 	SqlQuery(const string& query, Sqldatabase &db);
 	//Init(const string& query, Sqldatabase &db);
 private:

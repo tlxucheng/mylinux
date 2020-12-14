@@ -6,6 +6,16 @@
 
 using namespace std;
 
+MySqlResult::MySqlResult()
+{
+
+}
+
+MySqlResult::MySqlResult(Sqldatabase &db)
+{
+	m_driver = db.m_sqldriver;
+}
+
 vector<MyFields>& MySqlResult::getField()
 {
 	return m_fields;
@@ -125,6 +135,8 @@ static int DecodeMYSQLType(int mysqltype, int flags)
 
 bool MySqlResult::reset(const string& query)
 {
+	cout << "query: " << query << endl;
+
 	if (mysql_real_query(m_driver->getMysqlHandle(), query.c_str(), query.length()))
 	{
 		return false;

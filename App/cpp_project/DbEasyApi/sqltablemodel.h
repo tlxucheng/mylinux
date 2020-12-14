@@ -22,13 +22,13 @@ public:
 	string& getFilter();
 	void setQuery(const SqlQuery &query);
 	void select();
-	string& selectStatement();
+	string selectStatement();
 
 	void show();
 private:
 	string m_tablename;
 	string m_filter;
-	Sqldatabase db;
+	Sqldatabase m_db;
 };
 
 #endif

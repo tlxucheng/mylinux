@@ -3,7 +3,8 @@
 
 SqlTableModel::SqlTableModel()
 {
-
+	string dbtype = "MYSQL";
+	m_db = m_db.getDatabase(dbtype);
 }
 
 void SqlTableModel::setTable(const string& tablename)
@@ -41,7 +42,7 @@ void SqlTableModel::select()
 {
 	const string query = selectStatement();
 
-	SqlQuery qu(query, db);
+	SqlQuery qu(query, m_db);
 
 	/* 将字段相关的的存储起来，便于展示的时候使用  */
 	setQuery(qu);
@@ -49,11 +50,13 @@ void SqlTableModel::select()
 	return;
 }
 
-string& SqlTableModel::selectStatement() /* 用const修饰，怎么编译通过 */
+string SqlTableModel::selectStatement() /* 用const修饰，怎么编译通过 */
 {
 	string statement;
 
 	statement.append("select *from ").append(getTable()).append(getFilter());
+
+	cout << "statement: " << statement << endl;
 
 	return statement;
 }

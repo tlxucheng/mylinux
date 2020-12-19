@@ -65,4 +65,8 @@ string SqlTableModel::selectStatement() /* 用const修饰，怎么编译通过 */
 void SqlTableModel::show()
 {
 	query.getSqlResult()->show_fileds_type();
+
+	int index = 0;
+	query.getSqlResult()->show_data(0);
+
 }

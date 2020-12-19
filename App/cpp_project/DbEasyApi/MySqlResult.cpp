@@ -177,4 +177,25 @@ void MySqlResult::show_fileds_type()
 	{
 		cout << i << " type: " << m_fields[i].type << endl;
 	}
+
+	return;
+}
+
+void MySqlResult::show_data(int index)
+{
+    mysql_data_seek(m_result, index);
+    m_row = mysql_fetch_row(m_result);
+
+	if (NULL != m_row)
+	{
+		int i = 0;
+		size_t filed_vector_size = m_fields.size();
+		for (i = 0; i < filed_vector_size; i++)
+		{
+			cout << setw(20) << m_row[i];
+		}
+		cout << endl;
+	}
+
+    return;
 }

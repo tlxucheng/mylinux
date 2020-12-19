@@ -30,10 +30,12 @@ public:
 
 	/* test function */
 	void show_fileds_type();
+	void show_data(int index);
 private:
 	vector<MyFields> m_fields;
 
 	MYSQL_RES        *m_result;
+	MYSQL_ROW        m_row;
 	//MysqlDriver      *m_driver;
 
 	shared_ptr<SqlDriver> m_driver;  /* 是否正确？怎么使用最好？*/

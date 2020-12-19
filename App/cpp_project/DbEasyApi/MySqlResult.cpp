@@ -124,6 +124,10 @@ static int DecodeMYSQLType(int mysqltype, int flags)
 			break;
 		case FIELD_TYPE_ENUM:
 		case FIELD_TYPE_SET:
+		case FIELD_TYPE_DATE:                   /* 先认为是String */ 
+		case FIELD_TYPE_TIME:                   /* 先认为是String */ 
+		case FIELD_TYPE_STRING:
+		case FIELD_TYPE_VAR_STRING:
 			type = AnyType::String;
 			break;
 		default:

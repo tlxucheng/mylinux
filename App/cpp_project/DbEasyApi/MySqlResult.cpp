@@ -150,7 +150,11 @@ bool MySqlResult::reset(const string& query)
 	for (int i = 0; i < num_fileds; i++)
 	{
 		MYSQL_FIELD *field = mysql_fetch_field_direct(m_result, i);  //mysql_fetch_field_direct与mysql_fetch_field的区别？
-		m_fields[i].type = DecodeMYSQLType(field->type, field->flags);
+
+		MyFields field_info;
+		field_info.name = field->name;
+		field_info.type = DecodeMYSQLType(field->type, field->flags);
+		m_fields.push_back(field_info);
 	}
 
 	return true;
@@ -167,6 +171,6 @@ void MySqlResult::show_fileds_type()
 
 	for (int i = 0; i < filed_vector_size; i++)
 	{
-		cout << "i type: " << m_fields[i].type;
+		cout << i << " type: " << m_fields[i].type << endl;
 	}
 }

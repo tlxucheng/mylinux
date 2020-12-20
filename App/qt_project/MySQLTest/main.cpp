@@ -12,6 +12,8 @@
 #include <QAbstractItemView>
 #include <QHeaderView>
 #include <QSqlRecord>
+#include <QString>
+#include <QVariant>
 
 bool connect_mysql(const QString &dbName)
 {
@@ -32,6 +34,32 @@ bool connect_mysql(const QString &dbName)
 
     return true;
 }
+
+bool connect_sqlite(const QString &dbName)
+{
+    QSqlDatabase db;
+
+    if(QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        db = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
+
+    db.setDatabaseName(dbName);
+    if(!db.open())
+    {
+        QMessageBox::critical(0, QObject::tr("Database Error"), db.lastError().text());
+        return false;
+    }
+
+    qDebug() << "sqlite connect success";
+
+    return true;
+}
+
 
 void show_data_by_qdebug()
 {
@@ -63,9 +91,12 @@ void show_data_by_view()
     {
         QSqlTableModel *model = new QSqlTableModel;
         model->setTable("yunzhi_nursing");
-        //model.setFilter(QString("cc_number = '%1'").arg("cc_pc_101_1000_000148ec_1598949284_389279533"));
-        //model.setFilter("id > 0");
-        model->setSort(1, Qt::AscendingOrder);
+        //model->setFilter(QString("cc_number = '%1'").arg("cc_pc_101_1000_000148ec_1598949284_389279533"));
+        model->setFilter("project_type = 3");
+        //model->setSort(1, Qt::AscendingOrder);
+        //model->removeColumn(3);
+        //model->removeColumn(2);
+        model->removeColumns(0,3);
         //model->setHeaderData(1, Qt::Horizontal, "id");
         //model->setHeaderData(2, Qt::Horizontal, "api_push_data");
         if(model->select())
@@ -75,13 +106,37 @@ void show_data_by_view()
             QTableView *view = new QTableView;
 
             view->setModel(model);
-            view->setSelectionMode(QAbstractItemView::SingleSelection);
-            view->setSelectionBehavior(QAbstractItemView::SelectRows);
-            view->resizeColumnsToContents();
-            view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+//            view->setSelectionMode(QAbstractItemView::SingleSelection);
+//            view->setSelectionBehavior(QAbstractItemView::SelectRows);
+//            view->resizeColumnsToContents();
+//            view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-            QHeaderView *header = view->horizontalHeader();
-            header->setStretchLastSection(true);
+//            QHeaderView *header = view->horizontalHeader();
+//            header->setStretchLastSection(true);
+
+            view->show();
+        }
+        else
+        {
+            qDebug() << "select failed";
+        }
+    }
+}
+
+void show_data_by_view_from_sqlite()
+{
+    if(connect_sqlite("D:/sqlite3/test_db"))
+    {
+        QSqlTableModel *model = new QSqlTableModel;
+        model->setTable("yunzhi_nursing");
+        //model->setFilter("project_type = 3");
+        if(model->select())
+        {
+            qDebug() << "select success!";
+
+            QTableView *view = new QTableView;
+
+            view->setModel(model);
 
             view->show();
         }
@@ -137,17 +192,46 @@ void insert_data2()
     }
 }
 
+void test_variant(QVariant& va)
+{
+    QString str = "www.baidu.com";
+    va.setValue(str);
+}
+
+void show_variant(QVariant& va)
+{
+    QString str = va.toString();
+    qDebug() << "str: " << str;
+}
+
+
+void show_variant_int(QVariant& va)
+{
+    int num = va.toInt();
+    qDebug() << "num: " << num;
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     //MainWindow w;
     //w.show();
 
-    //show_data_by_qdebug();
-    qDebug() << "before insert";
-    //insert_data2();
-    show_data_by_view();
-    qDebug() << "after insert";
+#if 0
+    QVariant va;
+    test_variant(va);
+    show_variant(va);
+
+    QVariant va2("my name is bob");
+    show_variant(va2);
+
+    QVariant va3(100);
+    show_variant_int(va3);
+#endif
+
+    //show_data_by_view();                  /* show_data_by_view �?show_data_by_view_from_sqlite一起执行，数据显示不出�?*/
+
+    show_data_by_view_from_sqlite();
 
     return a.exec();
     //return 0;

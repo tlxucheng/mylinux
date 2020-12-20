@@ -1,7 +1,9 @@
 // DbEasyApi.cpp : 定义控制台应用程序的入口点。
-//
-
+// 如何设置头文件和lib文件路径？
+/* sqlite c api
+ * https://blog.csdn.net/zgrjkflmkyc/article/details/45150951
 /*
+
 typedef enum enum_field_types {
 	MYSQL_TYPE_DECIMAL, MYSQL_TYPE_TINY,
 	MYSQL_TYPE_SHORT, MYSQL_TYPE_LONG,
@@ -36,6 +38,8 @@ typedef enum enum_field_types {
 #include "DbEasyApi.h"
 #include "AnyType.h"
 #include "sqltablemodel.h"
+
+#include "sqlite3.h"
 
 using namespace std;
 
@@ -265,6 +269,82 @@ void show_data_by_view()
 	/* 析构掉model */
 }
 
+int sqlite_print_record(void * params, int n_column, char **column_value, char **column_name)
+{
+	int i;
+
+	for (i = 0; i<n_column; i++) {
+		cout << setw(20) << column_value[i];
+	}
+	cout << endl;
+
+	return 0;
+}
+void test_sqlite_api_static()
+{
+	sqlite3 *db = NULL;
+	const char *select_sql = "select *from yunzhi_nursing";
+	char *errmsg = NULL;
+
+	if (sqlite3_open("D:/sqlite3/test_db", &db))
+	{
+		cout << "sqlite3_open failed!" << endl;
+	}
+	else
+	{
+		cout << "sqlite3_open suceess!" << endl;
+	}
+
+	if (sqlite3_exec(db, select_sql, sqlite_print_record, NULL, &errmsg))
+	{
+		cout << errmsg << endl;
+	}
+
+	return;
+}
+
+void test_sqlite_api_static2()
+{
+	sqlite3 *db = NULL;
+	const char *select_sql = "select *from yunzhi_nursing";
+	char *errmsg = NULL;
+	char **dbresult; int j, nrow, ncolumn, index;
+	int ret = 0;
+
+	if (sqlite3_open("D:/sqlite3/test_db", &db))
+	{
+		cout << "sqlite3_open failed!" << endl;
+	}
+	else
+	{
+		cout << "sqlite3_open suceess!" << endl;
+	}
+
+	int i = 0;
+	ret = sqlite3_get_table(db, select_sql, &dbresult, &nrow, &ncolumn, &errmsg);
+	if (ret == SQLITE_OK) {
+		cout << "query " << nrow << " records. " << endl;
+		printf("query %i records.\n", nrow);
+		index = ncolumn;
+		for (i = 0; i<nrow; i++) {
+			cout << setw(2) << i;
+			for (j = 0; j < ncolumn; j++) {
+				if (NULL != dbresult[index])         /* https://bbs.csdn.net/topics/390187094 */
+				{
+				    cout << " " << dbresult[index]; 
+			    }
+												   /* 尝试 https://blog.csdn.net/jqsad/article/details/51782088 中的方法2 */
+				//printf(" %s", dbresult[index]);
+				index++;
+			}
+			cout << endl;
+		}
+	}
+	sqlite3_free_table(dbresult);
+
+	return;
+}
+
 int main()
 {
 #if 0
@@ -304,7 +384,11 @@ int main()
 	//system("pause");
 
 	/* show_data_by_view function */
-	show_data_by_view();
+	//show_data_by_view();
+
+	//test_sqlite_api_static();
+
+	test_sqlite_api_static2();
 
     return 0;
 }

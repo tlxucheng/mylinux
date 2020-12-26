@@ -342,6 +342,8 @@ void test_sqlite_api_static2()
 	}
 	sqlite3_free_table(dbresult);
 
+	sqlite3_close(db);
+
 	return;
 }
 
@@ -389,7 +391,7 @@ int main()
 	//test_sqlite_api_static();
 
 	test_sqlite_api_static2();
-
-    return 0;
+	
+	return 0;
 }
 

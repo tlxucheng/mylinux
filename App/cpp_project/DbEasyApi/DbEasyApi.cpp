@@ -254,6 +254,21 @@ void connect_sqlite(string &dbname)
 	return;
 }
 
+void sqlite_show_data_by_view()
+{
+	string db_name = "D:/sqlite3/test_db";
+
+	connect_sqlite(db_name);
+
+	SqlTableModel *model = new SqlTableModel;
+	model->setTable("yunzhi_nursing");   /* 为什么能编译通过 */
+	model->select();
+	model->show();
+
+	/* 析构掉model */
+}
+
+
 void anytype_test_function()
 {
 	AnyType test(100);
@@ -410,9 +425,13 @@ int main()
 	test_sqlite_api_static2();
 #endif	
 
+#if 0
 	string dbname = "D:/sqlite3/test_db";
 
 	connect_sqlite(dbname);
+#endif
+
+	sqlite_show_data_by_view();
 
 	return 0;
 }

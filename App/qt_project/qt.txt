@@ -1,3 +1,29 @@
+QSqlResult *QSQLiteDriver::createResult() const
+{
+    return new QSQLiteResult(this);
+}
+函数返回值类型是父类指针，直接返回子类指针，有问题吗？
+
+QT 如何 shared_ptr 和普通指针的转换
+
+https://www.cnblogs.com/totogo/p/10647171.html 
+Sqlite3.c不使用预编译头文件 才能编译通过的原因
+https://blog.csdn.net/puppet_master/article/details/47682375?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control
+https://www.sollyu.com/use-sqlite-vs-static-connections/
+
+1219任务记录 使用 AnyType 类进行mysql查询结构存储，类的测试函数 anytype_test_function
+
+DecodeMYSQLType crash
+
+1>d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp(128): warning C4267: “参数”: 从“size_t”转换到“unsigned long”，可能丢失数据
+1>  正在生成代码...
+1>d:\project\my_cpp\dbeasyapi\dbeasyapi\sqltablemodel.cpp(52): warning C4172: 返回局部变量或临时变量的地址: statement
+
+C++函数不用类调用，直接使用？
+严重性	代码	说明	项目	文件	行	禁止显示状态
+警告	C4267	“参数”: 从“size_t”转换到“unsigned long”，可能丢失数据	DbEasyApi	d:\project\my_cpp\dbeasyapi\dbeasyapi\mysqlresult.cpp	108	
+
+
 https://blog.csdn.net/qq_34139994/article/details/97641171  //书籍
 
 https://blog.csdn.net/Thinkerlife/article/details/78828986
@@ -180,6 +206,11 @@ lamda表达式
 QT
 emit
 
+QT
+https://www.it610.com/article/1281442585830768640.htm
+
+
+
 C语言如何实现万能数据类型
 
     inline QVariant value() const   调用了vector
@@ -201,7 +232,7 @@ C语言如何实现万能数据类型
 
     QVector<QMyField> fields;
 	
-	bool QMYSQLResult::reset (const QString& query)  // qsql_mysql.cpp
+	bool QMYSQLResult::reset (const QString& query)  // qsql_mysql.cpp:687
 	
 	QVariant QMYSQLResult::data(int field)
 	
@@ -350,6 +381,66 @@ private:
 
 
 /*****************important*************************/
+void QSqlDatabasePrivate::init(const QString &type)
+{
+    drvName = type;
+
+    if (!driver) {
+#ifdef QT_SQL_PSQL
+        if (type == QLatin1String("QPSQL") || type == QLatin1String("QPSQL7"))
+            driver = new QPSQLDriver();
+#endif
+#ifdef QT_SQL_MYSQL
+        if (type == QLatin1String("QMYSQL") || type == QLatin1String("QMYSQL3"))
+            driver = new QMYSQLDriver();
+#endif
+#ifdef QT_SQL_ODBC
+        if (type == QLatin1String("QODBC") || type == QLatin1String("QODBC3"))
+            driver = new QODBCDriver();
+#endif
+#ifdef QT_SQL_OCI
+        if (type == QLatin1String("QOCI") || type == QLatin1String("QOCI8"))
+            driver = new QOCIDriver();
+#endif
+#ifdef QT_SQL_TDS
+        if (type == QLatin1String("QTDS") || type == QLatin1String("QTDS7"))
+            driver = new QTDSDriver();
+#endif
+#ifdef QT_SQL_DB2
+        if (type == QLatin1String("QDB2"))
+            driver = new QDB2Driver();
+#endif
+#ifdef QT_SQL_SQLITE
+        if (type == QLatin1String("QSQLITE"))
+            driver = new QSQLiteDriver();
+#endif
+#ifdef QT_SQL_SQLITE2
+        if (type == QLatin1String("QSQLITE2"))
+            driver = new QSQLite2Driver();
+#endif
+#ifdef QT_SQL_IBASE
+        if (type == QLatin1String("QIBASE"))
+            driver = new QIBaseDriver();
+#endif
+    }
+
+QSqlResult *QSQLiteDriver::createResult() const
+{
+    return new QSQLiteResult(this);
+}
+
+static void qInit(QSqlQuery *q, const QString& query, QSqlDatabase db)
+{
+    QSqlDatabase database = db;
+    if (!database.isValid())
+        database = QSqlDatabase::database(QLatin1String(QSqlDatabase::defaultConnection), false);
+    if (database.isValid()) {
+        *q = QSqlQuery(database.driver()->createResult());
+    }
+    if (!query.isEmpty())
+        q->exec(query);
+}
+
 (1)select 函数先构造查询语句，然后获取一个db
 (2)db 保存查询结果
 (3)查询赋值方法
@@ -359,16 +450,36 @@ QSqlQuery::QSqlQuery(const QString& query, QSqlDatabase db)
     qInit(this, query, db);
 }
 
+class QSqlTableModel: public QSqlQueryModel
+{
+}
+
+class QSqlQueryModel: public QAbstractTableModel
+{
+private:
+    QSqlQuery query;
+};
+
 class QSqlQuery
 {
     const QSqlResult* result() const;
     QVariant value(int i) const;
+
+private:
+    QSqlResult *sqlResult;
 
 };
 
 class QSqlResult
 {
 
+};
+
+class QMYSQLResult : public QSqlResult
+{
+private:
+    MYSQL_RES *result;
+    MYSQL_ROW row;
 };
 
 查询完了先设置字段

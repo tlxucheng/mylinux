@@ -7,6 +7,12 @@ SqlTableModel::SqlTableModel()
 	m_db = m_db.getDatabase(dbtype);
 }
 
+SqlTableModel::SqlTableModel(string& dbtype)
+{
+	m_db = m_db.getDatabase(dbtype);
+}
+
+
 void SqlTableModel::setTable(const string& tablename)
 {
 	m_tablename = tablename;

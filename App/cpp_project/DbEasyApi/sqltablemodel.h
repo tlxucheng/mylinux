@@ -15,6 +15,7 @@ class SqlTableModel : public SqlQueryModel
 {
 public:
 	SqlTableModel();
+	SqlTableModel(string& dbtype);
 
 	void setTable(const string& tablename);
 	string& getTable();

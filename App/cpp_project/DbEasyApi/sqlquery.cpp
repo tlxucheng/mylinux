@@ -32,7 +32,9 @@ SqlQuery::SqlQuery(const string& query, Sqldatabase &db)
 	/* 申请 sqlResult 指针空间, db参数先不用 */
 	if (NULL == sqlResult)
 	{
-		sqlResult = new MySqlResult(db);  /* 如何使用this指针 */
+		//sqlResult = new MySqlResult(db);  /* 如何使用this指针 */
+
+		sqlResult = db.m_sqldriver->createResult();
 	}
 
 	this->sqlResult->reset(query);

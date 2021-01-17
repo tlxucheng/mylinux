@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SqliteDriver.h"
+#include "sqliteresult.h"
 
 using namespace std;
 
@@ -41,8 +42,7 @@ sqlite3* SqliteDriver::getSqliteHandle()
 	return m_sqlite;
 }
 
-/* ‘›Œ¥ µœ÷ */
 SqlResult* SqliteDriver::createResult() const
 {
-	return NULL;  
+	return new SqliteResult;
 }

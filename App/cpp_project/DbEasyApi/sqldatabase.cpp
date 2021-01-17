@@ -2,6 +2,7 @@
 #include "sqldatabase.h"
 #include "connectiondict.h"
 #include "MysqlDriver.h"
+#include "SqliteDriver.h"
 
 Sqldatabase::Sqldatabase()
 {
@@ -13,16 +14,15 @@ Sqldatabase::Sqldatabase(string& dbtype)
 	if ("MYSQL" == dbtype)
 	{
 		m_sqldriver = make_shared<MysqlDriver>();
-		//m_sqldriver = new MysqlDriver();
-		//cout << "con m_sqldriver: " << m_sqldriver << endl;
 	}
-
-	/*
+	else if ("SQLITE" == dbtype)
+	{
+		m_sqldriver = make_shared<SqliteDriver>();
+	}
 	else
 	{
 		m_sqldriver = NULL;
 	}
-	*/
 }
 
 Sqldatabase::~Sqldatabase()

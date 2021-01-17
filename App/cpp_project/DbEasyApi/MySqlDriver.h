@@ -14,10 +14,10 @@ public:
 
 	bool    init();
 	bool    open(string& host, string& user, string& password, string& db, unsigned int port);
-	MYSQL*  getMysqlHandle();
+	//MYSQL*  getMysqlHandle();
 
     SqlResult *createResult() const;
-private:
+public:
 	MYSQL   *m_mysql;
 };
 

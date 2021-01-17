@@ -42,10 +42,12 @@ bool MysqlDriver::open(string& host, string& user, string& password, string& db,
 	return true;
 }
 
+/*
 MYSQL* MysqlDriver::getMysqlHandle()
 {
 	return m_mysql;
 }
+*/
 
 SqlResult* MysqlDriver::createResult() const
 {

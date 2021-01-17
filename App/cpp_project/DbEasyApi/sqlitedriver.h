@@ -13,9 +13,10 @@ public:
 	~SqliteDriver();
 
 	bool open(string& host, string& user, string& password, string& db, unsigned int port);
+	bool init();
 	sqlite3*  getSqliteHandle();
 
-	//SqlResult *createResult() const;
+	SqlResult *createResult() const;
 private:
 	sqlite3 *m_sqlite;
 };

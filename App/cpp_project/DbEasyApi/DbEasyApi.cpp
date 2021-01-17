@@ -50,13 +50,15 @@ DbEasyApi::DbEasyApi(string& dbtype)
 
 void DbEasyApi::setTable(string& tablename)
 {
+	MysqlDriver *m_driver_ptr = reinterpret_cast<MysqlDriver *>(m_db.m_sqldriver.get());
+
 	//m_db = Sqldatabase::getDatabase("MYSQL"); /* 语法错误 */
 	//string dbtype = "MYSQL";
 	//m_db = m_db.getDatabase(dbtype);  /* 应该写入构造函数 */
 
 	m_tablename = tablename;
 
-	m_mysqlresult.GetFields(m_db.m_sqldriver->getMysqlHandle(), tablename);
+	m_mysqlresult.GetFields(m_driver_ptr->m_mysql, tablename);
 
 	return;
 }
@@ -141,7 +143,9 @@ int DbEasyApi::select()
 
 	cout << statement << endl;
 
-	result = m_mysqlresult.GetResult(m_db.m_sqldriver->getMysqlHandle(),statement);
+	MysqlDriver *m_driver_ptr = reinterpret_cast<MysqlDriver *>(m_db.m_sqldriver.get());
+
+	result = m_mysqlresult.GetResult(m_driver_ptr->m_mysql,statement);
 
 	memcpy(&result_row, result, sizeof(result_row));
 	showResultColumn(result);
@@ -231,6 +235,18 @@ void connect_mysql(string& dbname)
 	db.setHost(host);
 	db.setUser(user);
 	db.setPassword(password);
+	db.setDbname(dbname);
+
+	db.open();
+
+	return;
+}
+
+void connect_sqlite(string &dbname)
+{
+	string dbtype = "SQLITE";
+	Sqldatabase db = Sqldatabase::addDatabase(dbtype);
+	 
 	db.setDbname(dbname);
 
 	db.open();
@@ -390,8 +406,14 @@ int main()
 
 	//test_sqlite_api_static();
 
+#if 0
 	test_sqlite_api_static2();
-	
+#endif	
+
+	string dbname = "D:/sqlite3/test_db";
+
+	connect_sqlite(dbname);
+
 	return 0;
 }
 

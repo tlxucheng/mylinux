@@ -138,19 +138,21 @@ static int DecodeMYSQLType(int mysqltype, int flags)
 }
 
 bool MySqlResult::reset(const string& query)
-{
+{ 
+	MysqlDriver *m_driver_ptr = reinterpret_cast<MysqlDriver *>(m_driver.get());
+
 	cout << "query: " << query << endl;
 
-	if (mysql_real_query(m_driver->getMysqlHandle(), query.c_str(), query.length()))
+	if (mysql_real_query(m_driver_ptr->m_mysql, query.c_str(), query.length()))
 	{
 		return false;
 	}
-	m_result = mysql_store_result(m_driver->getMysqlHandle());
+	m_result = mysql_store_result(m_driver_ptr->m_mysql);
 	if (NULL == m_result)
 	{
 		return false;
 	}
-	int num_fileds = mysql_field_count(m_driver->getMysqlHandle());
+	int num_fileds = mysql_field_count(m_driver_ptr->m_mysql);
 	for (int i = 0; i < num_fileds; i++)
 	{
 		MYSQL_FIELD *field = mysql_fetch_field_direct(m_result, i);  //mysql_fetch_field_direct与mysql_fetch_field的区别？

@@ -28,6 +28,8 @@
  question:
  1. 确认 shared_ptr<SqlDriver> m_sqldriver 是否能释放;
  2. 如果mysql server没启动会crash
+ 3. 去除 getMysqlHandle 函数后，mysql接口功能未测试
+ 4. mysql句柄获取修改为一个宏，m_mysql修改为友元变量？
  */
 
 class DbEasyApi

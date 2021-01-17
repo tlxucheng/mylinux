@@ -18,6 +18,12 @@ SqliteDriver::~SqliteDriver()
 	cout << "close sqlite connect" << endl;
 }
 
+/* 做一些什么事件比较好 */
+bool SqliteDriver::init()
+{
+	return true;
+}
+
 bool SqliteDriver::open(string& host, string& user, string& password, string& db, unsigned int port)
 {
 	if (sqlite3_open(db.c_str(), &m_sqlite))
@@ -35,3 +41,8 @@ sqlite3* SqliteDriver::getSqliteHandle()
 	return m_sqlite;
 }
 
+/* 暂未实现 */
+SqlResult* SqliteDriver::createResult() const
+{
+	return NULL;  
+}

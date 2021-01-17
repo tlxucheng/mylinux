@@ -39,9 +39,13 @@ private:
 	//MysqlDriver      *m_driver;
 
 	shared_ptr<SqlDriver> m_driver;  /* 是否正确？怎么使用最好？*/
+	//SqlDriver *m_driver;
+
 	//MYSQL_FIELD      *m_fields;
 	//int              m_fields_num;
 	//vector<string>   m_field_name;
+
+
 };
 
 #endif

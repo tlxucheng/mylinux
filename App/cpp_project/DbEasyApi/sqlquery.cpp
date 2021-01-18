@@ -34,10 +34,11 @@ SqlQuery::SqlQuery(const string& query, Sqldatabase &db)
 	{
 		//sqlResult = new MySqlResult(db);  /* 如何使用this指针 */
 
-		sqlResult = db.m_sqldriver->createResult();
+		sqlResult = db.m_sqldriver->createResult(db);
 	}
 
-	this->sqlResult->reset(query);
+	//this->sqlResult->reset(query);
+	sqlResult->reset(query);
 }
 
 SqlResult *SqlQuery::getSqlResult()

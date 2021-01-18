@@ -5,6 +5,7 @@
 
 #include "SqlDriver.h"
 #include "SqlResult.h"
+#include "Sqldatabase.h"
 
 class MysqlDriver : public SqlDriver
 {
@@ -17,6 +18,7 @@ public:
 	//MYSQL*  getMysqlHandle();
 
     SqlResult *createResult() const;
+	SqlResult *createResult(Sqldatabase &db) const;
 public:
 	MYSQL   *m_mysql;
 };

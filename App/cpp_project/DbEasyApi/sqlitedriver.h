@@ -5,6 +5,7 @@
 
 #include "SqlDriver.h"
 #include "sqlite3.h"
+#include "Sqldatabase.h"
 
 class SqliteDriver : public SqlDriver
 {
@@ -17,7 +18,8 @@ public:
 	sqlite3*  getSqliteHandle();
 
 	SqlResult *createResult() const;
-private:
+	SqlResult *createResult(Sqldatabase &db) const;
+public:
 	sqlite3 *m_sqlite;
 };
 

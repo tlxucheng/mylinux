@@ -1,10 +1,14 @@
 #pragma once
+
+#ifndef SQLDATABASE_H
+#define SQLDATABASE_H
+
 #include <iostream>
 #include <string>
 #include <map>
 #include <memory>
 #include "sqlDriver.h"
-#include "MysqlDriver.h"
+//#include "MysqlDriver.h"
 
 using namespace std;
 
@@ -38,3 +42,5 @@ private:
 
 	//MysqlDriver *m_sqldriver;
 };
+
+#endif

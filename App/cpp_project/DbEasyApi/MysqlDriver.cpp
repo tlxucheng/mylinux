@@ -49,7 +49,13 @@ MYSQL* MysqlDriver::getMysqlHandle()
 }
 */
 
+
 SqlResult* MysqlDriver::createResult() const
 {
 	return new MySqlResult;  /* 与return new MySqlResult(this)的区别，何时删除 */
+}
+
+SqlResult* MysqlDriver::createResult(Sqldatabase &db) const
+{
+	return new MySqlResult(db);  /* 与return new MySqlResult(this)的区别，何时删除 */
 }

@@ -8,8 +8,11 @@
 #include <string>
 #include "mysql.h"
 #include "SqlResult.h"
+//#include "Sqldatabase.h"
 
 using namespace std;
+
+class Sqldatabase;
 
 class SqlDriver
 {
@@ -22,6 +25,7 @@ public:
 	virtual bool open(string& host, string& user, string& password, string& db, unsigned int port) = 0;
 
 	virtual SqlResult *createResult() const = 0;
+	virtual SqlResult *createResult(Sqldatabase &db) const = 0;
 private:
 
 };

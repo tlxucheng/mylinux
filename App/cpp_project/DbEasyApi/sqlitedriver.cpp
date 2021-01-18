@@ -46,3 +46,8 @@ SqlResult* SqliteDriver::createResult() const
 {
 	return new SqliteResult;
 }
+
+SqlResult* SqliteDriver::createResult(Sqldatabase &db) const
+{
+	return new SqliteResult(db);
+}

@@ -1,3 +1,18 @@
+bool QSQLiteResultPrivate::fetchNext(QSqlCachedResult::ValueCache &values, int idx, bool initialFetch)
+Qt 生产字段结果
+
+sqlite> pragma table_info('yunzhi_nursing');
+cid|name|type|notnull|dflt_value|pk
+0|id|int|0||0
+1|project_type|int|0||0
+2|project_number|int|0||0
+3|project_date|text|0||0
+4|project_time|text|0||0
+5|project_comments|text|0||0
+6|create_time|int|0||0
+7|update_time|int|0||0
+sqlite>
+
 QSqlResult *QSQLiteDriver::createResult() const
 {
     return new QSQLiteResult(this);

@@ -30,18 +30,26 @@ bool SqliteResult::reset(const string& query)
 	int             j             = 0;
 	int             index         = 0;
 
-	cout << "query: " << query << endl;
+	//cout << "query: " << query << endl;
+
+	cout << setiosflags(ios::fixed) << setprecision(6) << setiosflags(ios::left);
 
 	ret = sqlite3_get_table(m_driver_ptr->m_sqlite, query.c_str(), &dbresult, &nrow, &ncolumn, &errmsg);
 	if (ret == SQLITE_OK)
 	{
+		for (i = 0; i < ncolumn; i++)
+		{
+			cout << setw(20) << dbresult[i];
+		}
+		cout << endl;
+
 		index = ncolumn;
 		for (i = 0; i<nrow; i++) {
-			cout << setw(2) << i;
+			//cout << setw(2) << i;
 			for (j = 0; j < ncolumn; j++) {
 				if (NULL != dbresult[index])       
 				{
-					cout << " " << dbresult[index];
+					cout << setw(20) << dbresult[index];
 				}
 				index++;
 			}

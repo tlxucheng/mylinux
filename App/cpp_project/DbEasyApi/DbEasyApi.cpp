@@ -352,18 +352,27 @@ void test_sqlite_api_static2()
 		cout << "sqlite3_open suceess!" << endl;
 	}
 
+	cout << setiosflags(ios::fixed) << setprecision(6) << setiosflags(ios::left);
+
 	int i = 0;
 	ret = sqlite3_get_table(db, select_sql, &dbresult, &nrow, &ncolumn, &errmsg);
 	if (ret == SQLITE_OK) {
-		cout << "query " << nrow << " records. " << endl;
-		printf("query %i records.\n", nrow);
+		//cout << "query " << nrow << " records. " << endl;
+		//printf("query %i records.\n", nrow);
+
+		for (i = 0; i < ncolumn; i++)
+		{
+			cout << setw(20) << dbresult[i];
+		}
+		cout << endl;
+
 		index = ncolumn;
 		for (i = 0; i<nrow; i++) {
-			cout << setw(2) << i;
+			//cout << setw(2) << i;
 			for (j = 0; j < ncolumn; j++) {
 				if (NULL != dbresult[index])         /* https://bbs.csdn.net/topics/390187094 */
 				{
-				    cout << " " << dbresult[index]; 
+				    cout << setw(20) << dbresult[index];
 			    }
 												   /* 尝试 https://blog.csdn.net/jqsad/article/details/51782088 中的方法2 */
 				//printf(" %s", dbresult[index]);
@@ -422,9 +431,7 @@ int main()
 
 	//test_sqlite_api_static();
 
-#if 0
-	test_sqlite_api_static2();
-#endif	
+	//test_sqlite_api_static2();
 
 #if 0
 	string dbname = "D:/sqlite3/test_db";

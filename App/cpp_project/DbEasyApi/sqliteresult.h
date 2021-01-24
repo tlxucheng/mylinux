@@ -17,7 +17,7 @@ public:
 	bool reset(const string& sqlquery);
 	AnyType data(int field);
 
-    void show_fileds_type();
+    void show_fileds();
 	void show_data(int index);
 
 	int get_fileds_type(const string& query);

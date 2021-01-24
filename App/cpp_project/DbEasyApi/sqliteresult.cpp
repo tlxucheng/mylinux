@@ -112,6 +112,7 @@ bool SqliteResult::reset(const string& query)
 		for (i = 0; i < ncolumn; i++)
 		{
 			cout << setw(20) << dbresult[i];
+			m_fields[i].name = dbresult[i];
 		}
 		cout << endl;
 
@@ -138,15 +139,13 @@ AnyType SqliteResult::data(int filed)
 }
 
 
-void SqliteResult::show_fileds_type()
+void SqliteResult::show_fileds()
 {
 	size_t filed_vector_size = m_fields.size();
 
 	for (int i = 0; i < filed_vector_size; i++)
 	{
-		//cout << i << " type: " << m_fields[i].type << endl;
-
-		cout << DecodeFiledType(m_fields[i].type) << endl;
+		cout << i << " type: " << DecodeFiledType(m_fields[i].type) << "  name: " << m_fields[i].name << endl;
 	}
 
 	return;

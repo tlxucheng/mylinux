@@ -23,7 +23,7 @@ public:
 	AnyType data(int filed);
 
 	/* test function */
-	void show_fileds_type();
+	void show_fileds();
 	void show_data(int index);
 private:
 	vector<MyFields> m_fields;

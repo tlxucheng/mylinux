@@ -163,10 +163,9 @@ void SqliteResult::show_data(int index)
 void SqliteResult::show_data()
 {
 	size_t filed_vector_size = m_values.size();
-
 	for (int i = 0; i < filed_vector_size; i++)
 	{
-		if (i == m_fields_count)
+		if (0 == i % m_fields_count)
 		{
 			cout << endl;
 		}

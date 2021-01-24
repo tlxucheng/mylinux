@@ -201,3 +201,8 @@ void MySqlResult::show_data(int index)
 
     return;
 }
+
+void MySqlResult::show_data()
+{
+	return;
+}

@@ -116,6 +116,8 @@ bool SqliteResult::reset(const string& query)
 		}
 		cout << endl;
 
+		m_fields_count = ncolumn;
+
 		index = ncolumn;
 		for (i = 0; i<nrow; i++) {
 			//cout << setw(2) << i;
@@ -123,6 +125,7 @@ bool SqliteResult::reset(const string& query)
 				if (NULL != dbresult[index])       
 				{
 					cout << setw(20) << dbresult[index];
+					m_values.push_back(dbresult[index]);
 				}
 				index++;
 			}
@@ -153,6 +156,24 @@ void SqliteResult::show_fileds()
 
 void SqliteResult::show_data(int index)
 {
+
+	return;
+}
+
+void SqliteResult::show_data()
+{
+	size_t filed_vector_size = m_values.size();
+
+	for (int i = 0; i < filed_vector_size; i++)
+	{
+		if (i == m_fields_count)
+		{
+			cout << endl;
+		}
+		cout << m_values[i] << "  ";
+	}
+
+	cout << endl;
 
 	return;
 }

@@ -25,6 +25,7 @@ public:
 	/* test function */
 	virtual void show_fileds() = 0;
 	virtual void show_data(int index) = 0;
+	virtual void show_data() = 0;
 private:
 
 };

@@ -72,7 +72,12 @@ void SqlTableModel::show()
 {
 	query.getSqlResult()->show_fileds();
 
+	/* µ¥ÌõÏÔÊ¾
 	int index = 0;
 	query.getSqlResult()->show_data(0);
+	*/
 
+	query.getSqlResult()->show_data();
+
+	return;
 }

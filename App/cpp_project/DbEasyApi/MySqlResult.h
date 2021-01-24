@@ -25,6 +25,7 @@ public:
 	/* test function */
 	void show_fileds();
 	void show_data(int index);
+	void show_data();
 private:
 	vector<MyFields> m_fields;
 

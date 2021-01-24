@@ -9,12 +9,6 @@
 #include "Sqlresult.h"
 #include "sqldatabase.h"
 
-struct MyFields
-{
-	string name;
-	int type;
-};
-
 class MySqlResult : public SqlResult
 {
 public:

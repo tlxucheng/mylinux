@@ -18,6 +18,78 @@ SqliteResult::SqliteResult(Sqldatabase &db)
 
 /* 添加析构函数，调用close接口 */
 
+static int DecodeSQLITEType(int sqlite_type)
+{
+	int type = 0;
+
+	switch (sqlite_type)
+	{
+	case SQLITE_INTEGER:
+		type = AnyType::Int;
+		break;
+	case SQLITE_TEXT:
+		type = AnyType::String;
+		break;
+	default:
+		break;
+	}
+
+	return type;
+}
+
+string DecodeFiledType(int type)
+{
+	string str = "SQLITE_INTEGER";
+
+	switch (type)
+	{
+	case AnyType::Int:
+		return str;
+	case AnyType::String:
+		str = "SQLITE_TEXT";
+		return str;
+	default:
+		break;
+	}
+
+	return str;
+}
+
+
+
+/* 最好使用pragma table_info('yunzhi_nursing')获取字段信息
+ * 使用下面的方法，如果字段是空的，则会获取不到类型
+ */
+int SqliteResult::get_fileds_type(const string& query)
+{
+	sqlite3_stmt      *stmt            = NULL;
+	SqliteDriver      *m_driver_ptr    = reinterpret_cast<SqliteDriver *>(m_driver.get());
+	MyFields          field_info;
+
+	sqlite3_prepare(m_driver_ptr->m_sqlite, query.c_str(), -1, &stmt, 0);
+	while (stmt)
+	{
+		while (SQLITE_ROW == sqlite3_step(stmt))
+		{
+			int nCount = sqlite3_column_count(stmt);
+			for (int i = 0; i < nCount; i++)
+			{
+				//int nValue = sqlite3_column_int(stmt, 0);
+				int nType = sqlite3_column_type(stmt, i);
+
+				field_info.type = DecodeSQLITEType(nType);
+				m_fields.push_back(field_info);
+			}
+			break;
+		}
+
+		sqlite3_finalize(stmt);
+		stmt = NULL;
+	}
+
+	return 0;
+}
+
 bool SqliteResult::reset(const string& query)
 {
 	SqliteDriver    *m_driver_ptr = reinterpret_cast<SqliteDriver *>(m_driver.get());
@@ -30,9 +102,9 @@ bool SqliteResult::reset(const string& query)
 	int             j             = 0;
 	int             index         = 0;
 
-	//cout << "query: " << query << endl;
-
 	cout << setiosflags(ios::fixed) << setprecision(6) << setiosflags(ios::left);
+
+	get_fileds_type(query);
 
 	ret = sqlite3_get_table(m_driver_ptr->m_sqlite, query.c_str(), &dbresult, &nrow, &ncolumn, &errmsg);
 	if (ret == SQLITE_OK)
@@ -68,6 +140,15 @@ AnyType SqliteResult::data(int filed)
 
 void SqliteResult::show_fileds_type()
 {
+	size_t filed_vector_size = m_fields.size();
+
+	for (int i = 0; i < filed_vector_size; i++)
+	{
+		//cout << i << " type: " << m_fields[i].type << endl;
+
+		cout << DecodeFiledType(m_fields[i].type) << endl;
+	}
+
 	return;
 }
 

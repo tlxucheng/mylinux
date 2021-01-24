@@ -10,6 +10,12 @@
 
 using namespace std;
 
+struct MyFields
+{
+	string name;
+	int type;
+};
+
 class SqlResult
 {
 public:

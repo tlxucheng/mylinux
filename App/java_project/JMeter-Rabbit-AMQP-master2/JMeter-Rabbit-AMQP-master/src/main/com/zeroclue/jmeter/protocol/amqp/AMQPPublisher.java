@@ -35,6 +35,7 @@ public class AMQPPublisher extends AMQPSampler implements Interruptible {
 
     //++ These are JMX names, and must not be changed
     private final static String MESSAGE = "AMQPPublisher.Message";
+	private final static String MESSAGE_EXCHANGE = "AMQPPublisher.MessageExchange";
     private final static String MESSAGE_ROUTING_KEY = "AMQPPublisher.MessageRoutingKey";
     private final static String MESSAGE_TYPE = "AMQPPublisher.MessageType";
     private final static String REPLY_TO_QUEUE = "AMQPPublisher.ReplyToQueue";
@@ -92,7 +93,8 @@ public class AMQPPublisher extends AMQPSampler implements Interruptible {
                 // but this does not work since RabbitMQ does not sync to disk if consumers are connected as
                 // seen by iostat -cd 1. TPS value remains at 0.
 
-                channel.basicPublish(getExchange(), getMessageRoutingKey(), messageProperties, messageBytes);
+                channel.basicPublish(getMessageExchange(), getMessageRoutingKey(), messageProperties, messageBytes);
+				//channel.basicPublish(getExchange(), getMessageRoutingKey(), messageProperties, messageBytes);
 
             }
 
@@ -139,6 +141,14 @@ public class AMQPPublisher extends AMQPSampler implements Interruptible {
         setProperty(MESSAGE_ROUTING_KEY, content);
     }
 
+	public String getMessageExchange() {
+        return getPropertyAsString(MESSAGE_EXCHANGE);
+    }
+
+    public void setMessageExchange(String content) {
+        setProperty(MESSAGE_EXCHANGE, content);
+    }
+	
     /**
      * @return the message for the sample
      */

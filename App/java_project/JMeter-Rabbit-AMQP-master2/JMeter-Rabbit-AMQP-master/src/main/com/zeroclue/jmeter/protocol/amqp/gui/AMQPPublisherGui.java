@@ -34,6 +34,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
     private final FilePanel messageFile = new FilePanel("Filename", ALL_FILES);
     */
     private JLabeledTextArea message = new JLabeledTextArea("Message Content");
+	private JLabeledTextField messageExchange = new JLabeledTextField("Exchange");
     private JLabeledTextField messageRoutingKey = new JLabeledTextField("Routing Key");
     private JLabeledTextField messageType = new JLabeledTextField("Message Type");
     private JLabeledTextField replyToQueue = new JLabeledTextField("Reply-To Queue");
@@ -75,6 +76,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
         persistent.setSelected(sampler.getPersistent());
         useTx.setSelected(sampler.getUseTx());
 
+		messageExchange.setText(sampler.getMessageExchange());
         messageRoutingKey.setText(sampler.getMessageRoutingKey());
         messageType.setText(sampler.getMessageType());
         replyToQueue.setText(sampler.getReplyToQueue());
@@ -109,6 +111,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
         sampler.setPersistent(persistent.isSelected());
         sampler.setUseTx(useTx.isSelected());
 
+		sampler.setMessageExchange(messageExchange.getText());
         sampler.setMessageRoutingKey(messageRoutingKey.getText());
         sampler.setMessage(message.getText());
         sampler.setMessageType(messageType.getText());
@@ -132,6 +135,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
         super.init();
         persistent.setPreferredSize(new Dimension(100, 25));
         useTx.setPreferredSize(new Dimension(100, 25));
+		messageExchange.setPreferredSize(new Dimension(100, 25));
         messageRoutingKey.setPreferredSize(new Dimension(100, 25));
         messageType.setPreferredSize(new Dimension(100, 25));
         replyToQueue.setPreferredSize(new Dimension(100, 25));
@@ -142,6 +146,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
 
         mainPanel.add(persistent);
         mainPanel.add(useTx);
+		mainPanel.add(messageExchange);
         mainPanel.add(messageRoutingKey);
         mainPanel.add(messageType);
         mainPanel.add(replyToQueue);
@@ -160,6 +165,7 @@ public class AMQPPublisherGui extends AMQPSamplerGui {
         super.clearGui();
         persistent.setSelected(AMQPPublisher.DEFAULT_PERSISTENT);
         useTx.setSelected(AMQPPublisher.DEFAULT_USE_TX);
+		messageExchange.setText("");
         messageRoutingKey.setText("");
         messageType.setText("");
         replyToQueue.setText("");

@@ -35,7 +35,7 @@ public class AMQPPublisher extends AMQPSampler implements Interruptible {
 
     //++ These are JMX names, and must not be changed
     private final static String MESSAGE = "AMQPPublisher.Message";
-	private final static String MESSAGE_EXCHANGE = "AMQPPublisher.MessageExchange";
+    private final static String MESSAGE_EXCHANGE = "AMQPPublisher.MessageExchange";
     private final static String MESSAGE_ROUTING_KEY = "AMQPPublisher.MessageRoutingKey";
     private final static String MESSAGE_TYPE = "AMQPPublisher.MessageType";
     private final static String REPLY_TO_QUEUE = "AMQPPublisher.ReplyToQueue";

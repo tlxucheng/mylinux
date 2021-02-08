@@ -119,7 +119,7 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
 
             result.setResponseData("OK", null);
             result.setDataType(SampleResult.TEXT);
-            //result.setResponseHeaders(delivery != null ? formatHeaders(delivery) : null);
+            result.setResponseHeaders(delivery != null ? formatHeaders(delivery) : null);
 
 
             result.setResponseCodeOK();

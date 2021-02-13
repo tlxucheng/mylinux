@@ -21,6 +21,9 @@ AMQP::AMQP() {
 AMQP::AMQP(string cnnStr, bool use_ssl_,
 		string cacert_path_, string client_cert_path_, string client_key_path_,
 		bool verify_peer_, bool verify_hostname_) {
+
+    cout << "cnnStr" << cnnStr << endl;
+        
 	use_ssl = use_ssl_;
 	proto = SET_AMQP_PROTO_BY_SSL_USAGE(use_ssl);
 	cacert_path = cacert_path_;
@@ -35,6 +38,9 @@ AMQP::AMQP(string cnnStr, bool use_ssl_,
 };
 
 AMQP::~AMQP() {
+     cout << "enter ~AMQP function" << endl;
+
+#if 0
 	if (channels.size()) {
 		vector<AMQPBase*>::iterator i;
 		for (i=channels.begin(); i!=channels.end(); i++) {
@@ -44,6 +50,7 @@ AMQP::~AMQP() {
 
 	amqp_connection_close(cnn, AMQP_REPLY_SUCCESS);
 	amqp_destroy_connection(cnn);
+#endif
 };
 
 void AMQP::init(enum AMQPProto_e proto) {

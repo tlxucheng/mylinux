@@ -1,8 +1,9 @@
 CXX      = g++
-CFLAGS   = -Wall
+CFLAGS   = -g -Wall
 CPPFLAGS = $(CFLAGS) -Irabbitmq-c/librabbitmq -I/usr/local/include -Lrabbitmq-c/build/librabbitmq -L/usr/local/lib -Iinclude/
 
-LIBRARIES= rabbitmq ssl crypto
+#LIBRARIES= rabbitmq ssl crypto
+LIBRARIES= ssl crypto
 LIBS     = $(addprefix -l,$(LIBRARIES))
 
 LIBNAME  = amqpcpp
@@ -26,7 +27,7 @@ $(LIBSO): $(OBJECTS)
 	$(CXX) $(CPPFLAGS) -fPIC -shared $(SOURCES) -o $(LIBSO)
 	
 $(EXAMPLES): $(addprefix examples/,$(EXFILES)) $(LIBFILE)
-	$(CXX) $(CPPFLAGS) -o $@ examples/$@.cpp $(LIBFILE) $(LIBS)
+	$(CXX) $(CPPFLAGS) -o $@ examples/$@.cpp $(LIBFILE) rabbitmq-c/build/librabbitmq/librabbitmq.a $(LIBS)
 
 install:
 	cp $(LIBSO) /usr/local/lib

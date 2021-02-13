@@ -188,7 +188,8 @@ void AMQPExchange::Publish(char * data, uint32_t length, string key) {
 }
 
 void AMQPExchange::sendPublishCommand(amqp_bytes_t messageByte, const char * key) {
-	amqp_bytes_t exchangeByte = amqp_cstring_bytes(name.c_str());
+	//amqp_bytes_t exchangeByte = amqp_cstring_bytes(name.c_str());
+	amqp_bytes_t exchangeByte = amqp_cstring_bytes(message_exchange.c_str());
 	amqp_bytes_t keyrouteByte = amqp_cstring_bytes(key);
 
 	amqp_basic_properties_t props;
@@ -313,3 +314,8 @@ void AMQPExchange::setHeader(string name, string value, bool special) {
 void AMQPExchange::setHeader(string name, string value) {
 	setHeader(name, value, 0);
 }
+
+void AMQPExchange::setMessageExchange(string value) {
+	message_exchange = value;
+}
+
